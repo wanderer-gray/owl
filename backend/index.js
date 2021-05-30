@@ -1,12 +1,26 @@
-const express = require('express');
+const path = require('path');
+const fastify = require('fastify');
+const config = require('./config');
 
-const app = express();
-const PORT = 3000;
+const app = fastify({ logger: true });
 
-app.use(express.static('public'));
+app.register(require('./sec'), config);
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+app.register(require('./api'), {
+  ...config,
+  prefix: '/api',
 });
 
-app.listen(PORT, () => console.log(`Server listening on port: ${PORT}`));
+app.register(require('fastify-static'), {
+  root: path.join(__dirname, 'www'),
+});
+
+app.listen(config.app, (err) => {
+  if (err) {
+    app.log.fatal(err);
+  }
+
+  // eslint-disable-next-line no-console
+  console.log(app.printRoutes());
+  console.log(app.printPlugins());
+});

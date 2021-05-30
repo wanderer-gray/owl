@@ -10,10 +10,13 @@
   "author": "meerkat",
   "license": "ISC",
   "dependencies": {
-    "ajv": "^8.5.0",
-    "express": "^4.17.1",
-    "knex": "^0.95.6",
-    "log4js": "^6.3.0",
+    "fastify": "^3.16.2",
+    "fastify-autoload": "^3.7.1",
+    "fastify-cookie": "^5.3.1",
+    "fastify-knexjs": "^1.4.0",
+    "fastify-rate-limit": "^5.5.0",
+    "fastify-sensible": "^3.1.1",
+    "fastify-static": "^4.2.2",
     "pg": "^8.6.0"
   },
   "devDependencies": {
