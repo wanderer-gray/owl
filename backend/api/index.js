@@ -4,6 +4,57 @@ const fastifyKnexJS = require('fastify-knexjs');
 const fastifyCookie = require('fastify-cookie');
 const fastifyAutoload = require('fastify-autoload');
 
+async function Service(props) {
+  const {
+    auth = true,
+    operations,
+  } = props;
+
+  this.register(async (service) => {
+    operations.forEach((operation) => {
+      service.operation({ auth, ...operation });
+    });
+  });
+}
+
+async function Operation(props) {
+  const {
+    auth,
+    tran = false,
+    handler,
+    ...router
+  } = props;
+
+  if (auth) {
+    router.preHandler = async function Authorization(request) {
+      const { userId } = request.cookies;
+
+      if (!userId) {
+        throw this.httpErrors.unauthorized();
+      }
+
+      request.userId = userId;
+    };
+  }
+
+  router.handler = async function Handler(request) {
+    let result;
+
+    if (tran) {
+      const { knex } = this;
+      await knex.transaction(async (trx) => {
+        result = await handler(request, { ...this, knex: trx });
+      });
+    } else {
+      result = await handler(request, this);
+    }
+
+    return result;
+  };
+
+  this.route(router);
+}
+
 module.exports = async (fastify, options) => {
   const { api } = options;
 
@@ -11,45 +62,11 @@ module.exports = async (fastify, options) => {
   fastify.register(fastifyKnexJS, api.knex);
   fastify.register(fastifyCookie, api.cookie);
 
-  fastify.decorate('operation', function (props) {
-    const {
-      transaction = false,
-      authorization = true,
-      handler,
-      ...route
-    } = props;
-
-    if (authorization) {
-      route.preHandler = async function (request) {
-        const { userId } = request.cookies;
-
-        if (!userId) {
-          throw this.httpErrors.unauthorized();
-        }
-
-        request.userId = userId;
-      };
-    }
-
-    route.handler = async function (request) {
-      let result;
-      const { log, knex } = this;
-
-      if (transaction) {
-        await knex.transaction(async (trx) => {
-          result = await handler(request, { log, knex: trx });
-        });
-      } else {
-        result = await handler(request, { log, knex });
-      }
-
-      return result;
-    };
-
-    this.route(route);
-  });
+  fastify.decorate('service', Service);
+  fastify.decorate('operation', Operation);
 
   fastify.register(fastifyAutoload, {
     dir: path.join(__dirname, 'services'),
+    maxDepth: 1,
   });
 };

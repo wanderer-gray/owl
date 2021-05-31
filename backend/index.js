@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const path = require('path');
 const fastify = require('fastify');
 const config = require('./config');
@@ -20,7 +21,8 @@ app.listen(config.app, (err) => {
     app.log.fatal(err);
   }
 
-  // eslint-disable-next-line no-console
-  console.log(app.printRoutes());
-  console.log(app.printPlugins());
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(app.printRoutes());
+    console.log(app.printPlugins());
+  }
 });
