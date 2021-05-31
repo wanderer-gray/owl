@@ -5,7 +5,7 @@
 ### Команды
 Основная задача: автоматический перезапуск серверов при падении 
 - `dev`: pm2 start index.js --name=owl --watch
-- `prod`: pm2 start index.js --name=owl -i max --max-memory-restart 1G
+- `prod`: pm2 start index.js --name=owl -i max --max-memory-restart 1G --log ./all.log
 - Логи: pm2 logs
 - Список мониторинга: pm2 list
 - Панель мониторинга: pm2 monit
