@@ -68,5 +68,8 @@ module.exports = async (fastify, options) => {
   fastify.register(fastifyAutoload, {
     dir: path.join(__dirname, 'services'),
     maxDepth: 1,
+    options: {
+      prefix: '/api',
+    },
   });
 };

@@ -1,16 +1,16 @@
-/* eslint-disable no-console */
 const path = require('path');
 const fastify = require('fastify');
 const config = require('./config');
 
-const app = fastify({ logger: true });
+const app = fastify({
+  logger: {
+    level: 'debug',
+  },
+});
 
 app.register(require('./sec'), config);
 
-app.register(require('./api'), {
-  ...config,
-  prefix: '/api',
-});
+app.register(require('./api'), config);
 
 app.register(require('fastify-static'), {
   root: path.join(__dirname, 'www'),
@@ -22,7 +22,7 @@ app.listen(config.app, (err) => {
   }
 
   if (process.env.NODE_ENV !== 'production') {
+    // eslint-disable-next-line no-console
     console.log(app.printRoutes());
-    console.log(app.printPlugins());
   }
 });
