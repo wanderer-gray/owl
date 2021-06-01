@@ -37,19 +37,33 @@ async function Operation(props) {
     };
   }
 
-  router.handler = async function Handler(request) {
+  router.handler = async function Handler(request, reply) {
     let result;
 
+    const {
+      log,
+      knex,
+    } = this;
+    const exts = {
+      log,
+      knex,
+    };
+
     if (tran) {
-      const { knex } = this;
       await knex.transaction(async (trx) => {
-        result = await handler(request, { ...this, knex: trx });
+        result = await handler(request, { ...exts, knex: trx });
       });
     } else {
-      result = await handler(request, this);
+      result = await handler(request, exts);
     }
 
-    return result;
+    reply.code(200);
+
+    if (result) {
+      reply.header('Content-Type', 'application/json; charset=utf-8');
+    }
+
+    reply.send(result);
   };
 
   this.route(router);

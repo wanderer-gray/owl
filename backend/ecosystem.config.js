@@ -16,7 +16,7 @@ module.exports = {
     env: {
       NODE_ENV: 'development',
       APP_HOST: 'localhost',
-      APP_PORT: 8080,
+      APP_PORT: 8000,
       RATE_MAX: 10,
       RATE_TIME: 1000,
       RATE_CACHE: 10000,
