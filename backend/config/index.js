@@ -4,6 +4,10 @@ const COOKIE_SECRET = crypto.randomBytes(16);
 
 const config = {
   development: {
+    app: {
+      host: 'localhost',
+      port: 8000,
+    },
     sec: {
       rate: {
         max: 10,
@@ -33,12 +37,12 @@ const config = {
         secret: COOKIE_SECRET,
       },
     },
-    app: {
-      host: 'localhost',
-      port: 8000,
-    },
   },
   production: {
+    app: {
+      host: process.env.APP_HOST,
+      port: process.env.APP_PORT,
+    },
     sec: {
       rate: {
         max: process.env.RATE_MAX,
@@ -67,10 +71,6 @@ const config = {
       cookie: {
         secret: COOKIE_SECRET,
       },
-    },
-    app: {
-      host: process.env.APP_HOST,
-      port: process.env.APP_PORT,
     },
   },
 };
