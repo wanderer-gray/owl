@@ -1,8 +1,6 @@
 import React from 'react';
 
 const App = () => {
-  console.log(api());
-
   return (
     <h1>
       Hello, World!
