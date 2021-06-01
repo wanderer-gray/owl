@@ -20,6 +20,9 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
+    "globals": {
+      "api": true
+    },
     "extends": [
       "react-app",
       "react-app/jest"
