@@ -3,9 +3,4 @@ import ReactDOM from 'react-dom';
 
 import Init from './init';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <Init />
-  </React.StrictMode>,
-  document.getElementById('root'),
-);
+ReactDOM.render(<Init />, document.getElementById('root'));
