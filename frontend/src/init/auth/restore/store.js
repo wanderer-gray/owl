@@ -36,8 +36,7 @@ class RestoreStore {
     const { email } = this;
 
     try {
-      await api()
-        .service('auth/sendCodeToEmail')
+      await api('auth/sendRestoreCode')
         .method('post')
         .query({ email });
       
@@ -58,10 +57,9 @@ class RestoreStore {
     } = this;
 
     try {
-      await api()
-        .service('auth/restore')
+      await api('auth/restore')
         .method('post')
-        .query({
+        .body({
           email,
           code,
           password

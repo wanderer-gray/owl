@@ -38,10 +38,9 @@ class SignUpStore {
     } = this;
 
     try {
-      await api()
-        .service('auth/sendSignUpCode')
+      await api('auth/sendSignUpCode')
         .method('post')
-        .query({ email })
+        .query({ email });
 
       this.setStep(2);
     } catch {
@@ -60,8 +59,7 @@ class SignUpStore {
     } = this;
 
     try {
-      await api()
-        .service('auth/signup')
+      await api('auth/signup')
         .method('post')
         .body({
           email,

@@ -4,7 +4,7 @@ import ApiStore from '../api/store';
 class AuthStore {
   logOut = null;
 
-  open = true;
+  open = false;
   type = 'login';
 
   constructor() {

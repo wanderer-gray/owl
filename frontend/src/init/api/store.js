@@ -47,7 +47,7 @@ class ApiStore {
           'Content-Type': 'application/json;charset=utf-8'
         },
         method: _method,
-        body: Object.keys(_body).length ? JSON.stringify(_body) : undefined
+        body: _method !== 'get' ? JSON.stringify(_body) : undefined
       });
 
       if (!response.ok) {

@@ -29,8 +29,7 @@ class LogInStore {
     } = this;
 
     try {
-      await api()
-        .service('auth/login')
+      await api('auth/login')
         .method('post')
         .body({
           email,
