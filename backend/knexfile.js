@@ -1,9 +1,10 @@
 const {
-  development,
-  production,
+  api: {
+    knex,
+  },
 } = require('./config');
 
 module.exports = {
-  development: development.knex,
-  production: production.knex,
+  development: knex,
+  production: knex,
 };

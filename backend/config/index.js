@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 
-const COOKIE_SECRET = crypto.randomBytes(16);
+const COOKIE_SECRET = crypto.randomBytes(16).toString('hex');
 
 module.exports = {
   app: {
@@ -34,6 +34,9 @@ module.exports = {
     },
     cookie: {
       secret: COOKIE_SECRET,
+    },
+    password: {
+      salt: process.env.PASS_SALT,
     },
   },
 };

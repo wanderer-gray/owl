@@ -2,8 +2,9 @@ const schema = require('./schema');
 const handler = require('./handler');
 
 module.exports = {
-  method: 'GET',
-  path: '/search',
+  tran: true,
+  method: 'DELETE',
+  path: '/deleteRole',
   schema,
   handler,
 };

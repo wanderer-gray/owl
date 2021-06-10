@@ -1,8 +1,10 @@
+/* eslint-disable no-shadow */
 const path = require('path');
 const fastifySensible = require('fastify-sensible');
 const fastifyKnexJS = require('fastify-knexjs');
 const fastifyCookie = require('fastify-cookie');
 const fastifyAutoload = require('fastify-autoload');
+const mailer = require('./plugins/mailer');
 
 async function Service(props) {
   const {
@@ -32,8 +34,6 @@ async function Operation(props) {
       if (!userId) {
         throw this.httpErrors.unauthorized();
       }
-
-      request.userId = userId;
     };
   }
 
@@ -43,18 +43,28 @@ async function Operation(props) {
     const {
       log,
       knex,
+      mailer,
+      httpErrors,
     } = this;
     const exts = {
       log,
       knex,
+      mailer,
+      httpErrors,
     };
 
+    log.debug('begin handler');
+
     if (tran) {
+      log.debug('begin transaction');
+
       await knex.transaction(async (trx) => {
-        result = await handler(request, { ...exts, knex: trx });
+        result = await handler(request, { ...exts, knex: trx }, reply);
       });
+
+      log.debug('end transaction');
     } else {
-      result = await handler(request, exts);
+      result = await handler(request, exts, reply);
     }
 
     reply.code(200);
@@ -64,6 +74,8 @@ async function Operation(props) {
     }
 
     reply.send(result);
+
+    log.debug('end handler');
   };
 
   this.route(router);
@@ -76,11 +88,13 @@ module.exports = async (fastify, options) => {
   fastify.register(fastifyKnexJS, api.knex);
   fastify.register(fastifyCookie, api.cookie);
 
+  fastify.decorate('mailer', mailer);
   fastify.decorate('service', Service);
   fastify.decorate('operation', Operation);
 
   fastify.register(fastifyAutoload, {
     dir: path.join(__dirname, 'services'),
+    ignorePattern: /.utils/,
     maxDepth: 1,
     options: {
       prefix: '/api',

@@ -2,6 +2,7 @@ module.exports = {
   apps: [{
     name: 'owl',
     script: 'index.js',
+    autorestart: false,
     watch: true,
     watch_delay: 1000,
     ignore_watch: [
@@ -11,8 +12,8 @@ module.exports = {
     instances: -1,
     exec_mode: 'cluster',
     max_memory_restart: '100M',
-    out_file: './out.log',
-    error_file: './err.log',
+    // out_file: './out.log',
+    // error_file: './err.log',
     env: {
       NODE_ENV: 'development',
       APP_HOST: 'localhost',

@@ -1,7 +1,7 @@
-const searchUsers = require('./searchUsers');
+const getProfile = require('./getProfile');
 
 module.exports = async (fastify) => fastify.service({
   operations: [
-    searchUsers,
+    getProfile,
   ],
 });

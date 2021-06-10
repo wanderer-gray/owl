@@ -16,13 +16,18 @@ app.register(require('fastify-static'), {
   root: path.join(__dirname, 'www'),
 });
 
-app.listen(config.app, (err) => {
-  if (err) {
-    app.log.fatal(err);
-  }
+const init = async () => {
+  try {
+    await app.listen(config.app);
 
-  if (process.env.NODE_ENV !== 'production') {
-    // eslint-disable-next-line no-console
-    console.log(app.printRoutes());
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.log(app.printRoutes());
+    }
+  } catch (err) {
+    app.log.fatal(err);
+    process.exit(1);
   }
-});
+};
+
+init();
