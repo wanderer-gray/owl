@@ -1,4 +1,7 @@
-const { code: { getCode } } = require('../utils');
+const {
+  mail: { checkEmail },
+  code: { getCode },
+} = require('../utils');
 const {
   knexExists,
   getDateISO,
@@ -11,19 +14,31 @@ module.exports = async function operation({ query }, {
   log.debug(query);
 
   const email = query.email.trim();
-  const code = getCode();
-  const createAt = getDateISO();
 
   const queryFindAuth = knex('auths')
     .where({ email });
 
-  const existsAuth = await knexExists(queryFindAuth, knex);
+  const [
+    allowEmail,
+    existsAuth,
+  ] = await Promise.all([
+    checkEmail(email, knex),
+    knexExists(queryFindAuth, knex),
+  ]);
+
+  if (!allowEmail) {
+    log.warn('email not allow');
+
+    throw httpErrors.forbidden();
+  }
 
   if (existsAuth) {
     log.warn('auth email is exists');
 
-    throw httpErrors.forbidden();
+    throw httpErrors.conflict();
   }
+  const code = getCode();
+  const createAt = getDateISO();
 
   // @todo объеденить в один промис
   await knex('authCodes')

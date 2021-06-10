@@ -1,5 +1,4 @@
 const {
-  system,
   objects,
   actions,
 } = require('../api/enums');
@@ -9,17 +8,6 @@ const {
     getHash,
   },
 } = require('../api/services/auth/utils');
-
-const getSystemValues = () => [
-  { key: system.AUTH_MAIL_TYPE_LIST, value: 'white' },
-  {
-    key: system.AUTH_MAIL_LIST,
-    value: [
-      '%@study.utmn.ru',
-    ],
-  },
-  { key: system.SYST_MAIL_ACCOUNTS, value: [] },
-];
 
 const getPermissions = () => {
   const permissions = [];
@@ -39,7 +27,7 @@ const getRoleAdmin = () => ({
 
 const getUserAdmin = async () => {
   // eslint-disable-next-line no-console
-  console.error('НЕОБХОДИМО УДАЛИТЬ УЧЁТНУЮ ЗАПИСЬ "admin" ПОСЛЕ СОЗДАНИЯ!!!');
+  console.warn('НЕОБХОДИМО УДАЛИТЬ УЧЁТНУЮ ЗАПИСЬ "admin" ПОСЛЕ СОЗДАНИЯ!!!');
 
   const email = 'admin@owl.com';
   const password = '123456';
@@ -55,12 +43,10 @@ const getUserAdmin = async () => {
 };
 
 exports.up = async (knex) => {
-  await knex('system').insert(getSystemValues());
-
   const permissionIds = await knex('permissions')
     .insert(getPermissions())
     .returning('id');
-  const roleId = await knex('roles')
+  const [roleId] = await knex('roles')
     .insert(getRoleAdmin())
     .returning('id');
 
@@ -72,7 +58,7 @@ exports.up = async (knex) => {
   await knex('rolePermissions').insert(rolePermissions);
 
   const admin = await getUserAdmin();
-  const authId = await knex('auths')
+  const [authId] = await knex('auths')
     .insert(admin)
     .returning('id');
 
@@ -84,7 +70,6 @@ exports.up = async (knex) => {
 };
 
 exports.down = async (knex) => Promise.all([
-  knex('system').del(),
   knex('permissions').del(),
   knex('auths').del(),
 ]);

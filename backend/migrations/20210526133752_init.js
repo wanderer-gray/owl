@@ -1,9 +1,23 @@
 exports.up = async (knex) => {
-  await knex.schema.createTable('system', (table) => {
-    table.string('key').notNullable();
-    table.jsonb('value').notNullable();
+  await knex.schema.createTable('emailAccounts', (table) => {
+    table.increments('id');
 
-    table.unique('key');
+    table.string('host').notNullable();
+    table.integer('port').notNullable();
+    table.boolean('secure').notNullable();
+    table.string('user').notNullable();
+    table.string('pass').notNullable();
+  });
+  await knex.schema.createTable('emailСonditions', (table) => {
+    table.increments('id');
+
+    table.string('condition').notNullable();
+    table.enum('type', [
+      'white',
+      'black',
+    ]).notNullable();
+
+    table.unique('condition');
   });
 
   await knex.schema.createTable('permissions', (table) => {
@@ -12,7 +26,7 @@ exports.up = async (knex) => {
     table.integer('object').notNullable();
     table.integer('action').notNullable();
 
-    table.unique('object', 'action');
+    table.unique(['object', 'action']);
   });
   await knex.schema.createTable('roles', (table) => {
     table.increments('id');
@@ -28,7 +42,7 @@ exports.up = async (knex) => {
     table.foreign('roleId').references('roles.id').onDelete('CASCADE');
     table.foreign('permissionId').references('permissions.id').onDelete('CASCADE');
 
-    table.unique('roleId', 'permissionId');
+    table.unique(['roleId', 'permissionId']);
   });
 
   await knex.schema.createTable('auths', (table) => {
@@ -48,7 +62,7 @@ exports.up = async (knex) => {
     table.foreign('roleId').references('roles.id').onDelete('CASCADE');
 
     table.index('authId');
-    table.unique('authId', 'roleId');
+    table.unique(['authId', 'roleId']);
   });
   await knex.schema.createTable('authCodes', (table) => {
     table.string('email').notNullable();
@@ -69,7 +83,8 @@ exports.up = async (knex) => {
 };
 
 exports.down = async (knex) => {
-  await knex.raw('drop table system cascade');
+  await knex.raw('drop table "emailAccounts" cascade');
+  await knex.raw('drop table "emailСonditions" cascade');
 
   await knex.raw('drop table permissions cascade');
   await knex.raw('drop table roles cascade');

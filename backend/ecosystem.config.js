@@ -9,7 +9,7 @@ module.exports = {
       '*.log',
       'node_modules',
     ],
-    instances: -1,
+    instances: 1,
     exec_mode: 'cluster',
     max_memory_restart: '100M',
     // out_file: './out.log',

@@ -84,15 +84,17 @@ async function Operation(props) {
 module.exports = async (fastify, options) => {
   const { api } = options;
 
-  fastify.register(fastifySensible);
-  fastify.register(fastifyKnexJS, api.knex);
-  fastify.register(fastifyCookie, api.cookie);
+  await fastify.register(fastifySensible);
+  await fastify.register(fastifyKnexJS, api.knex);
+  await fastify.register(fastifyCookie, api.cookie);
 
-  fastify.decorate('mailer', mailer);
-  fastify.decorate('service', Service);
-  fastify.decorate('operation', Operation);
+  await fastify.knex.migrate.latest();
 
-  fastify.register(fastifyAutoload, {
+  await fastify.decorate('mailer', mailer);
+  await fastify.decorate('service', Service);
+  await fastify.decorate('operation', Operation);
+
+  await fastify.register(fastifyAutoload, {
     dir: path.join(__dirname, 'services'),
     ignorePattern: /.utils/,
     maxDepth: 1,

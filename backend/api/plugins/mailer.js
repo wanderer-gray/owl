@@ -1,16 +1,16 @@
 const nodemailer = require('nodemailer');
-const { system: { SYST_MAIL_ACCOUNTS } } = require('../enums');
+const { system } = require('../enums');
 
 // @todo Необходимо оптимизировать метод получения аккаунтов
 // @todo Необходимо случайным образом выбирать аккаунт для отправки почты
 module.exports = async ({ to, subject, text }, { log, knex, httpErrors }) => {
-  const value = await knex('system')
-    .where('key', SYST_MAIL_ACCOUNTS)
-    .select('value');
+  const accounts = await knex('system')
+    .where('key', system.MAIL_SYS_ACCOUNTS)
+    .first('value');
 
-  log.info(value);
+  log.info(accounts);
 
-  if (!Array.isArray(value) || !value.length) {
+  if (!accounts.length) {
     log.error('system accounts with mail were not found');
 
     throw httpErrors.serviceUnavailable();
