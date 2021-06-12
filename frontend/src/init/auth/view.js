@@ -1,4 +1,4 @@
-import { observer } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import {
   Typography,
   Button,
@@ -160,4 +160,10 @@ const AuthView = observer(({ AuthStore, children }) => {
   )
 });
 
-export default AuthView;
+export default inject(
+  ({ AuthStore }) => { 
+    return {
+      AuthStore
+    };
+  }
+)(AuthView);

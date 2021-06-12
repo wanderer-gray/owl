@@ -1,6 +1,8 @@
+import { inject } from 'mobx-react';
 import React from 'react';
 
-const App = () => {
+const App = ({ AuthStore }) => {
+  console.log(AuthStore)
   return (
     <h1>
       Hello, World!
@@ -8,4 +10,10 @@ const App = () => {
   );
 };
 
-export default App;
+export default inject(
+  ({ AuthStore }) => {
+    return {
+      AuthStore
+    };
+  }
+)(App);
