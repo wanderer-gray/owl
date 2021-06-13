@@ -20,30 +20,28 @@ module.exports = async function operation({ body }, { log, knex, httpErrors }, r
     password,
   } = body;
 
-  const queryFindAuth = knex('auths')
+  const queryFindUser = knex('users')
     .where({ email });
 
-  const [
-    existsAuth,
-    numberDeletedCodes,
-  ] = await Promise.all([
-    knexExists(queryFindAuth, knex),
-    knex('authCodes')
-      .where({ email, code })
-      .where('createAt', '>', getDateISO(-1 * 1000 * 60 * 3))
-      .del(),
-  ]);
+  const existsUser = await knexExists(queryFindUser, knex);
 
-  log.info(existsAuth, numberDeletedCodes);
+  log.info(existsUser);
 
-  if (!existsAuth) {
-    log.warn('auth email is not exists');
+  if (!existsUser) {
+    log.warn('user not found');
 
     throw httpErrors.notFound();
   }
 
+  const numberDeletedCodes = await knex('codes')
+    .where({ email, code })
+    .where('createAt', '>', getDateISO(-1 * 1000 * 60 * 3)) // Если токену < 3 минут
+    .del();
+
+  log.info(numberDeletedCodes);
+
   if (!numberDeletedCodes) {
-    log.warn('auth code not found');
+    log.warn('code not found');
 
     throw httpErrors.notFound();
   }
@@ -53,7 +51,7 @@ module.exports = async function operation({ body }, { log, knex, httpErrors }, r
   const hash = await getHash(password, salt);
   log.info(hash);
 
-  const userId = await knex('auths')
+  const [userId] = await knex('users')
     .where({ email })
     .update({
       salt,

@@ -19,15 +19,15 @@ module.exports = async function operation({ body }, { log, knex, httpErrors }, r
     password,
   } = body;
 
-  const numberDeletedCodes = await knex('authCodes')
+  const numberDeletedCodes = await knex('codes')
     .where({ email, code })
-    .where('createAt', '>', getDateISO(-1 * 1000 * 60 * 3))
+    .where('createAt', '>', getDateISO(-1 * 1000 * 60 * 3)) // Если токену < 3 минут
     .del();
 
   log.info(numberDeletedCodes);
 
   if (!numberDeletedCodes) {
-    log.warn('auth code not found');
+    log.warn('code not found');
 
     throw httpErrors.notFound();
   }
@@ -37,7 +37,7 @@ module.exports = async function operation({ body }, { log, knex, httpErrors }, r
   const hash = await getHash(password, salt);
   log.info(hash);
 
-  const userId = await knex('auths')
+  const [userId] = await knex('users')
     .insert({
       email,
       salt,

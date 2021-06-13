@@ -15,16 +15,9 @@ module.exports = async function operation({ query }, {
 
   const email = query.email.trim();
 
-  const queryFindAuth = knex('auths')
-    .where({ email });
+  const allowEmail = await checkEmail(email, knex);
 
-  const [
-    allowEmail,
-    existsAuth,
-  ] = await Promise.all([
-    checkEmail(email, knex),
-    knexExists(queryFindAuth, knex),
-  ]);
+  log.info(allowEmail);
 
   if (!allowEmail) {
     log.warn('email not allow');
@@ -32,27 +25,37 @@ module.exports = async function operation({ query }, {
     throw httpErrors.forbidden();
   }
 
-  if (existsAuth) {
-    log.warn('auth email is exists');
+  const queryFindUser = knex('users')
+    .where({ email });
+
+  const existsUser = await knexExists(queryFindUser, knex);
+
+  log.info(existsUser);
+
+  if (existsUser) {
+    log.warn('email is exists');
 
     throw httpErrors.conflict();
   }
+
   const code = getCode();
+  log.info(code);
   const createAt = getDateISO();
+  log.info(createAt);
 
-  // @todo объеденить в один промис
-  await knex('authCodes')
-    .insert({
-      email,
-      code,
-      createAt,
-    })
-    .onConflict('email')
-    .merge();
-
-  console.log(await mailer({
-    to: email,
-    subject: 'Регистрация',
-    text: `Код: ${code}`,
-  }, { log, knex, httpErrors }));
+  await Promise.all([
+    knex('codes')
+      .insert({
+        email,
+        code,
+        createAt,
+      })
+      .onConflict('email')
+      .merge(),
+    mailer.sendMail({
+      to: email,
+      subject: 'Регистрация',
+      text: `Код: ${code}`,
+    }, { log, knex, httpErrors }),
+  ]);
 };

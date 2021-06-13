@@ -1,3 +1,5 @@
+const isAuth = require('./isAuth');
+const getPermissions = require('./getPermissions');
 const login = require('./login');
 const logout = require('./logout');
 const signup = require('./signup');
@@ -8,6 +10,8 @@ const sendRestoreCode = require('./sendRestoreCode');
 module.exports = async (fastify) => fastify.service({
   auth: false,
   operations: [
+    isAuth,
+    getPermissions,
     login,
     logout,
     signup,

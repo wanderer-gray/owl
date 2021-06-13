@@ -16,8 +16,18 @@ module.exports = async function operation({ userId }, { log, knex, httpErrors })
     throw httpErrors.forbidden();
   }
 
-  const config = await knex('system')
-    .select('*');
+  const [
+    accounts,
+    conditions,
+  ] = await Promise.all([
+    knex('emailAccounts')
+      .select('*'),
+    knex('emailСonditions')
+      .select('*'),
+  ]);
 
-  return config;
+  return {
+    accounts,
+    conditions,
+  };
 };

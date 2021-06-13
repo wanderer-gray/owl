@@ -5,13 +5,22 @@ const {
 const { getCheckPermissions } = require('../../../utils');
 
 const fmtRole = async (role, { knex }) => {
-  const permissionIds = knex('rolePermissions')
+  const permissionIds = await knex('rolePermissions')
     .where('roleId', role.id)
     .pluck('permissionId');
 
   return {
     ...role,
     permissionIds,
+  };
+};
+
+const fmtResult = async (roles, count, { knex }) => {
+  const result = await Promise.all(roles.map((role) => fmtRole(role, { knex })));
+
+  return {
+    result,
+    count,
   };
 };
 
@@ -33,17 +42,23 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
     throw httpErrors.forbidden();
   }
 
-  const roles = await knex('roles')
-    .where('name', 'ilike', `%${name}%`)
-    .select('id', 'name')
-    .orderBy('name')
-    .limit(limit);
+  const [
+    roles,
+    count,
+  ] = await Promise.all([
+    knex('roles')
+      .where('name', 'ilike', `${name}%`)
+      .select('id', 'name')
+      .orderBy('name')
+      .limit(limit),
+    knex('roles')
+      .where('name', 'ilike', `${name}%`)
+      .select(knex.raw('count(*)::int')),
+  ]);
 
-  log.debug(roles);
+  log.info(roles, count);
 
-  const result = await Promise.all(roles.map((role) => fmtRole(role, { knex })));
-
-  log.debug(result);
+  const result = await fmtResult(roles, count, { knex });
 
   return result;
 };

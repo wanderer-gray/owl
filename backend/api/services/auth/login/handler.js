@@ -10,14 +10,14 @@ module.exports = async function operation({ body }, { log, knex, httpErrors }, r
     password,
   } = body;
 
-  const auth = await knex('auths')
+  const user = await knex('users')
     .where({ email })
     .first('id', 'salt', 'hash');
 
-  log.info(auth);
+  log.info(user);
 
-  if (!auth) {
-    log.warn('auth not found');
+  if (!user) {
+    log.warn('user not found');
 
     throw httpErrors.notFound();
   }
@@ -26,9 +26,11 @@ module.exports = async function operation({ body }, { log, knex, httpErrors }, r
     id: userId,
     salt,
     hash,
-  } = auth;
+  } = user;
 
   const check = await checkPassword(password, salt, hash);
+
+  log.info(check);
 
   if (!check) {
     log.warn('passwords don\'t match');

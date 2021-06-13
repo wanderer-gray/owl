@@ -2,10 +2,7 @@ const {
   objects: { ROLES },
   actions: { DELETE },
 } = require('../../../enums');
-const {
-  getCheckPermissions,
-  knexExists,
-} = require('../../../utils');
+const { getCheckPermissions } = require('../../../utils');
 
 module.exports = async function operation({ userId, query }, { log, knex, httpErrors }) {
   log.trace('deleteRole');
@@ -22,18 +19,15 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
     throw httpErrors.forbidden();
   }
 
-  const queryFindRole = knex('roles')
-    .where({ id });
+  const numberDeletedRoles = await knex('roles')
+    .where({ id })
+    .del();
 
-  const existsRole = await knexExists(queryFindRole, knex);
+  log.info(numberDeletedRoles);
 
-  if (!existsRole) {
-    log.warn('role is not exists');
+  if (!numberDeletedRoles) {
+    log.warn('role not found');
 
     throw httpErrors.notFound();
   }
-
-  await knex('roles')
-    .where({ id })
-    .del();
 };

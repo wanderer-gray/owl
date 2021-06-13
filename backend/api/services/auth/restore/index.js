@@ -9,6 +9,6 @@ module.exports = {
   handler,
   config: {
     max: 1,
-    timeWindow: 1000 * 10,
+    timeWindow: 1000,
   },
 };

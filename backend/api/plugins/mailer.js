@@ -1,39 +1,57 @@
 const nodemailer = require('nodemailer');
-const { system } = require('../enums');
 
-// @todo Необходимо оптимизировать метод получения аккаунтов
-// @todo Необходимо случайным образом выбирать аккаунт для отправки почты
-module.exports = async ({ to, subject, text }, { log, knex, httpErrors }) => {
-  const accounts = await knex('system')
-    .where('key', system.MAIL_SYS_ACCOUNTS)
-    .first('value');
+module.exports = () => {
+  let index = 0;
+  let accounts = [];
 
-  log.info(accounts);
+  const updateAccounts = async ({ log, knex }) => {
+    log.trace('updateAccounts');
 
-  if (!accounts.length) {
-    log.error('system accounts with mail were not found');
+    accounts = await knex('emailAccounts')
+      .select('*');
 
-    throw httpErrors.serviceUnavailable();
-  }
+    log.info(accounts);
+  };
 
-  const testEmailAccount = await nodemailer.createTestAccount();
+  return {
+    updateAccounts,
+    sendMail: async ({ to, subject, text }, { log, knex, httpErrors }) => {
+      if (!accounts || !accounts.length) {
+        await updateAccounts({ log, knex });
+      }
 
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    secure: false,
-    auth: {
-      user: testEmailAccount.user,
-      pass: testEmailAccount.pass,
+      if (!accounts || !accounts.length) {
+        throw httpErrors.serviceUnavailable();
+      }
+
+      index = (index + 1) % accounts.length;
+
+      const {
+        host,
+        port,
+        secure,
+        user,
+        pass,
+      } = accounts[index];
+
+      const transporter = nodemailer.createTransport({
+        host,
+        port,
+        secure,
+        auth: {
+          user,
+          pass,
+        },
+      });
+
+      const result = await transporter.sendMail({
+        from: `"Сова" <${user}>`,
+        to,
+        subject,
+        text,
+      });
+
+      log.info(result);
     },
-  });
-
-  const result = await transporter.sendMail({
-    from: '"Сова" <nodejs@example.com>',
-    to: to || 'user@example.com',
-    subject: subject || 'Message from Node js',
-    text: text || 'This message was sent from Node js server.',
-  });
-
-  return nodemailer.getTestMessageUrl(result);
+  };
 };

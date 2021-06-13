@@ -22,7 +22,7 @@ module.exports = async function operation({ userId, body }, { log, knex, httpErr
     throw httpErrors.forbidden();
   }
 
-  const roleId = await knex('roles')
+  const [roleId] = await knex('roles')
     .insert({ name })
     .returning('id');
 

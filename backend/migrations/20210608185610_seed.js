@@ -58,18 +58,18 @@ exports.up = async (knex) => {
   await knex('rolePermissions').insert(rolePermissions);
 
   const admin = await getUserAdmin();
-  const [authId] = await knex('auths')
+  const [userId] = await knex('users')
     .insert(admin)
     .returning('id');
 
-  await knex('authRoles')
+  await knex('userRoles')
     .insert({
-      authId,
+      userId,
       roleId,
     });
 };
 
 exports.down = async (knex) => Promise.all([
   knex('permissions').del(),
-  knex('auths').del(),
+  knex('users').del(),
 ]);

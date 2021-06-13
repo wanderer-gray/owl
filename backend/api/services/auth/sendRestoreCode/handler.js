@@ -11,33 +11,38 @@ module.exports = async function operation({ query }, {
   log.debug(query);
 
   const email = query.email.trim();
-  const code = getCode();
-  const createAt = getDateISO();
 
-  const queryFindAuth = knex('auths')
+  const code = getCode();
+  log.info(code);
+  const createAt = getDateISO();
+  log.info(createAt);
+
+  const queryFindUser = knex('users')
     .where({ email });
 
-  const existsAuth = await knexExists(queryFindAuth, knex);
+  const existsUser = await knexExists(queryFindUser, knex);
 
-  if (!existsAuth) {
-    log.warn('auth email is not exists');
+  log.info(existsUser);
+
+  if (!existsUser) {
+    log.warn('user not found');
 
     throw httpErrors.notFound();
   }
 
-  // @todo объеденить в один промис
-  await knex('authCodes')
-    .insert({
-      email,
-      code,
-      createAt,
-    })
-    .onConflict('email')
-    .merge();
-
-  console.log(await mailer({
-    to: email,
-    subject: 'Восстановление пароля',
-    text: `Код: ${code}`,
-  }, { log, knex, httpErrors }));
+  await Promise.all([
+    knex('codes')
+      .insert({
+        email,
+        code,
+        createAt,
+      })
+      .onConflict('email')
+      .merge(),
+    mailer.sendMail({
+      to: email,
+      subject: 'Восстановление пароля',
+      text: `Код: ${code}`,
+    }, { log, knex, httpErrors }),
+  ]);
 };

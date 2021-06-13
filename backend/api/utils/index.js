@@ -13,8 +13,8 @@ const getCheckPermissions = async (userId, { log, knex }) => {
 
   const permissions = await knex('permissions')
     .join('rolePermissions', 'permissions.id', '=', 'rolePermissions.permissionId')
-    .join('authRoles', 'rolePermissions.roleId', '=', 'authRoles.roleId')
-    .where({ authId: userId })
+    .join('userRoles', 'rolePermissions.roleId', '=', 'userRoles.roleId')
+    .where({ userId })
     .select([
       'object',
       'action',

@@ -3,6 +3,7 @@ const PERMISSIONS = 1;
 const ROLES = 2;
 const USERS = 3;
 const GROUPS = 4;
+const TESTS = 5;
 
 module.exports = {
   SYSTEM,
@@ -10,4 +11,5 @@ module.exports = {
   ROLES,
   USERS,
   GROUPS,
+  TESTS,
 };

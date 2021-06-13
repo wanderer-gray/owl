@@ -28,6 +28,7 @@ module.exports = {
       KNEX_DATABASE: 'owl',
       KNEX_POOL_MIN: 1,
       KNEX_POOL_MAX: 2,
+      PASS_SALT: 'dFo6tfbrcbr1Whv2pbuNiQwkTobRKspP',
     },
     env_production: {
       watch: false,
