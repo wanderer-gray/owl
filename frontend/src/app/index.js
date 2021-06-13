@@ -1,3 +1,4 @@
+import { inject } from 'mobx-react';
 import React from 'react';
 import { CssBaseline } from '@material-ui/core';
 import Header from './header';
@@ -24,4 +25,10 @@ const App = () => {
   );
 };
 
-export default App;
+export default inject(
+  ({ AuthStore }) => {
+    return {
+      AuthStore
+    };
+  }
+)(App);
