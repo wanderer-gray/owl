@@ -16,6 +16,10 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
   },
+  logoLink: {
+    textDecoration: "none",
+    color: theme.palette.common.white,
+  }
 }));
 
 const Header = () => {
@@ -30,7 +34,12 @@ const Header = () => {
           variant={'h6'}
           noWrap={true}
         >
-          Сова
+          <a
+            className={classes.logoLink}
+            href="/"
+          >
+            Сова
+          </a>
         </Typography>
 
         <Search />
