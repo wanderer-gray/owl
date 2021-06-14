@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Drawer,
@@ -7,8 +8,13 @@ import {
   ListItemIcon,
   Divider,
 }from '@material-ui/core';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import TestIcon from '@material-ui/icons/Assignment';
+import ProfileIcon from '@material-ui/icons/AccountBox';
+import ContactsIcon from '@material-ui/icons/Contacts';
+import GroupsIcon from '@material-ui/icons/Group';
+import UsersIcon from '@material-ui/icons/People';
+import SystemIcon from '@material-ui/icons/Settings';
+import RolesIcon from '@material-ui/icons/Security';
 
 const useStyles = makeStyles((theme) => ({
   aside: {
@@ -28,7 +34,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const View = () => {
+const Item = ({ Icon, to }) => (
+  <ListItem button={true}>
+    <Link to={to}>
+      <ListItemIcon>
+        <Icon />
+      </ListItemIcon>
+    </Link>
+  </ListItem>
+);
+
+const View = ({ store }) => {
   const classes = useStyles();
 
   return (
@@ -42,19 +58,16 @@ const View = () => {
       <div className={classes.toolbar} />
 
       <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-          </ListItem>
-        ))}
+        <Item Icon={TestIcon} to={'/'} />
+        <Item Icon={ProfileIcon} to={'/profile'} />
+        <Item Icon={ContactsIcon} to={'/contacts'} />
+        <Item Icon={GroupsIcon} to={'/groups'} />
       </List>
       <Divider />
       <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-          </ListItem>
-        ))}
+        <Item Icon={UsersIcon} to={'/'} />
+        <Item Icon={SystemIcon} to={'/'} />
+        <Item Icon={RolesIcon} to={'/'} />
       </List>
     </Drawer>
   );

@@ -2,20 +2,13 @@ import { makeAutoObservable } from 'mobx';
 
 class AsideStore {
   get permissions() {
-    return (this.AuthStore || {}).permissions || [];
+    return this.AuthStore.permissions;
   }
 
-  constructor({ AuthStore, BodyStore }) {
-    this.AuthStore = AuthStore;
-    this.BodyStore = BodyStore;
-
+  constructor({ AuthStore }) {
     makeAutoObservable(this);
-  }
 
-  onProfile = () => {
-    const { onProfile } = this.BodyStore || {};
-
-    onProfile && onProfile();
+    this.AuthStore = AuthStore;
   }
 }
 
