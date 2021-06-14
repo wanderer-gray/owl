@@ -28,28 +28,65 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const GroupView = observer(({
-  open,
-  group,
-  setGroupTitle,
-  addGroupContact,
-  delGroupContact,
-  contacts,
-  searchContacts,
-  onOpenContacts,
-  onClose,
-  onSave,
-}) => {
+const ContactsView = observer(({ ContactsStore }) => {
+  const {
+    contacts,
+    searchContacts,
+    GroupStore: {
+      addContact,
+    },
+  } = ContactsStore;
+
+  return (
+    <Autocomplete
+      fullWidth={true}
+      getOptionLabel={(option) => option.email}
+      getOptionSelected={(option, value) => option.id === value.id}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label={'Контакты'}
+          variant={'outlined'}
+        />
+      )}
+      options={contacts}
+      onChange={(_, contact, reason) => {
+        if (reason !== 'select-option') {
+          return;
+        }
+
+        addContact(contact);
+      }}
+      onInputChange={(_, email, reason) => {
+        if (reason !== 'input') {
+          return;
+        }
+        
+        searchContacts(email);
+      }}
+    />
+  );
+});
+
+const GroupView = observer(({ GroupStore }) => {
   const classes = useStyles();
 
   const {
     id,
     title,
-    contacts: groupContacts,
-  } = group;
+    contacts,
+    setTitle,
+    removeContact,
+    open,
+    onClose,
+    onSave,
+    ContactsStore,
+  } = GroupStore;
 
   return (
     <Dialog
+      scroll={'paper'}
+      fullWidth={true}
       open={open}
       onClose={onClose}
     >
@@ -57,41 +94,20 @@ const GroupView = observer(({
         {id ? `Редактирование группы #${id}` : 'Создание группы'}
       </DialogTitle>
 
-      <DialogContent>
+      <DialogContent dividers={true}>
         <TextField
           className={classes.input}
           label={'Название'}
           variant={'outlined'}
           fullWidth={true}
           value={title}
-          onChange={(event) => setGroupTitle(event.target.value)}
+          onChange={(event) => setTitle(event.target.value)}
         />
 
-        <Autocomplete
-          fullWidth={true}
-          getOptionLabel={(option) => option.email}
-          getOptionSelected={(option, value) => option.id === value.id}
-          renderInput={(params) => <TextField {...params} variant={'outlined'} />}
-          options={contacts}
-          onChange={(_, contact, reason) => {
-            if (reason !== 'select-option') {
-              return;
-            }
+        <ContactsView ContactsStore={ContactsStore} />
 
-            addGroupContact(contact);
-          }}
-          onInputChange={(_, email, reason) => {
-            if (reason !== 'input') {
-              return;
-            }
-            
-            searchContacts(email);
-          }}
-          onOpen={onOpenContacts}
-        />
-        
         <List>
-          {groupContacts.map(({ id, email }) => (
+          {contacts.map(({ id, email }) => (
             <ListItem key={id}>
               <ListItemAvatar>
                 <Avatar />
@@ -102,7 +118,7 @@ const GroupView = observer(({
               <ListItemSecondaryAction>
                 <IconButton
                   edge={'end'}
-                  onClick={() => delGroupContact(id)}
+                  onClick={() => removeContact(id)}
                 >
                   <DeleteIcon />
                 </IconButton>
@@ -130,24 +146,17 @@ const GroupView = observer(({
   );
 });
 
-const GroupsView = observer(({ store }) => {
+const GroupsView = observer(({
+  GroupsStore,
+  GroupEditStore,
+  GroupCreateStore,
+}) => {
   const {
     groups,
     count,
     title,
-    open,
-    group,
-    setGroupTitle,
-    addGroupContact,
-    delGroupContact,
-    contacts,
-    searchContacts,
-    onOpenContacts,
-    onOpen,
-    onClose,
-    onSave,
     deleteGroup,
-  } = store;
+  } = GroupsStore;
 
   return (
     <Fragment>
@@ -156,7 +165,7 @@ const GroupsView = observer(({ store }) => {
 
         <IconButton
           edge={'end'}
-          onClick={() => onOpen()}
+          onClick={GroupCreateStore.onOpen}
         >
           <GroupAddIcon />
         </IconButton>
@@ -164,29 +173,33 @@ const GroupsView = observer(({ store }) => {
 
       {count ? (
         <List>
-          {groups.map(({ id, title }) => (
-            <ListItem
-              key={id}
-              onClick={() => onOpen(id)}
-            >
-              <ListItemAvatar>
-                <Avatar>
-                  <GroupIcon />
-                </Avatar>
-              </ListItemAvatar>
+          {groups.map((group) => {
+            const { id, title } = group;
 
-              <ListItemText primary={title} />
+            return (
+              <ListItem
+                key={id}
+                onClick={() => GroupEditStore.onOpen(group)}
+              >
+                <ListItemAvatar>
+                  <Avatar>
+                    <GroupIcon />
+                  </Avatar>
+                </ListItemAvatar>
 
-              <ListItemSecondaryAction>
-                <IconButton
-                  edge={'end'}
-                  onClick={() => deleteGroup(id)}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          ))}
+                <ListItemText primary={title} />
+
+                <ListItemSecondaryAction>
+                  <IconButton
+                    edge={'end'}
+                    onClick={() => deleteGroup(id)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            );
+          })}
         </List>
       ) : (
         <p>
@@ -194,19 +207,8 @@ const GroupsView = observer(({ store }) => {
         </p>
       )}
 
-      <GroupView
-        open={open}
-        group={group}
-        setGroupTitle={setGroupTitle}
-        addGroupContact={addGroupContact}
-        delGroupContact={delGroupContact}
-        contacts={contacts}
-        searchContacts={searchContacts}
-        onOpenContacts={onOpenContacts}
-        onOpen={onOpen}
-        onClose={onClose}
-        onSave={onSave}
-      />
+      <GroupView GroupStore={GroupEditStore} />
+      <GroupView GroupStore={GroupCreateStore} />
     </Fragment>
   );
 });

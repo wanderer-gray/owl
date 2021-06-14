@@ -1,6 +1,8 @@
 import { Component } from 'react';
 import { inject } from 'mobx-react';
 import Store from './store';
+import GroupEditStore from './group/edit';
+import GroupCreateStore from './group/create';
 import View from './view';
 
 class Groups extends Component {
@@ -9,7 +11,11 @@ class Groups extends Component {
 
     const { SearchStore } = this.props;
 
-    this.store = new Store({ SearchStore });
+    const GroupsStore = new Store({ SearchStore });
+
+    this.GroupsStore = GroupsStore;
+    this.GroupEditStore = new GroupEditStore({ GroupsStore });
+    this.GroupCreateStore = new GroupCreateStore({ GroupsStore });
   }
 
   componentDidMount() {
@@ -17,7 +23,7 @@ class Groups extends Component {
 
     SearchStore.setView(true);
     SearchStore.setPlaceholder('Введите название группы...');
-    SearchStore.setOnValueChange(this.store.searchGroups);
+    SearchStore.setOnValueChange(this.GroupsStore.searchGroups);
   }
 
   componentWillUnmount() {
@@ -25,7 +31,13 @@ class Groups extends Component {
   }
 
   render() {
-    return <View store={this.store} />;
+    return (
+      <View
+        GroupsStore={this.GroupsStore}
+        GroupEditStore={this.GroupEditStore}
+        GroupCreateStore={this.GroupCreateStore}
+      />
+    );
   }
 }
 
