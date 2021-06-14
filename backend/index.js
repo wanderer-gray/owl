@@ -4,7 +4,7 @@ const config = require('./config');
 
 const app = fastify({
   logger: {
-    level: 'debug',
+    level: 'trace',
   },
 });
 

@@ -7,7 +7,7 @@ const sendSignUpCode = require('./sendSignUpCode');
 const restore = require('./restore');
 const sendRestoreCode = require('./sendRestoreCode');
 
-module.exports = async (fastify) => fastify.service({
+module.exports = (fastify) => fastify.service({
   auth: false,
   operations: [
     isAuth,

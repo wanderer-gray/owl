@@ -1,6 +1,6 @@
 const getPermissions = require('./getPermissions');
 
-module.exports = async (fastify) => fastify.service({
+module.exports = (fastify) => fastify.service({
   operations: [
     getPermissions,
   ],

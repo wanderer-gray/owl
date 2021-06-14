@@ -66,5 +66,6 @@ module.exports = async function operation({ body }, { log, knex, httpErrors }, r
     sameSite: 'strict',
     signed: true,
     httpOnly: true,
+    maxAge: 60 * 60 * 24 * 7, // one week
   });
 };

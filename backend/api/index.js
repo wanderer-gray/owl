@@ -26,26 +26,45 @@ async function Operation(props) {
     handler,
     ...router
   } = props;
+  const {
+    log,
+    knex,
+    mailer,
+    httpErrors,
+  } = this;
 
   if (auth) {
     router.preHandler = async function Authorization(request) {
-      const { userId } = request.cookies;
+      log.tarce('Authorization');
+      log.debug(request.cookies);
 
-      if (!userId) {
+      const signUserId = request.cookies.userId;
+
+      log.info(signUserId);
+
+      if (!signUserId) {
+        log.warn('not authorized');
+
         throw this.httpErrors.unauthorized();
       }
+
+      const result = request.unsignCookie(signUserId);
+
+      log.info(result);
+
+      if (!result.valid) {
+        log.warn('not authorized');
+
+        throw this.httpErrors.unauthorized();
+      }
+
+      request.userId = Number(result.value);
     };
   }
 
   router.handler = async function Handler(request, reply) {
     let result;
 
-    const {
-      log,
-      knex,
-      mailer,
-      httpErrors,
-    } = this;
     const exts = {
       log,
       knex,

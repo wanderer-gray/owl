@@ -3,7 +3,7 @@ const updateLink = require('./updateLink');
 const updatePassword = require('./updatePassword');
 const deleteAccount = require('./deleteAccount');
 
-module.exports = async (fastify) => fastify.service({
+module.exports = (fastify) => fastify.service({
   operations: [
     getProfile,
     updateLink,
