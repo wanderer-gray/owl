@@ -1,12 +1,12 @@
 import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import {
   AppBar,
   Toolbar,
   Typography,
-} from '@material-ui/core';
+}from '@material-ui/core';
 import Search from './search';
 import Account from './account';
-import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
   logoLink: {
     textDecoration: 'none',
     color: theme.palette.common.white,
-  }
+  },
 }));
 
 const Header = () => {
@@ -28,7 +28,8 @@ const Header = () => {
   return (
     <AppBar
       position={'fixed'}
-      className={classes.appBar}>
+      className={classes.appBar}
+    >
       <Toolbar>
         <Typography
           variant={'h6'}

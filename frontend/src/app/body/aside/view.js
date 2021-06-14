@@ -1,18 +1,30 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  Divider,
+}from '@material-ui/core';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
+  aside: {
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
     overflowX: 'hidden',
     width: theme.spacing(7) + 1,
-    marginTop: theme.spacing(7) + 1,
+  },
+  toolbar: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: theme.spacing(0, 1),
+    ...theme.mixins.toolbar,
   },
 }));
 
@@ -22,10 +34,13 @@ const View = () => {
   return (
     <Drawer
       variant={'permanent'}
+      className={classes.aside}
       classes={{
-        paper: classes.paper,
+        paper: classes.aside,
       }}
     >
+      <div className={classes.toolbar} />
+
       <List>
         {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
           <ListItem button key={text}>

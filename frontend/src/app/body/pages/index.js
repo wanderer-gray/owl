@@ -14,37 +14,40 @@ import GroupsPage from './groups/Groups';
 import AdminPage from './admin/Admin';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-  },
-  content: {
+  pages: {
     flexGrow: 1,
-    padding: theme.spacing(12),
+    padding: theme.spacing(3),
+  },
+  toolbar: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: theme.spacing(0, 1),
+    ...theme.mixins.toolbar,
   },
 }));
 
-const AppRouter = () =>  {
+const AppRouter = () => {
   const classes = useStyles();
 
   return (
-    
-    <div className={classes.root}>
-      <main className={classes.content}>
-        <Router>
-          <Switch >
-            <Route path="/" exact component={MainPage} />
-            <Route path="/test/view" exact component={TestViewPage} />
-            <Route path="/test/edit" exact component={TestEditPage} />
-            <Route path="/users" exact component={UserPage} />
-            <Route path="/groups" exact component={GroupsPage} />
-            <Route path="/admin" exact component={AdminPage} />
+    <main className={classes.pages}>
+      <div className={classes.toolbar} />
 
-            <Redirect to="/" exact/>
-          </Switch>
-        </Router>
-      </main>
-    </div>
+      <Router>
+        <Switch >
+          <Route path="/" exact component={MainPage} />
+          <Route path="/test/view" exact component={TestViewPage} />
+          <Route path="/test/edit" exact component={TestEditPage} />
+          <Route path="/users" exact component={UserPage} />
+          <Route path="/groups" exact component={GroupsPage} />
+          <Route path="/admin" exact component={AdminPage} />
+
+          <Redirect to="/" exact/>
+        </Switch>
+      </Router>
+    </main>
   );
-}
+};
 
 export default AppRouter;

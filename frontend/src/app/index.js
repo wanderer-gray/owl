@@ -1,10 +1,6 @@
 import React from 'react';
-import {
-  inject,
-  Provider
-} from 'mobx-react';
-import { CssBaseline } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { inject } from 'mobx-react';
+import { CssBaseline, makeStyles } from '@material-ui/core';
 import Header from './header';
 import Body from './body';
 
