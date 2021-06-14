@@ -32,7 +32,7 @@ module.exports = async function operation({ userId, query }, { log, knex }) {
 
   const [
     groups,
-    count,
+    [{ count }],
   ] = await Promise.all([
     knex('groups')
       .where('title', 'ilike', `${title}%`)

@@ -44,7 +44,7 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
 
   const [
     roles,
-    count,
+    [{ count }],
   ] = await Promise.all([
     knex('roles')
       .where('name', 'ilike', `${name}%`)

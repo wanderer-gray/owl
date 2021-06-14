@@ -35,7 +35,7 @@ async function Operation(props) {
 
   if (auth) {
     router.preHandler = async function Authorization(request) {
-      log.tarce('Authorization');
+      log.trace('Authorization');
       log.debug(request.cookies);
 
       const signUserId = request.cookies.userId;

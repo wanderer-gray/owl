@@ -10,7 +10,7 @@ module.exports = {
         type: 'integer',
         minimum: 1,
         maximum: 100,
-        default: 10,
+        default: 100,
       },
     },
     required: ['email'],

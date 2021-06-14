@@ -10,10 +10,10 @@ module.exports = async function operation({ userId, query }, { log, knex }) {
 
   const [
     contacts,
-    count,
+    [{ count }],
   ] = await Promise.all([
     knex('contacts')
-      .join('users', 'users.id', '=', knex.raw('userIdFrom + userIdTo - ?', [userId]))
+      .join('users', 'users.id', '=', knex.raw('"userIdFrom" + "userIdTo" - ?', [userId]))
       .where((builder) => {
         builder
           .where({ userIdFrom: userId })
@@ -24,7 +24,7 @@ module.exports = async function operation({ userId, query }, { log, knex }) {
       .orderBy('email')
       .limit(limit),
     knex('contacts')
-      .join('users', 'users.id', '=', knex.raw('userIdFrom + userIdTo - ?', [userId]))
+      .join('users', 'users.id', '=', knex.raw('"userIdFrom" + "userIdTo" - ?', [userId]))
       .where((builder) => {
         builder
           .where({ userIdFrom: userId })
@@ -35,7 +35,7 @@ module.exports = async function operation({ userId, query }, { log, knex }) {
   ]);
 
   return {
-    result: contacts,
+    contacts,
     count,
   };
 };

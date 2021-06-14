@@ -7,7 +7,7 @@ module.exports = async function operation({ userId, body }, { log, knex, httpErr
 
   const { link } = body;
 
-  const userIdTo = knex('users')
+  const { id: userIdTo } = await knex('users')
     .where({ link })
     .whereNot({ id: userId })
     .first('id');
