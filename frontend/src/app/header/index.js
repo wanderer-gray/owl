@@ -16,6 +16,9 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
   },
+  logo: {
+    marginRight: '12px',
+  },
   logoLink: {
     textDecoration: 'none',
     color: theme.palette.common.white,
@@ -32,8 +35,8 @@ const Header = () => {
     >
       <Toolbar>
         <Typography
+          className={classes.logo}
           variant={'h6'}
-          noWrap={true}
         >
           <a
             className={classes.logoLink}

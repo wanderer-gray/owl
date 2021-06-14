@@ -5,11 +5,12 @@ import {
   Redirect
 } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import MainPage  from './main/Main';
+import Main  from './main/Main';
+import Profile from './profile';
+import Contacts from './contacts';
 import TestViewPage from './testView/TestView';
 import TestEditPage from './testEdit/TestEdit';
 import UserPage from './users/Users';
-import GroupsPage from './groups/Groups';
 import AdminPage from './admin/Admin';
 
 const useStyles = makeStyles((theme) => ({
@@ -34,11 +35,13 @@ const AppRouter = () => {
       <div className={classes.toolbar} />
 
       <Switch >
-        <Route path="/" exact component={MainPage} />
+        <Route path="/" exact component={Main} />
+        <Route path="/profile" exact component={Profile} />
+        <Route path="/groups" exact component={null} />
+        <Route path="/contacts" exact component={Contacts} />
         <Route path="/test/view" exact component={TestViewPage} />
         <Route path="/test/edit" exact component={TestEditPage} />
         <Route path="/users" exact component={UserPage} />
-        <Route path="/groups" exact component={GroupsPage} />
         <Route path="/admin" exact component={AdminPage} />
 
         <Redirect to="/" exact/>

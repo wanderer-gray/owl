@@ -6,10 +6,7 @@ const Notify = ({ children }) => {
   const notifyStore = new NotifyStore();
 
   return (
-    <SnackbarProvider
-      hideIconVariant={true}
-      autoHideDuration={3000}
-    >
+    <SnackbarProvider autoHideDuration={3000}>
       <NotifyView NotifyStore={notifyStore} >
         {children}
       </NotifyView>

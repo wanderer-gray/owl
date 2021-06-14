@@ -1,4 +1,5 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import { InputBase } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
@@ -10,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: fade(theme.palette.common.white, 0.15),
     borderRadius: theme.shape.borderRadius,
     [theme.breakpoints.up('sm')]: {
-      width: 'auto',
+      width: '350px',
     },
     '&:hover': {
       backgroundColor: fade(theme.palette.common.white, 0.25),
@@ -26,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
     pointerEvents: 'none',
   },
   inputRoot: {
+    width: '100%',
     color: 'inherit',
   },
   inputInput: {
@@ -34,13 +36,10 @@ const useStyles = makeStyles((theme) => ({
     // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
     transition: theme.transitions.create('width'),
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
   },
 }));
 
-const SearchView = ({ SearchStore }) => {
+const SearchView = observer(({ SearchStore }) => {
   const classes = useStyles();
 
   const {
@@ -48,7 +47,7 @@ const SearchView = ({ SearchStore }) => {
     placeholder,
     value,
     onChange,
-  } = SearchStore || {};
+  } = SearchStore;
 
   if (!view) {
     return null;
@@ -71,6 +70,6 @@ const SearchView = ({ SearchStore }) => {
       />
     </div>
   );
-};
+});
 
 export default SearchView;
