@@ -1,9 +1,12 @@
-import { inject } from 'mobx-react';
 import React from 'react';
+import {
+  inject,
+  Provider
+} from 'mobx-react';
 import { CssBaseline } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import Header from './header';
 import Body from './body';
-import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(() => ({
   root: {

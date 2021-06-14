@@ -2,7 +2,8 @@ import { makeAutoObservable } from 'mobx';
 import ApiStore from '../api/store';
 
 class AuthStore {
-  logOut = null;
+  isAuth = false;
+  permissions = [];
 
   open = false;
   type = 'login';
@@ -11,7 +12,8 @@ class AuthStore {
     makeAutoObservable(this);
 
     ApiStore.errorHandler = this.apiErrorHandler;
-    AuthStore.logOut = this.logOut;
+
+    this.init();
   }
 
   apiErrorHandler = (error) => {
@@ -19,8 +21,28 @@ class AuthStore {
       return;
     }
 
-    this.setOpen(true)
-    this.setType('login');
+    this.onLogIn();
+  }
+
+  init = () => {
+    this.checkIsAuth();
+    this.getPermissions();
+  }
+
+  checkIsAuth = async() => {
+    try {
+      this.isAuth = await api('auth/isAuth');
+    } catch {
+      this.isAuth = false;
+    }
+  }
+
+  getPermissions = async() => {
+    try {
+      this.permissions = await api('auth/getPermissions');
+    } catch {
+      this.permissions = [];
+    }
   }
 
   setOpen = (open) => {
@@ -33,19 +55,24 @@ class AuthStore {
 
   close = () => {
     this.setOpen(false)
+
+    this.init();
+  }
+
+  onLogIn = () => {
+    this.setOpen(true)
     this.setType('login');
   }
 
-  logOut = async() => {
+  onLogOut = async() => {
     try {
-      await api()
-        .service('auth/logout')
+      await api('auth/logout')
         .method('delete');
     } catch {
       // pass
     }
     
-    window.location.reload();
+    window.location = '/';
   }
 }
 

@@ -4,7 +4,7 @@ class AccountStore {
   anchorEl = null;
 
   get isAuth() {
-    return (this.AuthStore || {}).isAuth || false;
+    return this.AuthStore.isAuth;
   }
 
   constructor({ AuthStore, BodyStore }) {
@@ -29,15 +29,11 @@ class AccountStore {
   }
 
   onLogIn = () => {
-    const { onLogIn } = this.AuthStore || {};
-
-    onLogIn && onLogIn();
+    this.AuthStore.onLogIn();
   }
 
   onLogOut = () => {
-    const { onLogOut } = this.AuthStore || {};
-
-    onLogOut && onLogOut();
+    this.AuthStore.onLogOut();
   }
 }
 

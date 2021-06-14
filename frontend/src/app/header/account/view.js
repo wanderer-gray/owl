@@ -53,7 +53,7 @@ const AccountView = observer(({ store }) => {
           onClose={onClose}
         >
           <MenuItem onClick={onProfile}>Профиль</MenuItem>
-          {isAuth ? (
+          {!isAuth ? (
             <MenuItem onClick={onLogIn}>Войти в систему</MenuItem>
           ) : (
             <MenuItem onClick={onLogOut}>Выйти из системы</MenuItem>

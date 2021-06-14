@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   logoLink: {
-    textDecoration: "none",
+    textDecoration: 'none',
     color: theme.palette.common.white,
   }
 }));
@@ -36,7 +36,7 @@ const Header = () => {
         >
           <a
             className={classes.logoLink}
-            href="/"
+            href={'/'}
           >
             Сова
           </a>

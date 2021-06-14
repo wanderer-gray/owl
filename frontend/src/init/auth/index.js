@@ -5,7 +5,6 @@ import AuthView from './view';
 
 const Auth = ({ children }) => {
   const authStore = new AuthStore();
-
   
   return (
     <Provider AuthStore={authStore}>

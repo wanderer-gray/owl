@@ -1,12 +1,12 @@
 import React, { Fragment } from 'react';
-import AppRouter from '../../routing/AppRouter';
 import Aside from './aside';
+import Pages from './pages';
 
 const Body = () => {
   return (
     <Fragment>
       <Aside />
-      <AppRouter />
+      <Pages />
     </Fragment>
   );
 };
