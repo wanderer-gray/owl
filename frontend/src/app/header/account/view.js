@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import { observer } from 'mobx-react';
+import { Link } from 'react-router-dom';
 import {
   IconButton,
   Menu,
@@ -15,6 +16,10 @@ const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
   },
+  link: {
+    color: 'inherit',
+    textDecoration: 'none',
+  },
 }));
 
 const AccountView = observer(({ store }) => {
@@ -25,7 +30,6 @@ const AccountView = observer(({ store }) => {
     isAuth,
     onOpen,
     onClose,
-    onProfile,
     onLogIn,
     onLogOut
   } = store;
@@ -52,7 +56,16 @@ const AccountView = observer(({ store }) => {
           anchorEl={anchorEl}
           onClose={onClose}
         >
-          <MenuItem onClick={onProfile}>Профиль</MenuItem>
+          {isAuth ? (
+            <MenuItem>
+              <Link
+                to={'/profile'}
+                className={classes.link}
+              >
+                Профиль
+              </Link>
+            </MenuItem>
+          ) : null}
           {!isAuth ? (
             <MenuItem onClick={onLogIn}>Войти в систему</MenuItem>
           ) : (

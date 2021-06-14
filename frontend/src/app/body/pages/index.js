@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  BrowserRouter as Router,
   Switch,
   Route,
   Redirect
@@ -34,18 +33,16 @@ const AppRouter = () => {
     <main className={classes.pages}>
       <div className={classes.toolbar} />
 
-      <Router>
-        <Switch >
-          <Route path="/" exact component={MainPage} />
-          <Route path="/test/view" exact component={TestViewPage} />
-          <Route path="/test/edit" exact component={TestEditPage} />
-          <Route path="/users" exact component={UserPage} />
-          <Route path="/groups" exact component={GroupsPage} />
-          <Route path="/admin" exact component={AdminPage} />
+      <Switch >
+        <Route path="/" exact component={MainPage} />
+        <Route path="/test/view" exact component={TestViewPage} />
+        <Route path="/test/edit" exact component={TestEditPage} />
+        <Route path="/users" exact component={UserPage} />
+        <Route path="/groups" exact component={GroupsPage} />
+        <Route path="/admin" exact component={AdminPage} />
 
-          <Redirect to="/" exact/>
-        </Switch>
-      </Router>
+        <Redirect to="/" exact/>
+      </Switch>
     </main>
   );
 };

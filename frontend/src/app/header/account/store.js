@@ -7,9 +7,8 @@ class AccountStore {
     return this.AuthStore.isAuth;
   }
 
-  constructor({ AuthStore, BodyStore }) {
+  constructor({ AuthStore }) {
     this.AuthStore = AuthStore;
-    this.BodyStore = BodyStore;
 
     makeAutoObservable(this);
   }
@@ -20,12 +19,6 @@ class AccountStore {
 
   onClose = () => {
     this.anchorEl = null;
-  }
-
-  onProfile = () => {
-    const { onProfile } = this.BodyStore || {};
-
-    onProfile && onProfile();
   }
 
   onLogIn = () => {

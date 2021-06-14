@@ -1,5 +1,6 @@
 import React from 'react';
 import { inject } from 'mobx-react';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { CssBaseline, makeStyles } from '@material-ui/core';
 import Header from './header';
 import Body from './body';
@@ -14,13 +15,15 @@ const App = () => {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
-      <CssBaseline />
+    <Router>
+      <div className={classes.root}>
+        <CssBaseline />
 
-      <Header />
+        <Header />
 
-      <Body />
-    </div>
+        <Body />
+      </div>
+    </Router>
   );
 };
 
