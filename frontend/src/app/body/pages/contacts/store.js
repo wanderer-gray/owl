@@ -36,6 +36,7 @@ class ContactsStore {
   searchContacts = async(email = '', datetime = Date.now()) => {
     try {
       const result = await api('contacts/searchContacts')
+        .method('post')
         .query({ email });
       
       this.setResult(result, datetime);

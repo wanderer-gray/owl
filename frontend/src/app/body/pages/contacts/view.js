@@ -41,8 +41,6 @@ const ContactsView = observer(({ store }) => {
     deleteContact,
   } = store;
 
-  console.log(JSON.stringify(count));
-
   return (
     <Fragment>
       <Typography variant={'h4'}>
@@ -73,10 +71,9 @@ const ContactsView = observer(({ store }) => {
       {count ? (
         <List>
           {contacts.map(({ id, email }) => (
-            <ListItem key={id} >
+            <ListItem key={id}>
               <ListItemAvatar>
-                <Avatar>
-                </Avatar>
+                <Avatar />
               </ListItemAvatar>
 
               <ListItemText primary={email} />

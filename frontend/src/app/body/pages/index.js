@@ -8,6 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Main  from './main/Main';
 import Profile from './profile';
 import Contacts from './contacts';
+import Groups from './groups';
 import TestViewPage from './testView/TestView';
 import TestEditPage from './testEdit/TestEdit';
 import UserPage from './users/Users';
@@ -37,8 +38,8 @@ const AppRouter = () => {
       <Switch >
         <Route path="/" exact component={Main} />
         <Route path="/profile" exact component={Profile} />
-        <Route path="/groups" exact component={null} />
         <Route path="/contacts" exact component={Contacts} />
+        <Route path="/groups" exact component={Groups} />
         <Route path="/test/view" exact component={TestViewPage} />
         <Route path="/test/edit" exact component={TestEditPage} />
         <Route path="/users" exact component={UserPage} />
