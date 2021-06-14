@@ -16,4 +16,18 @@ module.exports = {
     required: ['email'],
     additionalProperties: false,
   },
+  body: {
+    type: 'object',
+    properties: {
+      noContactIds: {
+        type: 'array',
+        items: {
+          type: 'integer',
+        },
+        maxItems: 256,
+        default: [],
+      },
+    },
+    additionalProperties: false,
+  },
 };

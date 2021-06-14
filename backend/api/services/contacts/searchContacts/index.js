@@ -2,7 +2,7 @@ const schema = require('./schema');
 const handler = require('./handler');
 
 module.exports = {
-  method: 'GET',
+  method: 'POST',
   path: '/searchContacts',
   schema,
   handler,

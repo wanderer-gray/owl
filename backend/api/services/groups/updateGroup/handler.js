@@ -16,7 +16,7 @@ const updateContacts = async (id, contactIds, { log, knex }) => {
   }
 
   await knex('groupContacts')
-    .where({ id })
+    .where('groupId', id)
     .del();
 
   const groupContacts = contactIds.map((contactId) => ({
@@ -26,8 +26,10 @@ const updateContacts = async (id, contactIds, { log, knex }) => {
 
   log.info(groupContacts);
 
-  await knex('groupContacts')
-    .insert(groupContacts);
+  if (groupContacts.length) {
+    await knex('groupContacts')
+      .insert(groupContacts);
+  }
 };
 
 module.exports = async function operation({ userId, query, body }, { log, knex, httpErrors }) {

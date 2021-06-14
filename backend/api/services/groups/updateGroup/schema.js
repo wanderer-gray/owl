@@ -22,7 +22,7 @@ module.exports = {
         items: {
           type: 'integer',
         },
-        minItems: 1,
+        maxItems: 256,
         uniqueItems: true,
       },
     },

@@ -24,6 +24,8 @@ module.exports = async function operation({ userId, body }, { log, knex }) {
 
   log.info(groupContacts);
 
-  await knex('groupContacts')
-    .insert(groupContacts);
+  if (groupContacts.length) {
+    await knex('groupContacts')
+      .insert(groupContacts);
+  }
 };

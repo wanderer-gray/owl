@@ -1,8 +1,8 @@
 const fmtGroup = async (group, { userId, knex }) => {
-  const contacts = knex('contacts')
+  const contacts = await knex('contacts')
     .join('groupContacts', 'contacts.id', '=', 'groupContacts.contactId')
-    .join('users', 'users.id', '=', knex.raw('userIdFrom + userIdTo - ?', [userId]))
-    .where({ groupId: group.id })
+    .join('users', 'users.id', '=', knex.raw('"userIdFrom" + "userIdTo" - ?', [userId]))
+    .where('groupId', group.id)
     .select(knex.ref('contacts.id').as('id'), 'email');
 
   return {
@@ -15,7 +15,7 @@ const fmtResult = async (groups, count, { userId, knex }) => {
   const result = await Promise.all(groups.map((group) => fmtGroup(group, { userId, knex })));
 
   return {
-    result,
+    groups: result,
     count,
   };
 };
@@ -37,10 +37,12 @@ module.exports = async function operation({ userId, query }, { log, knex }) {
     knex('groups')
       .where('title', 'ilike', `${title}%`)
       .select('id', 'title')
+      .where('ownerId', userId)
       .orderBy('title')
       .limit(limit),
     knex('groups')
       .where('title', 'ilike', `${title}%`)
+      .where('ownerId', userId)
       .select(knex.raw('count(*)::int')),
   ]);
 
