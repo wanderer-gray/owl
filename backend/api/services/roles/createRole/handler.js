@@ -35,6 +35,8 @@ module.exports = async function operation({ userId, body }, { log, knex, httpErr
 
   log.info(rolePermissions);
 
-  await knex('rolePermissions')
-    .insert(rolePermissions);
+  if (rolePermissions.length) {
+    await knex('rolePermissions')
+      .insert(rolePermissions);
+  }
 };

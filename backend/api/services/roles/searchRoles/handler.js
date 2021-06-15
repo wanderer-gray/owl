@@ -19,7 +19,7 @@ const fmtResult = async (roles, count, { knex }) => {
   const result = await Promise.all(roles.map((role) => fmtRole(role, { knex })));
 
   return {
-    result,
+    roles: result,
     count,
   };
 };

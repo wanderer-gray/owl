@@ -33,8 +33,10 @@ const updatePermissions = async (id, permissionIds, { log, knex }) => {
 
   log.info(rolePermissions);
 
-  await knex('rolePermissions')
-    .insert(rolePermissions);
+  if (rolePermissions.length) {
+    await knex('rolePermissions')
+      .insert(rolePermissions);
+  }
 };
 
 module.exports = async function operation({ userId, query, body }, { log, knex, httpErrors }) {

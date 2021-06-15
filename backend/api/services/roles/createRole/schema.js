@@ -12,7 +12,6 @@ module.exports = {
         items: {
           type: 'integer',
         },
-        minItems: 1,
         uniqueItems: true,
       },
     },
