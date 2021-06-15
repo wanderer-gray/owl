@@ -1,9 +1,9 @@
-const system = require('./system');
-const objects = require('./objects');
-const actions = require('./actions');
+import * as actions from './actions';
+import * as objects from './objects';
+import * as system from './system';
 
-module.exports = {
-  system,
-  objects,
+export {
   actions,
+  objects,
+  system,
 };

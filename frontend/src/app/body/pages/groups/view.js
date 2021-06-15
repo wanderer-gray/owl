@@ -18,9 +18,9 @@ import {
   DialogActions,
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import GroupAddIcon from '@material-ui/icons/GroupAdd';
-import GroupIcon from '@material-ui/icons/Group';
+import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import GroupIcon from '@material-ui/icons/Group';
 
 const useStyles = makeStyles(() => ({
   input: {
@@ -167,7 +167,7 @@ const GroupsView = observer(({
           edge={'end'}
           onClick={GroupCreateStore.onOpen}
         >
-          <GroupAddIcon />
+          <AddIcon />
         </IconButton>
       </Typography>
 

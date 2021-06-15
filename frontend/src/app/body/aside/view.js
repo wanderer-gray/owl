@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
+import {
+  inject,
+  observer,
+} from 'mobx-react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Drawer,
@@ -15,6 +19,8 @@ import GroupsIcon from '@material-ui/icons/Group';
 import UsersIcon from '@material-ui/icons/People';
 import SystemIcon from '@material-ui/icons/Settings';
 import RolesIcon from '@material-ui/icons/Security';
+import { objects } from '../../../enums';
+import { checkPermissions } from '../../../utils';
 
 const useStyles = makeStyles((theme) => ({
   aside: {
@@ -44,8 +50,28 @@ const Item = ({ Icon, to }) => (
   </ListItem>
 );
 
-const View = ({ store }) => {
+const View = observer(({ AuthStore }) => {
   const classes = useStyles();
+
+  const { permissions } = AuthStore;
+
+  const hideItems = [];
+
+  checkPermissions(permissions, objects.USERS) && hideItems.push({
+    key: objects.USERS,
+    to: '/',
+    Icon: UsersIcon,
+  });
+  checkPermissions(permissions, objects.SYSTEM) && hideItems.push({
+    key: objects.SYSTEM,
+    to: '/',
+    Icon: SystemIcon,
+  });
+  checkPermissions(permissions, objects.ROLES) && hideItems.push({
+    key: objects.ROLES,
+    to: '/roles',
+    Icon: RolesIcon,
+  });
 
   return (
     <Drawer
@@ -63,14 +89,22 @@ const View = ({ store }) => {
         <Item Icon={ContactsIcon} to={'/contacts'} />
         <Item Icon={GroupsIcon} to={'/groups'} />
       </List>
-      <Divider />
-      <List>
-        <Item Icon={UsersIcon} to={'/'} />
-        <Item Icon={SystemIcon} to={'/'} />
-        <Item Icon={RolesIcon} to={'/'} />
-      </List>
+      {hideItems.length ? (
+        <Fragment>
+          <Divider />
+          <List>
+            {hideItems.map(({ key, to, Icon }) => (
+              <Item key={key} to={to} Icon={Icon} />
+            ))}
+          </List>
+        </Fragment>
+      ) : null}
     </Drawer>
   );
-};
+});
 
-export default View;
+export default inject(({ AuthStore }) => {
+  return {
+    AuthStore,
+  };
+})(View);
