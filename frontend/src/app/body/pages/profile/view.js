@@ -94,7 +94,7 @@ const ProfileView = observer(({ store }) => {
               <TextField
                 className={classes.input}
                 type={'password'}
-                placeholder={'Стары пароль'}
+                placeholder={'Старый пароль'}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
               />
