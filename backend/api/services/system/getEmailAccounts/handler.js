@@ -5,7 +5,7 @@ const {
 const { getCheckPermissions } = require('../../../utils');
 
 module.exports = async function operation({ userId }, { log, knex, httpErrors }) {
-  log.trace('getConfig');
+  log.trace('getEmailAccounts');
   log.debug(userId);
 
   const checkPermissions = await getCheckPermissions(userId, { log, knex });
@@ -16,18 +16,10 @@ module.exports = async function operation({ userId }, { log, knex, httpErrors })
     throw httpErrors.forbidden();
   }
 
-  const [
-    accounts,
-    conditions,
-  ] = await Promise.all([
-    knex('emailAccounts')
-      .select('*'),
-    knex('emailСonditions')
-      .select('*'),
-  ]);
+  const accounts = await knex('emailAccounts')
+    .select('*');
 
-  return {
-    accounts,
-    conditions,
-  };
+  log.info(accounts);
+
+  return accounts;
 };

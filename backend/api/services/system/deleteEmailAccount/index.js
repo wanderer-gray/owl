@@ -3,8 +3,8 @@ const handler = require('./handler');
 
 module.exports = {
   tran: true,
-  method: 'PUT',
-  path: '/setConfig',
+  method: 'DELETE',
+  path: '/deleteEmailAccount',
   schema,
   handler,
 };
