@@ -1,8 +1,11 @@
-import { inject, observer } from 'mobx-react';
+import {
+  inject,
+  observer,
+} from 'mobx-react';
+import { Link as ReactLink } from 'react-router-dom';
 import {
   Typography,
-  Button,
-  Link
+  Link,
 } from '@material-ui/core';
 import LogIn from './login';
 import Restore from './restore';
@@ -36,7 +39,13 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between'
-  }
+  },
+  link: {
+    color: '#000',
+    textDecoration: 'none',
+    textTransform: 'uppercase',
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
+  },
 }));
 
 const AuthViewBody = observer(({ AuthStore }) => {
@@ -67,9 +76,7 @@ const AuthViewFoot = observer(({ AuthStore }) => {
     case 'login':
       return (
         <>
-          <Link 
-            onClick={() => setType('signup')}
-          >
+          <Link onClick={() => setType('signup')}>
             Регистрация
           </Link>
           
@@ -85,9 +92,7 @@ const AuthViewFoot = observer(({ AuthStore }) => {
     case 'restore':
       return (
         <>
-          <Link
-            onClick={() => setType('login')}
-          >
+          <Link onClick={() => setType('login')}>
             Войти в систему
           </Link>
 
@@ -103,9 +108,7 @@ const AuthViewFoot = observer(({ AuthStore }) => {
     case 'signup':
       return (
         <>
-          <Link
-            onClick={() => setType('login')}
-          >
+          <Link onClick={() => setType('login')}>
             Войти в систему
           </Link>
 
@@ -143,9 +146,13 @@ const AuthView = observer(({ AuthStore, children }) => {
             Сова
           </Typography>
 
-          <Button onClick={close}>
+          <ReactLink
+            className={classes.link}
+            to={'/'}
+            onClick={close}
+          >
             Закрыть
-          </Button>
+          </ReactLink>
         </div>
 
         <div className={classes.body}>
