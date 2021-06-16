@@ -12,8 +12,9 @@ import TestEditPage from './testEdit/TestEdit';
 import Profile from './profile';
 import Contacts from './contacts';
 import Groups from './groups';
-import System from './system';
 import Roles from './roles';
+import Users from './users';
+import System from './system';
 import { objects } from '../../../enums';
 import { checkPermissions } from '../../../utils';
 
@@ -48,11 +49,14 @@ const AppRouter = observer(({ AuthStore }) => {
         <Route path="/contacts" exact component={Contacts} />
         <Route path="/groups" exact component={Groups} />
 
-        {checkPermissions(permissions, objects.SYSTEM) ? (
-          <Route path="/system" exact component={System} />
-        ) : null}
         {checkPermissions(permissions, objects.ROLES) ? (
           <Route path="/roles" exact component={Roles} />
+        ) : null}
+        {checkPermissions(permissions, objects.USERS) ? (
+          <Route path="/users" exact component={Users} />
+        ) : null}
+        {checkPermissions(permissions, objects.SYSTEM) ? (
+          <Route path="/system" exact component={System} />
         ) : null}
 
         <Redirect to="/" exact/>

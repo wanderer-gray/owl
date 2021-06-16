@@ -5,18 +5,16 @@ class RolesStore {
   count = 0;
   datetime = 0;
 
-  get name() {
-    return this.SearchStore.value;
+  get noRoleIds() {
+    return this.UserStore.roleIds;
   }
 
-  constructor({ SearchStore }) {
+  constructor({ UserStore }) {
     makeAutoObservable(this);
 
-    this.SearchStore = SearchStore;
-
-    this.searchRoles();
+    this.UserStore = UserStore;
   }
-  
+
   setResult = ({ roles, count }, datetime) => {
     if (this.datetime > datetime) {
       return;
@@ -28,35 +26,19 @@ class RolesStore {
   }
 
   searchRoles = async(name = '', datetime = Date.now()) => {
+    const { noRoleIds } = this;
+
     try {
       const result = await api('roles/searchRoles')
         .method('post')
-        .query({ name });
+        .query({ name })
+        .body({ noRoleIds });
       
       this.setResult(result, datetime);
     } catch {
       notify({
         variant: 'error',
         message: 'Не удалось выполнить поиск ролей'
-      });
-    }
-  }
-
-  refresh = () => {
-    this.searchRoles(this.name);
-  }
-
-  deleteRole = async(id) => {
-    try {
-      await api('roles/deleteRole')
-        .method('delete')
-        .query({ id });
-      
-      this.refresh();
-    } catch {
-      notify({
-        variant: 'error',
-        message: 'Не удалось удалить роль'
       });
     }
   }

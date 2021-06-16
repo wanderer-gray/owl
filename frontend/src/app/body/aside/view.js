@@ -57,20 +57,20 @@ const View = observer(({ AuthStore }) => {
 
   const hideItems = [];
 
+  checkPermissions(permissions, objects.ROLES) && hideItems.push({
+    key: objects.ROLES,
+    to: '/roles',
+    Icon: RolesIcon,
+  });
   checkPermissions(permissions, objects.USERS) && hideItems.push({
     key: objects.USERS,
-    to: '/',
+    to: '/users',
     Icon: UsersIcon,
   });
   checkPermissions(permissions, objects.SYSTEM) && hideItems.push({
     key: objects.SYSTEM,
     to: '/system',
     Icon: SystemIcon,
-  });
-  checkPermissions(permissions, objects.ROLES) && hideItems.push({
-    key: objects.ROLES,
-    to: '/roles',
-    Icon: RolesIcon,
   });
 
   return (

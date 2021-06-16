@@ -1,0 +1,49 @@
+import UserEditStore from './edit';
+
+const defaultUser = {
+  email: '',
+  password: '',
+  roleIds: [],
+};
+
+class UserCreateStore extends UserEditStore {
+  constructor({ UserStore }) {
+    super({ UserStore });
+
+    this.onOpen = this.onOpen.bind(this);
+  }
+
+  onOpen() {
+    super.onOpen(defaultUser);
+  }
+
+  onSave = async() => {
+    const {
+      user: {
+        email,
+        password,
+        roleIds,
+      },
+    } = this;
+
+    try {
+      await api('users/createUser')
+        .method('post')
+        .body({ 
+          email,
+          password,
+          roleIds,
+        });
+      
+      this.refresh();
+      this.onClose();
+    } catch {
+      notify({
+        variant: 'error',
+        message: 'Не удалось добавить пользователя'
+      });
+    }
+  }
+}
+
+export default UserCreateStore;

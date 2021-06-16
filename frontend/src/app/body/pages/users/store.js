@@ -1,11 +1,11 @@
 import { makeAutoObservable } from 'mobx';
 
-class RolesStore {
-  roles = [];
+class UsersStore {
+  users = [];
   count = 0;
   datetime = 0;
 
-  get name() {
+  get email() {
     return this.SearchStore.value;
   }
 
@@ -13,42 +13,39 @@ class RolesStore {
     makeAutoObservable(this);
 
     this.SearchStore = SearchStore;
-
-    this.searchRoles();
   }
-  
-  setResult = ({ roles, count }, datetime) => {
+
+  setResult = ({ users, count }, datetime) => {
     if (this.datetime > datetime) {
       return;
     }
 
-    this.roles = roles;
+    this.users = users;
     this.count = count;
     this.datetime = datetime;
   }
 
-  searchRoles = async(name = '', datetime = Date.now()) => {
+  searchUsers = async(email = '', datetime = Date.now()) => {
     try {
-      const result = await api('roles/searchRoles')
-        .method('post')
-        .query({ name });
+      const result = await api('users/searchUsers')
+        .query({ email });
       
       this.setResult(result, datetime);
     } catch {
       notify({
         variant: 'error',
-        message: 'Не удалось выполнить поиск ролей'
+        message: 'Не удалось выполнить поиск пользователей'
       });
     }
   }
 
   refresh = () => {
-    this.searchRoles(this.name);
+    this.searchUsers(this.email);
   }
 
-  deleteRole = async(id) => {
+  deleteUser = async(id) => {
     try {
-      await api('roles/deleteRole')
+      await api('users/deleteUser')
         .method('delete')
         .query({ id });
       
@@ -56,10 +53,10 @@ class RolesStore {
     } catch {
       notify({
         variant: 'error',
-        message: 'Не удалось удалить роль'
+        message: 'Не удалось удалить пользователя'
       });
     }
   }
 }
 
-export default RolesStore;
+export default UsersStore;

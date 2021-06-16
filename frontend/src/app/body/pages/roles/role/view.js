@@ -21,7 +21,6 @@ class RoleViewStore {
 
     makeObservable(this, {
       role: observable,
-      id: computed,
       name: computed,
       permissionIds: computed,
       setRole: action,
