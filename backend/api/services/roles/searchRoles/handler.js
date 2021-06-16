@@ -24,15 +24,17 @@ const fmtResult = async (roles, count, { knex }) => {
   };
 };
 
-module.exports = async function operation({ userId, query }, { log, knex, httpErrors }) {
+module.exports = async function operation({ userId, query, body }, { log, knex, httpErrors }) {
   log.trace('searchRoles');
   log.debug(userId);
   log.debug(query);
+  log.debug(body);
 
   const {
     name,
     limit,
   } = query;
+  const { noRoleIds } = body;
 
   const checkPermissions = await getCheckPermissions(userId, { log, knex });
 
@@ -48,11 +50,13 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
   ] = await Promise.all([
     knex('roles')
       .where('name', 'ilike', `${name}%`)
+      .whereNotIn('id', noRoleIds)
       .select('id', 'name')
       .orderBy('name')
       .limit(limit),
     knex('roles')
       .where('name', 'ilike', `${name}%`)
+      .whereNotIn('id', noRoleIds)
       .select(knex.raw('count(*)::int')),
   ]);
 

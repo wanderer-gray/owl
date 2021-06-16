@@ -2,7 +2,7 @@ module.exports = {
   querystring: {
     type: 'object',
     properties: {
-      name: {
+      email: {
         type: 'string',
         maxLength: 255,
       },
@@ -13,21 +13,7 @@ module.exports = {
         default: 10,
       },
     },
-    required: ['name'],
-    additionalProperties: false,
-  },
-  body: {
-    type: 'object',
-    properties: {
-      noRoleIds: {
-        type: 'array',
-        items: {
-          type: 'integer',
-        },
-        maxItems: 256,
-        default: [],
-      },
-    },
+    required: ['email'],
     additionalProperties: false,
   },
 };
