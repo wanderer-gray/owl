@@ -9,6 +9,11 @@ module.exports = async function operation({ userId, body }, { log, knex, httpErr
   log.debug(userId);
   log.debug(body);
 
+  const {
+    condition,
+    type,
+  } = body;
+
   const checkPermissions = await getCheckPermissions(userId, { log, knex });
 
   if (!checkPermissions(SYSTEM, CREATE)) {
@@ -18,5 +23,8 @@ module.exports = async function operation({ userId, body }, { log, knex, httpErr
   }
 
   await knex('emailСonditions')
-    .insert(body);
+    .insert({
+      condition,
+      type,
+    });
 };

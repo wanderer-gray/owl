@@ -10,6 +10,12 @@ module.exports = async function operation({ userId, query, body }, { log, knex, 
   log.debug(query);
   log.debug(body);
 
+  const { id } = query;
+  const {
+    condition,
+    type,
+  } = body;
+
   const checkPermissions = await getCheckPermissions(userId, { log, knex });
 
   if (!checkPermissions(SYSTEM, UPDATE)) {
@@ -18,11 +24,12 @@ module.exports = async function operation({ userId, query, body }, { log, knex, 
     throw httpErrors.forbidden();
   }
 
-  const { id } = query;
-
   const numberUpdatedConditions = await knex('emailСonditions')
     .where({ id })
-    .update(body);
+    .update({
+      condition,
+      type,
+    });
 
   if (!numberUpdatedConditions) {
     log.warn('condition not found');

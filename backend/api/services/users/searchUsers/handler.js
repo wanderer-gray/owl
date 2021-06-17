@@ -5,13 +5,14 @@ const {
 const { getCheckPermissions } = require('../../../utils');
 
 const fmtUser = async (user, { knex }) => {
-  const roleIds = await knex('userRoles')
+  const roles = await knex('userRoles')
+    .join('roles', 'roles.id', '=', 'userRoles.roleId')
     .where('userId', user.id)
-    .pluck('roleId');
+    .select(knex.ref('roles.id').as('id'), knex.ref('roles.name').as('name'));
 
   return {
     ...user,
-    roleIds,
+    roles,
   };
 };
 
@@ -19,7 +20,7 @@ const fmtResult = async (users, count, { knex }) => {
   const result = await Promise.all(users.map((user) => fmtUser(user, { knex })));
 
   return {
-    user: result,
+    users: result,
     count,
   };
 };
@@ -29,6 +30,11 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
   log.debug(userId);
   log.debug(query);
 
+  const {
+    email,
+    limit,
+  } = query;
+
   const checkPermissions = await getCheckPermissions(userId, { log, knex });
 
   if (!checkPermissions(USERS, SELECT)) {
@@ -36,11 +42,6 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
 
     throw httpErrors.forbidden();
   }
-
-  const {
-    email,
-    limit,
-  } = query;
 
   const [
     users,

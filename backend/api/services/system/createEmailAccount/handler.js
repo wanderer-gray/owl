@@ -11,6 +11,14 @@ module.exports = async function operation({ userId, body }, {
   log.debug(userId);
   log.debug(body);
 
+  const {
+    host,
+    port,
+    secure,
+    user,
+    pass,
+  } = body;
+
   const checkPermissions = await getCheckPermissions(userId, { log, knex });
 
   if (!checkPermissions(SYSTEM, CREATE)) {
@@ -20,7 +28,13 @@ module.exports = async function operation({ userId, body }, {
   }
 
   await knex('emailAccounts')
-    .insert(body);
+    .insert({
+      host,
+      port,
+      secure,
+      user,
+      pass,
+    });
 
   await mailer.updateAccounts({ log, knex });
 };

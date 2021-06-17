@@ -12,6 +12,15 @@ module.exports = async function operation({ userId, query, body }, {
   log.debug(query);
   log.debug(body);
 
+  const { id } = query;
+  const {
+    host,
+    port,
+    secure,
+    user,
+    pass,
+  } = body;
+
   const checkPermissions = await getCheckPermissions(userId, { log, knex });
 
   if (!checkPermissions(SYSTEM, CREATE)) {
@@ -20,11 +29,15 @@ module.exports = async function operation({ userId, query, body }, {
     throw httpErrors.forbidden();
   }
 
-  const { id } = query;
-
   const numberUpdatedAccounts = await knex('emailAccounts')
     .where({ id })
-    .update(body);
+    .update({
+      host,
+      port,
+      secure,
+      user,
+      pass,
+    });
 
   if (!numberUpdatedAccounts) {
     log.warn('account not found');
