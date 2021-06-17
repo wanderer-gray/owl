@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, autorun } from 'mobx';
 
 class ContactsStore {
   contacts = [];
@@ -13,6 +13,10 @@ class ContactsStore {
     makeAutoObservable(this);
     
     this.GroupStore = GroupStore;
+
+    this.disposer = autorun(() => {
+      this.searchContacts();
+    });
   }
 
   setResult = ({ contacts, count }, datetime) => {
@@ -41,6 +45,10 @@ class ContactsStore {
         message: 'Не удалось выполнить поиск контактов'
       });
     }
+  }
+
+  dispose = () => {
+    this.disposer();
   }
 }
 

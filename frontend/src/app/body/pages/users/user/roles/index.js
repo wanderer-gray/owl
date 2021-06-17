@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, autorun } from 'mobx';
 
 class RolesStore {
   roles = [];
@@ -13,6 +13,10 @@ class RolesStore {
     makeAutoObservable(this);
 
     this.UserStore = UserStore;
+
+    this.disposer = autorun(() => {
+      this.searchRoles();
+    });
   }
 
   setResult = ({ roles, count }, datetime) => {
@@ -41,6 +45,10 @@ class RolesStore {
         message: 'Не удалось выполнить поиск ролей'
       });
     }
+  }
+
+  dispose = () => {
+    this.disposer();
   }
 }
 

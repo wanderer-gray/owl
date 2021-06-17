@@ -29,10 +29,15 @@ class RoleEditStore extends RoleViewStore {
 
   onClose = () => {
     this.setOpen(false);
-    this.setRole({});
   }
 
   addPermission = ({ id }) => {
+    const exists = this.permissionIds.includes(id);
+
+    if (exists) {
+      return;
+    }
+
     const permissionIds = toJS(this.permissionIds);
 
     permissionIds.push(id);
@@ -52,10 +57,8 @@ class RoleEditStore extends RoleViewStore {
 
   onSave = async() => {
     const {
-      role: {
-        id,
-        name,
-      },
+      id,
+      name,
       permissionIds,
     } = this;
 

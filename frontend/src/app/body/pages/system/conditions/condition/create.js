@@ -19,10 +19,8 @@ class ConditionCreateStore extends ConditionEditStore {
 
   onSave = async() => {
     const {
-      data: {
-        condition,
-        type,
-      },
+      condition,
+      type,
     } = this;
 
     try {

@@ -30,14 +30,12 @@ class AccountEditStore extends AccountViewStore {
 
   onSave = async() => {
     const {
-      account: {
-        id,
-        host,
-        port,
-        secure,
-        user,
-        pass,
-      },
+      id,
+      host,
+      port,
+      secure,
+      user,
+      pass,
     } = this;
 
     try {

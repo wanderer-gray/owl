@@ -28,6 +28,9 @@ class Groups extends Component {
 
   componentWillUnmount() {
     this.props.SearchStore.clear();
+
+    this.GroupEditStore.dispose();
+    this.GroupCreateStore.dispose();
   }
 
   render() {

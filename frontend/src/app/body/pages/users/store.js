@@ -13,6 +13,8 @@ class UsersStore {
     makeAutoObservable(this);
 
     this.SearchStore = SearchStore;
+
+    this.searchUsers();
   }
 
   setResult = ({ users, count }, datetime) => {

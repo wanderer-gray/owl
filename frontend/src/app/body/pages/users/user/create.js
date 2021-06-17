@@ -7,8 +7,10 @@ const defaultUser = {
 };
 
 class UserCreateStore extends UserEditStore {
-  constructor({ UserStore }) {
-    super({ UserStore });
+  disabledFields = {};
+
+  constructor({ UsersStore }) {
+    super({ UsersStore });
 
     this.onOpen = this.onOpen.bind(this);
   }
@@ -19,11 +21,9 @@ class UserCreateStore extends UserEditStore {
 
   onSave = async() => {
     const {
-      user: {
-        email,
-        password,
-        roleIds,
-      },
+      email,
+      password,
+      roleIds,
     } = this;
 
     try {

@@ -39,7 +39,11 @@ class AccountViewStore {
       user: computed,
       pass: computed,
       setAccount: action,
-      setValue: action,
+      setHost: action,
+      setPort: action,
+      setSecure: action,
+      setUser: action,
+      setPass: action,
     });
   }
 
@@ -47,8 +51,30 @@ class AccountViewStore {
     this.account = toJS(account);
   }
 
-  setValue = (key, value) => {
-    this.account[key] = value;
+  setHost = (host) => {
+    this.account.host = toJS(host);
+  }
+
+  setPort = (port) => {
+    const value = Number(port);
+
+    if (value && (!Number.isInteger(value) || value < 0 || value > (2 ** 16 - 1))) {
+      return;
+    }
+
+    this.account.port = toJS(value);
+  }
+
+  setSecure = (secure) => {
+    this.account.secure = toJS(secure);
+  }
+
+  setUser = (user) => {
+    this.account.user = toJS(user);
+  }
+
+  setPass = (pass) => {
+    this.account.pass = toJS(pass);
   }
 }
 

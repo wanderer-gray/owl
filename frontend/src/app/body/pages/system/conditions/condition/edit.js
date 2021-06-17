@@ -26,16 +26,13 @@ class ConditionEditStore extends ConditionViewStore {
 
   onClose = () => {
     this.setOpen(false);
-    this.setData({});
   }
 
   onSave = async() => {
     const {
-      data: {
-        id,
-        condition,
-        type,
-      },
+      id,
+      condition,
+      type,
     } = this;
 
     try {

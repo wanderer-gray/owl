@@ -1,4 +1,4 @@
-import React from 'react';
+import { Link } from 'react-router-dom'; 
 import { makeStyles } from '@material-ui/core/styles';
 import {
   AppBar,
@@ -38,12 +38,12 @@ const Header = () => {
           className={classes.logo}
           variant={'h6'}
         >
-          <a
+          <Link
             className={classes.logoLink}
-            href={'/'}
+            to={'/'}
           >
             Сова
-          </a>
+          </Link>
         </Typography>
 
         <Search />

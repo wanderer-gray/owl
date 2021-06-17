@@ -18,7 +18,7 @@ class GroupCreateStore extends GroupEditStore {
 
   onSave = async() => {
     const {
-      group: { title },
+      title,
       contactIds,
     } = this;
 

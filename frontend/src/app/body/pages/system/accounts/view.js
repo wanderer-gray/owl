@@ -39,7 +39,11 @@ const AccountView = observer(({ AccountStore }) => {
     secure,
     user,
     pass,
-    setValue,
+    setHost,
+    setPort,
+    setSecure,
+    setUser,
+    setPass,
     open,
     onClose,
     onSave,
@@ -63,7 +67,7 @@ const AccountView = observer(({ AccountStore }) => {
           variant={'outlined'}
           fullWidth={true}
           value={host}
-          onChange={(event) => setValue('host', event.target.value)}
+          onChange={(event) => setHost(event.target.value)}
         />
 
         <TextField
@@ -72,15 +76,7 @@ const AccountView = observer(({ AccountStore }) => {
           variant={'outlined'}
           fullWidth={true}
           value={port}
-          onChange={(event) => {
-            const value = Number(event.target.value);
-
-            if (!value || !Number.isInteger(value) || value < 0 || value > (2 ** 16 - 1)) {
-              return;
-            }
-
-            setValue('port', value);
-          }}
+          onChange={(event) => setPort(event.target.value)}
         />
 
         <FormControlLabel
@@ -93,7 +89,7 @@ const AccountView = observer(({ AccountStore }) => {
               color={'primary'}
               checked={secure}
               onChange={() => {
-                setValue('secure', !secure);
+                setSecure(!secure);
               }}
             />
           )}
@@ -105,7 +101,7 @@ const AccountView = observer(({ AccountStore }) => {
           variant={'outlined'}
           fullWidth={true}
           value={user}
-          onChange={(event) => setValue('user', event.target.value)}
+          onChange={(event) => setUser(event.target.value)}
         />
 
         <TextField
@@ -114,7 +110,7 @@ const AccountView = observer(({ AccountStore }) => {
           variant={'outlined'}
           fullWidth={true}
           value={pass}
-          onChange={(event) => setValue('pass', event.target.value)}
+          onChange={(event) => setPass(event.target.value)}
         />
       </DialogContent>
 

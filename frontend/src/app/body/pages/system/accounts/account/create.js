@@ -21,13 +21,11 @@ class AccountCreateStore extends AccountEditStore {
 
   onSave = async() => {
     const {
-      account: {
-        host,
-        port,
-        secure,
-        user,
-        pass,
-      },
+      host,
+      port,
+      secure,
+      user,
+      pass,
     } = this;
 
     try {

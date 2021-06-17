@@ -34,10 +34,15 @@ class GroupEditStore extends GroupViewStore {
 
   onClose = () => {
     this.setOpen(false);
-    this.setGroup({});
   }
 
-  addContact = (contact) => {
+  addContact = (contact) => {    
+    const exists = this.contacts.some(({ id }) => id === contact.id);
+
+    if (exists) {
+      return;
+    }
+
     const contacts = toJS(this.contacts);
 
     contacts.push(contact);
@@ -57,10 +62,8 @@ class GroupEditStore extends GroupViewStore {
 
   onSave = async() => {
     const {
-      group: {
-        id,
-        title,
-      },
+      id,
+      title,
       contactIds,
     } = this;
 
@@ -85,6 +88,10 @@ class GroupEditStore extends GroupViewStore {
 
   refresh = () => {
     this.GroupsStore.refresh();
+  }
+
+  dispose = () => {
+    this.ContactsStore.dispose();
   }
 }
 

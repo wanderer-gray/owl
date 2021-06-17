@@ -3,15 +3,14 @@ import { inject } from 'mobx-react';
 import Store from './store';
 import View from './view';
 
-const Account = ({ AuthStore, BodyStore }) => {
-  const store = new Store({ AuthStore, BodyStore });
+const Account = ({ AuthStore }) => {
+  const store = new Store({ AuthStore });
 
   return <View store={store} />;
 };
 
-export default inject(({ AuthStore, BodyStore }) => {
+export default inject(({ AuthStore }) => {
   return {
     AuthStore,
-    BodyStore,
   };
 })(Account);

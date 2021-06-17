@@ -32,6 +32,7 @@ const RolesView = observer(({ RolesStore }) => {
     roles,
     searchRoles,
     UserStore: {
+      disabledFields,
       addRole,
     },
   } = RolesStore;
@@ -63,6 +64,7 @@ const RolesView = observer(({ RolesStore }) => {
         
         searchRoles(name);
       }}
+      disabled={disabledFields.roles}
     />
   );
 });
@@ -75,6 +77,7 @@ const UserView = observer(({ UserStore }) => {
     email,
     password,
     roles,
+    disabledFields,
     setEmail,
     setPassword,
     removeRole,
@@ -103,6 +106,7 @@ const UserView = observer(({ UserStore }) => {
           fullWidth={true}
           value={email}
           onChange={(event) => setEmail(event.target.value)}
+          disabled={disabledFields.email}
         />
 
         {password !== undefined ? (

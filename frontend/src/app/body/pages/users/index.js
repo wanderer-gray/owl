@@ -28,6 +28,9 @@ class Users extends Component {
 
   componentWillUnmount() {
     this.props.SearchStore.clear();
+
+    this.UserEditStore.dispose();
+    this.UserCreateStore.dispose();
   }
 
   render() {

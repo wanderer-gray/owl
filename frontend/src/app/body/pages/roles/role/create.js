@@ -18,7 +18,7 @@ class RoleCreateStore extends RoleEditStore {
 
   onSave = async() => {
     const {
-      role: { name },
+      name,
       permissionIds,
     } = this;
 

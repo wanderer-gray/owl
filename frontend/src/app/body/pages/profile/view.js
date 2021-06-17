@@ -129,10 +129,12 @@ const ProfileView = observer(({ store }) => {
                 onClose={onClose}
               >
                 <DialogTitle>Вы уверены, что хотите удалить аккаунт?</DialogTitle>
+
                 <DialogContent>
                   <DialogContentText>
-                    Если вы удалите аккаунт, то все контакты, группы, тесты и результаты будут потеряны
+                    Если вы удалите аккаунт, то все контакты, группы, тесты и результаты будут потеряны.
                   </DialogContentText>
+
                   <DialogActions>
                     <Button
                       color={'primary'}

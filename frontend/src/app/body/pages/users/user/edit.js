@@ -5,6 +5,10 @@ import UserViewStore from './view';
 class UserEditStore extends UserViewStore {
   open = false;
 
+  disabledFields = {
+    email: true,
+  };
+
   get roleIds() {
     return this.roles.map(({ id }) => id);
   }
@@ -34,10 +38,15 @@ class UserEditStore extends UserViewStore {
 
   onClose = () => {
     this.setOpen(false);
-    this.setUser({});
   }
 
   addRole = (role) => {
+    const exists = this.roles.some(({ id }) => id === role.id);
+
+    if (exists) {
+      return;
+    }
+
     const roles = toJS(this.roles);
 
     roles.push(role);
@@ -57,10 +66,8 @@ class UserEditStore extends UserViewStore {
 
   onSave = async() => {
     const {
-      user: {
-        id,
-        roleIds
-      },
+      id,
+      roleIds
     } = this;
 
     try {
@@ -81,6 +88,10 @@ class UserEditStore extends UserViewStore {
 
   refresh = () => {
     this.UsersStore.refresh();
+  }
+
+  dispose = () => {
+    this.RolesStore.dispose();
   }
 }
 
