@@ -16,6 +16,8 @@ app.register(require('fastify-static'), {
   root: path.join(__dirname, 'www'),
 });
 
+app.setNotFoundHandler((_, reply) => reply.sendFile('index.html'));
+
 const init = async () => {
   try {
     await app.listen(config.app);
