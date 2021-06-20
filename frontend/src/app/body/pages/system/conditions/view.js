@@ -70,7 +70,6 @@ const ConditionView = observer(({ ConditionStore }) => {
         />
 
         <FormControlLabel
-          value={'start'}
           label={`Тип условия "${type}": `}
           labelPlacement={'start'}
           control={(

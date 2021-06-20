@@ -13,6 +13,7 @@ import {
   Divider,
 }from '@material-ui/core';
 import TestIcon from '@material-ui/icons/Assignment';
+import AddIcon from '@material-ui/icons/Add';
 import ProfileIcon from '@material-ui/icons/AccountBox';
 import ContactsIcon from '@material-ui/icons/Contacts';
 import GroupsIcon from '@material-ui/icons/Group';
@@ -85,6 +86,7 @@ const View = observer(({ AuthStore }) => {
 
       <List>
         <Item Icon={TestIcon} to={'/'} />
+        <Item Icon={AddIcon} to={'/test/createOrEdit'} />
         <Item Icon={ProfileIcon} to={'/profile'} />
         <Item Icon={ContactsIcon} to={'/contacts'} />
         <Item Icon={GroupsIcon} to={'/groups'} />

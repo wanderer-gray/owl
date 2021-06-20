@@ -81,7 +81,6 @@ const AccountView = observer(({ AccountStore }) => {
 
         <FormControlLabel
           className={classes.input}
-          value={'start'}
           label={'Secure'}
           labelPlacement={'start'}
           control={(

@@ -1,13 +1,10 @@
-import React from 'react';
-import {
-  Typography
-} from '@material-ui/core';
+import Store from './store';
+import View from './view';
 
-export default function MainPage() {
+const Tests = () => {
+  const store = new Store();
 
-  return (
-    <Typography variant="h4">
-      Главная
-    </Typography>
-  );
+  return <View Store={store} />;
 }
+
+export default Tests;

@@ -29,10 +29,7 @@ const Header = () => {
   const classes = useStyles();
 
   return (
-    <AppBar
-      position={'fixed'}
-      className={classes.appBar}
-    >
+    <AppBar className={classes.appBar}>
       <Toolbar>
         <Typography
           className={classes.logo}

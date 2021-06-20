@@ -7,6 +7,7 @@ import {
 import { inject, observer } from 'mobx-react';
 import { makeStyles } from '@material-ui/core/styles';
 import Tests  from './tests';
+import CreateOrEditTest  from './test/createOrEdit';
 import Profile from './profile';
 import Contacts from './contacts';
 import Groups from './groups';
@@ -42,7 +43,7 @@ const AppRouter = observer(({ AuthStore }) => {
       <Switch >
         <Route path="/" exact component={Tests} />
         <Route path="/test/view/:link" exact component={Tests} />
-        <Route path="/test/edit/:testId" exact component={Tests} />
+        <Route path="/test/createOrEdit/:link?" exact component={CreateOrEditTest} />
         <Route path="/profile" exact component={Profile} />
         <Route path="/contacts" exact component={Contacts} />
         <Route path="/groups" exact component={Groups} />
