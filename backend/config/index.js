@@ -18,15 +18,15 @@ module.exports = {
     knex: {
       client: 'pg',
       connection: {
-        host: process.env.KNEX_HOST,
-        port: process.env.KNEX_PORT,
-        user: process.env.KNEX_USER,
-        password: process.env.KNEX_PASSWORD,
-        database: process.env.KNEX_DATABASE,
+        host: process.env.KNEX_HOST || 'localhost',
+        port: process.env.KNEX_PORT || 5432,
+        user: process.env.KNEX_USER || 'admin',
+        password: process.env.KNEX_PASSWORD || '123456',
+        database: process.env.KNEX_DATABASE || 'owl',
       },
       pool: {
-        min: Number(process.env.KNEX_POOL_MIN),
-        max: Number(process.env.KNEX_POOL_MAX),
+        min: Number(process.env.KNEX_POOL_MIN || 1),
+        max: Number(process.env.KNEX_POOL_MAX || 2),
       },
       migrations: {
         tableName: 'migrations',
