@@ -1,6 +1,8 @@
 const {
-  objects: { SYSTEM },
-  actions: { UPDATE },
+  permissions: {
+    objects: { SYSTEM },
+    actions: { UPDATE },
+  },
 } = require('../../../enums');
 const { getCheckPermissions } = require('../../../utils');
 
@@ -12,8 +14,9 @@ module.exports = async function operation({ userId, query, body }, { log, knex, 
 
   const { id } = query;
   const {
-    condition,
     type,
+    action,
+    condition,
   } = body;
 
   const checkPermissions = await getCheckPermissions(userId, { log, knex });
@@ -27,8 +30,9 @@ module.exports = async function operation({ userId, query, body }, { log, knex, 
   const numberUpdatedConditions = await knex('emailСonditions')
     .where({ id })
     .update({
-      condition,
       type,
+      action,
+      condition,
     });
 
   if (!numberUpdatedConditions) {

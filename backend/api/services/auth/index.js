@@ -1,5 +1,6 @@
 const isAuth = require('./isAuth');
 const getPermissions = require('./getPermissions');
+const getGlobalPermissions = require('./getGlobalPermissions');
 const login = require('./login');
 const logout = require('./logout');
 const signup = require('./signup');
@@ -12,6 +13,7 @@ module.exports = (fastify) => fastify.service({
   operations: [
     isAuth,
     getPermissions,
+    getGlobalPermissions,
     login,
     logout,
     signup,

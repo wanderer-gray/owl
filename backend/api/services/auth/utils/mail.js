@@ -1,16 +1,24 @@
 const {
-  system: {
-    EMAIL_СONDITION_WHITE,
-    EMAIL_СONDITION_BLACK,
+  emailСonditions: {
+    types: {
+      WHITE,
+      BLACK,
+    },
   },
 } = require('../../../enums');
 
-const checkEmail = async (email, knex) => {
+const checkEmail = async (email, action, { knex }) => {
   const queryWhiteList = knex('emailСonditions')
-    .where('type', EMAIL_СONDITION_WHITE)
+    .where({
+      type: WHITE,
+      action,
+    })
     .whereRaw('? like condition', [email]);
   const queryBlackList = knex('emailСonditions')
-    .where('type', EMAIL_СONDITION_BLACK)
+    .where({
+      type: BLACK,
+      action,
+    })
     .whereRaw('? like condition', [email]);
 
   const { white, black } = await knex.first(

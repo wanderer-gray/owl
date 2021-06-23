@@ -1,14 +1,26 @@
-const { pass: { checkPassword } } = require('../utils');
+const { emailСonditions: { actions: { LOGIN } } } = require('../../../enums');
+const {
+  mail: { checkEmail },
+  pass: { checkPassword },
+} = require('../utils');
 const { toStr } = require('../../../utils');
 
 module.exports = async function operation({ body }, { log, knex, httpErrors }, reply) {
   log.trace('login');
   log.debug(body);
 
-  const {
-    email,
-    password,
-  } = body;
+  const email = body.email.trim();
+  const { password } = body;
+
+  const allowEmail = await checkEmail(email, LOGIN, { knex });
+
+  log.info(allowEmail);
+
+  if (!allowEmail) {
+    log.warn('email not allow');
+
+    throw httpErrors.locked();
+  }
 
   const user = await knex('users')
     .where({ email })

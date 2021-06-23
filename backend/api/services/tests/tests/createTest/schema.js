@@ -2,6 +2,13 @@ module.exports = {
   body: {
     type: 'object',
     properties: {
+      type: {
+        type: 'string',
+        enum: [
+          'TEST',
+          'SURVEY',
+        ],
+      },
       title: {
         type: 'string',
         minLength: 1,
@@ -44,9 +51,6 @@ module.exports = {
               minimum: 0,
               maximum: 100,
             },
-            required: {
-              type: 'boolean',
-            },
             options: {
               type: 'array',
               items: {
@@ -73,9 +77,8 @@ module.exports = {
           },
           required: [
             'title',
-            'points',
             'type',
-            'required',
+            'points',
             'options',
           ],
           additionalProperties: false,
@@ -85,6 +88,7 @@ module.exports = {
       },
     },
     required: [
+      'type',
       'title',
       'availableAll',
       'questions',

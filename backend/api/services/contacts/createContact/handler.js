@@ -1,4 +1,13 @@
-const { knexExists } = require('../../../utils');
+const {
+  permissions: {
+    objects: { CONTACTS },
+    actions: { CREATE },
+  },
+} = require('../../../enums');
+const {
+  knexExists,
+  getCheckGlobalPermissions,
+} = require('../../../utils');
 
 module.exports = async function operation({ userId, body }, { log, knex, httpErrors }) {
   log.trace('createContact');
@@ -6,6 +15,14 @@ module.exports = async function operation({ userId, body }, { log, knex, httpErr
   log.debug(body);
 
   const { link } = body;
+
+  const checkGlobalPermissions = await getCheckGlobalPermissions({ log, knex });
+
+  if (!checkGlobalPermissions(CONTACTS, CREATE)) {
+    log.warn('not allow to create contact');
+
+    throw httpErrors.locked();
+  }
 
   const { id: userIdTo } = await knex('users')
     .where({ link })

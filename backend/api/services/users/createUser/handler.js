@@ -1,6 +1,8 @@
 const {
-  objects: { USERS },
-  actions: { CREATE },
+  permissions: {
+    objects: { USERS },
+    actions: { CREATE },
+  },
 } = require('../../../enums');
 const { getCheckPermissions } = require('../../../utils');
 const {

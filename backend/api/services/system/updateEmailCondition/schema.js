@@ -1,3 +1,10 @@
+const {
+  emailСonditions: {
+    types,
+    actions,
+  },
+} = require('../../../enums');
+
 module.exports = {
   querystring: {
     type: 'object',
@@ -12,17 +19,25 @@ module.exports = {
   body: {
     type: 'object',
     properties: {
+      type: {
+        type: 'integer',
+        enum: [
+          types.WHITE,
+          types.BLACK,
+        ],
+      },
+      action: {
+        type: 'integer',
+        enum: [
+          actions.LOGIN,
+          actions.SIGNUP,
+          actions.RESTORE,
+        ],
+      },
       condition: {
         type: 'string',
         minLength: 1,
         maxLength: 255,
-      },
-      type: {
-        type: 'string',
-        enum: [
-          'white',
-          'black',
-        ],
       },
     },
     minProperties: 1,

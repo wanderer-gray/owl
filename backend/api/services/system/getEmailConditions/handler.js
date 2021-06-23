@@ -1,12 +1,17 @@
 const {
-  objects: { SYSTEM },
-  actions: { SELECT },
+  permissions: {
+    objects: { SYSTEM },
+    actions: { SELECT },
+  },
 } = require('../../../enums');
 const { getCheckPermissions } = require('../../../utils');
 
-module.exports = async function operation({ userId }, { log, knex, httpErrors }) {
+module.exports = async function operation({ userId, query }, { log, knex, httpErrors }) {
   log.trace('getEmailConditions');
   log.debug(userId);
+  log.debug(query);
+
+  const { action } = query;
 
   const checkPermissions = await getCheckPermissions(userId, { log, knex });
 
@@ -17,7 +22,12 @@ module.exports = async function operation({ userId }, { log, knex, httpErrors })
   }
 
   const conditions = await knex('emailСonditions')
-    .select('*');
+    .where({ action })
+    .select('*')
+    .orderBy([
+      'type',
+      'id',
+    ]);
 
   log.info(conditions);
 

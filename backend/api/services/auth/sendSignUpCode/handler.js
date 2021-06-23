@@ -1,3 +1,4 @@
+const { emailСonditions: { actions: { SIGNUP } } } = require('../../../enums');
 const {
   mail: { checkEmail },
   code: { getCode },
@@ -15,7 +16,7 @@ module.exports = async function operation({ query }, {
 
   const email = query.email.trim();
 
-  const allowEmail = await checkEmail(email, knex);
+  const allowEmail = await checkEmail(email, SIGNUP, { knex });
 
   log.info(allowEmail);
 

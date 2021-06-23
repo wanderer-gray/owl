@@ -36,7 +36,7 @@ module.exports = {
       secret: COOKIE_SECRET,
     },
     password: {
-      salt: process.env.PASS_SALT,
+      salt: process.env.PASS_SALT || 'dFo6tfbrcbr1Whv2pbuNiQwkTobRKspP',
     },
   },
 };

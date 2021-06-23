@@ -1,11 +1,13 @@
-const system = require('./system');
-const objects = require('./objects');
-const actions = require('./actions');
+const permissions = require('./permissions');
+const emailСonditions = require('./emailСonditions');
 const tests = require('./tests');
+const questions = require('./questions');
+const members = require('./members');
 
 module.exports = {
-  system,
-  objects,
-  actions,
+  permissions,
+  emailСonditions,
   tests,
+  questions,
+  members,
 };

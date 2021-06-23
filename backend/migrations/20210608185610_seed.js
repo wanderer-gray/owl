@@ -1,6 +1,8 @@
 const {
-  objects,
-  actions,
+  permissions: {
+    objects,
+    actions,
+  },
 } = require('../api/enums');
 const {
   pass: {
@@ -9,17 +11,44 @@ const {
   },
 } = require('../api/services/auth/utils');
 
-const getPermissions = () => {
-  const permissions = [];
+const getPermissions = () => [
+  { object: objects.SYSTEM, action: actions.CREATE },
+  { object: objects.SYSTEM, action: actions.UPDATE },
+  { object: objects.SYSTEM, action: actions.DELETE },
+  { object: objects.SYSTEM, action: actions.SELECT },
+  { object: objects.PERMISSIONS, action: actions.SELECT },
+  { object: objects.ROLES, action: actions.CREATE },
+  { object: objects.ROLES, action: actions.UPDATE },
+  { object: objects.ROLES, action: actions.DELETE },
+  { object: objects.ROLES, action: actions.SELECT },
+  { object: objects.USERS, action: actions.CREATE },
+  { object: objects.USERS, action: actions.UPDATE },
+  { object: objects.USERS, action: actions.DELETE },
+  { object: objects.USERS, action: actions.SELECT },
+  { object: objects.CONTACTS, action: actions.CREATE },
+  { object: objects.CONTACTS, action: actions.DELETE },
+  { object: objects.CONTACTS, action: actions.SELECT },
+  { object: objects.GROUPS, action: actions.CREATE },
+  { object: objects.GROUPS, action: actions.UPDATE },
+  { object: objects.GROUPS, action: actions.DELETE },
+  { object: objects.GROUPS, action: actions.SELECT },
+  { object: objects.TESTS, action: actions.CREATE },
+  { object: objects.TESTS, action: actions.UPDATE },
+  { object: objects.TESTS, action: actions.DELETE },
+];
 
-  Object.values(objects).forEach((object) => {
-    Object.values(actions).forEach((action) => {
-      permissions.push({ object, action });
-    });
-  });
-
-  return permissions;
-};
+const getGlobalPermissions = () => [
+  { object: objects.CONTACTS, action: actions.CREATE, permit: true },
+  { object: objects.CONTACTS, action: actions.DELETE, permit: true },
+  { object: objects.CONTACTS, action: actions.SELECT, permit: true },
+  { object: objects.GROUPS, action: actions.CREATE, permit: true },
+  { object: objects.GROUPS, action: actions.UPDATE, permit: true },
+  { object: objects.GROUPS, action: actions.DELETE, permit: true },
+  { object: objects.GROUPS, action: actions.SELECT, permit: true },
+  { object: objects.TESTS, action: actions.CREATE, permit: true },
+  { object: objects.TESTS, action: actions.UPDATE, permit: true },
+  { object: objects.TESTS, action: actions.DELETE, permit: true },
+];
 
 const getRoleAdmin = () => ({
   name: 'admin',
@@ -43,21 +72,31 @@ const getUserAdmin = async () => {
 };
 
 exports.up = async (knex) => {
-  const permissionIds = await knex('permissions')
-    .insert(getPermissions())
-    .returning('id');
-  const [roleId] = await knex('roles')
-    .insert(getRoleAdmin())
-    .returning('id');
+  const [
+    [roleId],
+    permissionIds,
+  ] = await Promise.all([
+    knex('roles')
+      .insert(getRoleAdmin())
+      .returning('id'),
+    knex('permissions')
+      .insert(getPermissions())
+      .returning('id'),
+    knex('globalPermissions')
+      .insert(getGlobalPermissions()),
+  ]);
 
   const rolePermissions = permissionIds.map((permissionId) => ({
     roleId,
     permissionId,
   }));
 
-  await knex('rolePermissions').insert(rolePermissions);
+  const [admin] = await Promise.all([
+    getUserAdmin(),
+    knex('rolePermissions')
+      .insert(rolePermissions),
+  ]);
 
-  const admin = await getUserAdmin();
   const [userId] = await knex('users')
     .insert(admin)
     .returning('id');
@@ -70,6 +109,12 @@ exports.up = async (knex) => {
 };
 
 exports.down = async (knex) => Promise.all([
-  knex('permissions').del(),
-  knex('users').del(),
+  knex('roles')
+    .del(),
+  knex('permissions')
+    .del(),
+  knex('globalPermissions')
+    .del(),
+  knex('users')
+    .del(),
 ]);

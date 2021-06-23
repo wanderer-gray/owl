@@ -1,6 +1,8 @@
 const {
-  objects: { SYSTEM },
-  actions: { SELECT },
+  permissions: {
+    objects: { SYSTEM },
+    actions: { SELECT },
+  },
 } = require('../../../enums');
 const { getCheckPermissions } = require('../../../utils');
 
@@ -17,7 +19,11 @@ module.exports = async function operation({ userId }, { log, knex, httpErrors })
   }
 
   const accounts = await knex('emailAccounts')
-    .select('*');
+    .select('*')
+    .orderBy([
+      'host',
+      'id',
+    ]);
 
   log.info(accounts);
 

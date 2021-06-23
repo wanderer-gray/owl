@@ -1,6 +1,8 @@
 const {
-  objects: { ROLES },
-  actions: { DELETE },
+  permissions: {
+    objects: { ROLES },
+    actions: { DELETE },
+  },
 } = require('../../../enums');
 const { getCheckPermissions } = require('../../../utils');
 

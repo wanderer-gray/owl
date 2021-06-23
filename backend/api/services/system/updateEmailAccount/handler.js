@@ -1,6 +1,8 @@
 const {
-  objects: { SYSTEM },
-  actions: { CREATE },
+  permissions: {
+    objects: { SYSTEM },
+    actions: { UPDATE },
+  },
 } = require('../../../enums');
 const { getCheckPermissions } = require('../../../utils');
 
@@ -23,8 +25,8 @@ module.exports = async function operation({ userId, query, body }, {
 
   const checkPermissions = await getCheckPermissions(userId, { log, knex });
 
-  if (!checkPermissions(SYSTEM, CREATE)) {
-    log.warn('no permission to create a system config');
+  if (!checkPermissions(SYSTEM, UPDATE)) {
+    log.warn('no permission to update a system config');
 
     throw httpErrors.forbidden();
   }

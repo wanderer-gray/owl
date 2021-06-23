@@ -1,9 +1,13 @@
 const {
-  tests: {
-    types,
-    members: { CREATOR },
+  permissions: {
+    objects: { TESTS },
+    actions: { CREATE },
   },
-} = require('../../../enums');
+  tests,
+  questions: questionsEnum,
+  members: { roles: { CREATOR } },
+} = require('../../../../enums');
+const { getCheckGlobalPermissions } = require('../../../../utils');
 
 const getDbQuestions = (testId, questions) => questions.map((question, index) => {
   const {
@@ -11,16 +15,14 @@ const getDbQuestions = (testId, questions) => questions.map((question, index) =>
     description,
     type,
     points,
-    required,
   } = question;
 
   return {
     testId,
     title,
     description,
-    typeEnum: types[type],
+    type: questionsEnum.types[type],
     points,
-    required,
     weight: index,
   };
 });
@@ -28,15 +30,15 @@ const getDbQuestions = (testId, questions) => questions.map((question, index) =>
 const getDbOptions = (questionIds, questions) => {
   const result = [];
 
-  questions.forEach(({ options }, index) => {
-    const questionId = questionIds[index];
+  questions.forEach(({ options }, questionIndex) => {
+    const questionId = questionIds[questionIndex];
 
-    options.forEach(({ checked, title }) => {
+    options.forEach(({ checked, title }, optionIndex) => {
       result.push({
         questionId,
         checked,
         title,
-        weight: index,
+        weight: optionIndex,
       });
     });
   });
@@ -44,20 +46,30 @@ const getDbOptions = (questionIds, questions) => {
   return result;
 };
 
-module.exports = async function operation({ userId, body }, { log, knex }) {
+module.exports = async function operation({ userId, body }, { log, knex, httpErrors }) {
   log.trace('createTest');
   log.debug(userId);
   log.debug(body);
 
   const {
+    type,
     title,
     description,
     availableAll,
     questions,
   } = body;
 
+  const checkGlobalPermissions = await getCheckGlobalPermissions({ log, knex });
+
+  if (!checkGlobalPermissions(TESTS, CREATE)) {
+    log.warn('not allow to create test');
+
+    throw httpErrors.locked();
+  }
+
   const { id: testId } = await knex('tests')
     .insert({
+      type: tests.types[type],
       title,
       description,
       availableAll,
@@ -65,13 +77,6 @@ module.exports = async function operation({ userId, body }, { log, knex }) {
     .returning('id');
 
   log.info(testId);
-
-  await knex('testMembers')
-    .insert({
-      testId,
-      userId,
-      roleEnum: CREATOR,
-    });
 
   const dbQuestions = getDbQuestions(testId, questions);
 
@@ -81,8 +86,15 @@ module.exports = async function operation({ userId, body }, { log, knex }) {
 
   const dbOptions = getDbOptions(questionIds, questions);
 
-  await knex('questionOptions')
+  await knex('options')
     .insert(dbOptions);
+
+  await knex('members')
+    .insert({
+      testId,
+      userId,
+      role: CREATOR,
+    });
 
   return testId;
 };

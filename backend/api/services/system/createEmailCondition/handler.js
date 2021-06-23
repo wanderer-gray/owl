@@ -1,6 +1,8 @@
 const {
-  objects: { SYSTEM },
-  actions: { CREATE },
+  permissions: {
+    objects: { SYSTEM },
+    actions: { CREATE },
+  },
 } = require('../../../enums');
 const { getCheckPermissions } = require('../../../utils');
 
@@ -10,8 +12,9 @@ module.exports = async function operation({ userId, body }, { log, knex, httpErr
   log.debug(body);
 
   const {
-    condition,
     type,
+    action,
+    condition,
   } = body;
 
   const checkPermissions = await getCheckPermissions(userId, { log, knex });
@@ -24,7 +27,8 @@ module.exports = async function operation({ userId, body }, { log, knex, httpErr
 
   await knex('emailСonditions')
     .insert({
-      condition,
       type,
+      action,
+      condition,
     });
 };

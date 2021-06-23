@@ -1,4 +1,13 @@
-const { knexExists } = require('../../../utils');
+const {
+  permissions: {
+    objects: { GROUPS },
+    actions: { UPDATE },
+  },
+} = require('../../../enums');
+const {
+  knexExists,
+  getCheckGlobalPermissions,
+} = require('../../../utils');
 
 const updateTitle = async (id, title, { knex }) => {
   if (title === undefined) {
@@ -26,10 +35,12 @@ const updateContacts = async (id, contactIds, { log, knex }) => {
 
   log.info(groupContacts);
 
-  if (groupContacts.length) {
-    await knex('groupContacts')
-      .insert(groupContacts);
+  if (!groupContacts.length) {
+    return;
   }
+
+  await knex('groupContacts')
+    .insert(groupContacts);
 };
 
 module.exports = async function operation({ userId, query, body }, { log, knex, httpErrors }) {
@@ -43,6 +54,14 @@ module.exports = async function operation({ userId, query, body }, { log, knex, 
     title,
     contactIds,
   } = body;
+
+  const checkGlobalPermissions = await getCheckGlobalPermissions({ log, knex });
+
+  if (!checkGlobalPermissions(GROUPS, UPDATE)) {
+    log.warn('not allow to update group');
+
+    throw httpErrors.locked();
+  }
 
   const queryFindGroup = knex('groups')
     .where({

@@ -4,8 +4,7 @@ module.exports = {
     properties: {
       link: {
         type: 'string',
-        minLength: 1,
-        maxLength: 255,
+        format: 'uuid',
       },
     },
     required: [

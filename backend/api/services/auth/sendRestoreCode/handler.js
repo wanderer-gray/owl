@@ -1,4 +1,8 @@
-const { code: { getCode } } = require('../utils');
+const { emailСonditions: { actions: { RESTORE } } } = require('../../../enums');
+const {
+  mail: { checkEmail },
+  code: { getCode },
+} = require('../utils');
 const {
   knexExists,
   getDateISO,
@@ -11,6 +15,16 @@ module.exports = async function operation({ query }, {
   log.debug(query);
 
   const email = query.email.trim();
+
+  const allowEmail = await checkEmail(email, RESTORE, { knex });
+
+  log.info(allowEmail);
+
+  if (!allowEmail) {
+    log.warn('email not allow');
+
+    throw httpErrors.forbidden();
+  }
 
   const code = getCode();
   log.info(code);
