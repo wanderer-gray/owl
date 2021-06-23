@@ -50,14 +50,19 @@ class GroupsStore {
       await api('groups/deleteGroup')
         .method('delete')
         .query({ id });
-      
-      this.refresh();
+
+      notify({
+        variant: 'success',
+        message: 'Группа удалена'
+      });
     } catch {
       notify({
         variant: 'error',
         message: 'Не удалось удалить группу'
       });
     }
+
+    this.refresh();
   }
 }
 

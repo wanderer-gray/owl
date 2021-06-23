@@ -31,7 +31,11 @@ class RoleCreateStore extends RoleEditStore {
         });
       
       this.refresh();
-      this.onClose();
+
+      notify({
+        variant: 'success',
+        message: 'Роль добавлена'
+      });
     } catch {
       notify({
         variant: 'error',

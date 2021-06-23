@@ -1,5 +1,6 @@
 import { makeObservable, observable, action } from 'mobx';
 import AccountViewStore from './view';
+import { httpErrors } from '../../../../../../enums';
 
 class AccountEditStore extends AccountViewStore {
   open = false;
@@ -51,8 +52,25 @@ class AccountEditStore extends AccountViewStore {
         });
       
       this.refresh();
-      this.onClose();
-    } catch {
+
+      notify({
+        variant: 'success',
+        message: 'Аккаунт изменён'
+      });
+    } catch (error) {
+      const { status } = error || {};
+
+      if (status === httpErrors.NOTFOUND) {
+        this.refresh();
+
+        notify({
+          variant: 'warning',
+          message: 'Аккаунт не найден'
+        });
+
+        return;
+      }
+
       notify({
         variant: 'error',
         message: 'Не удалось изменить аккаунт'
@@ -62,6 +80,7 @@ class AccountEditStore extends AccountViewStore {
 
   refresh = () => {
     this.AccountsStore.refresh();
+    this.onClose();
   }
 }
 

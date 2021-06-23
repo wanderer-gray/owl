@@ -1,9 +1,12 @@
 import { makeAutoObservable } from 'mobx';
 
 class ConditionsStore {
+  action
   conditions = [];
 
-  constructor() {
+  constructor({ action }) {
+    this.action = action;
+
     makeAutoObservable(this);
 
     this.getConditions();
@@ -14,8 +17,11 @@ class ConditionsStore {
   }
 
   getConditions = async() => {
+    const { action } = this;
+
     try {
-      const conditions = await api('system/getEmailConditions');
+      const conditions = await api('system/getEmailConditions')
+        .query({ action });
       
       this.setConditions(conditions);
     } catch {
@@ -35,14 +41,19 @@ class ConditionsStore {
       await api('system/deleteEmailCondition')
         .method('delete')
         .query({ id });
-      
-      this.getConditions();
+
+      notify({
+        variant: 'success',
+        message: 'Условие удалено'
+      });
     } catch {
       notify({
         variant: 'error',
         message: 'Не удалось удалить условие'
       });
     }
+      
+    this.getConditions();
   }
 }
 

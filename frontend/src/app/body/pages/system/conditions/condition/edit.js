@@ -1,5 +1,6 @@
 import { makeObservable, observable, action } from 'mobx';
 import ConditionViewStore from './view';
+import { httpErrors } from '../../../../../../enums';
 
 class ConditionEditStore extends ConditionViewStore {
   open = false;
@@ -31,22 +32,39 @@ class ConditionEditStore extends ConditionViewStore {
   onSave = async() => {
     const {
       id,
-      condition,
       type,
+      condition,
     } = this;
 
     try {
       await api('system/updateEmailCondition')
         .method('put')
         .query({ id })
-        .body({ 
-          condition,
+        .body({
           type,
+          condition,
         });
       
       this.refresh();
-      this.onClose();
-    } catch {
+
+      notify({
+        variant: 'success',
+        message: 'Условие изменено'
+      });
+    } catch (error) {
+      const { status } = error || {};
+
+      if (status === httpErrors.NOTFOUND) {
+        this.refresh();
+
+        notify({
+          variant: 'warning',
+          message: 'Условие не найдено'
+        });
+
+        return;
+      }
+
       notify({
         variant: 'error',
         message: 'Не удалось изменить условие'
@@ -56,6 +74,7 @@ class ConditionEditStore extends ConditionViewStore {
 
   refresh = () => {
     this.ConditionsStore.refresh();
+    this.onClose();
   }
 }
 

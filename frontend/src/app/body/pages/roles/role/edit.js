@@ -1,6 +1,7 @@
 import { makeObservable, observable, action, toJS } from 'mobx';
 import PermissionsStore from './permissions';
 import RoleViewStore from './view';
+import { httpErrors } from '../../../../../enums';
 
 class RoleEditStore extends RoleViewStore {
   open = false;
@@ -72,8 +73,25 @@ class RoleEditStore extends RoleViewStore {
         });
       
       this.refresh();
-      this.onClose();
-    } catch {
+
+      notify({
+        variant: 'success',
+        message: 'Роль изменена'
+      });
+    } catch (error) {
+      const { status } = error || {};
+
+      if (status === httpErrors.NOTFOUND) {
+        this.refresh();
+
+        notify({
+          variant: 'warning',
+          message: 'Роль не найдена'
+        });
+
+        return;
+      }
+
       notify({
         variant: 'error',
         message: 'Не удалось изменить роль'
@@ -83,6 +101,7 @@ class RoleEditStore extends RoleViewStore {
 
   refresh = () => {
     this.RolesStore.refresh();
+    this.onClose();
   }
 }
 

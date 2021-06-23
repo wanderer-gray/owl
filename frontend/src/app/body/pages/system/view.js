@@ -10,6 +10,7 @@ import {
 } from '@material-ui/core';
 import Accounts from './accounts';
 import Conditions from './conditions';
+import { actions } from '../../../../enums/emailConditions';
 
 const useStyles = makeStyles(() => ({
   tabs: {
@@ -23,7 +24,13 @@ const Content = ({ tabIndex }) => {
       return <Accounts />;
 
     case 1:
-      return <Conditions />;
+      return <Conditions action={actions.LOGIN} />;
+  
+    case 2:
+      return <Conditions action={actions.SIGNUP} />;
+
+    case 3:
+      return <Conditions action={actions.RESTORE} />;
     
     default:
       return null;
@@ -46,14 +53,18 @@ const SystemView = observer(({ store }) => {
 
       <Paper className={classes.tabs}>
         <Tabs
-          centered={true}
+          variant={'scrollable'}
+          scrollButtons={'on'}
           textColor={'primary'}
           indicatorColor={'primary'}
           value={tabIndex}
           onChange={onTabIndexChange}
         >
           <Tab label={'Email аккаунты'} />
-          <Tab label={'Email условия'} />
+          <Tab label={'Email условия входа'} />
+          <Tab label={'Email условия регистрации'} />
+          <Tab label={'Email условия восстановления'} />
+          <Tab label={'Глобальные разрешения'} />
         </Tabs>
       </Paper>
 

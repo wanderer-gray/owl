@@ -31,7 +31,11 @@ class GroupCreateStore extends GroupEditStore {
         });
       
       this.refresh();
-      this.onClose();
+
+      notify({
+        variant: 'success',
+        message: 'Группа добавлена'
+      });
     } catch {
       notify({
         variant: 'error',

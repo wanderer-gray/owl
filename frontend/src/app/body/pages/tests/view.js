@@ -7,6 +7,7 @@ import {
   Tabs,
   Tab,
 } from '@material-ui/core';
+import Pagination from '@material-ui/lab/Pagination';
 
 const useStyles = makeStyles(() => ({
   tabs: {
@@ -26,7 +27,7 @@ const TestsView = observer(({ Store }) => {
   return (
     <Fragment>
       <Typography variant={'h4'}>
-        Тесты
+        Тесты и опросы
       </Typography>
 
       <Paper className={classes.tabs}>
@@ -43,6 +44,11 @@ const TestsView = observer(({ Store }) => {
           <Tab label={'Пройденные'} />
         </Tabs>
       </Paper>
+
+      <Pagination
+        count={100}
+        siblingCount={5}
+      />
     </Fragment>
   );
 });

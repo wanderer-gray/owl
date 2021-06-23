@@ -4,6 +4,7 @@ import ApiStore from '../api/store';
 class AuthStore {
   isAuth = false;
   permissions = [];
+  globalPermissions = [];
 
   open = false;
   type = 'login';
@@ -27,6 +28,7 @@ class AuthStore {
   init = () => {
     this.checkIsAuth();
     this.getPermissions();
+    this.getGlobalPermissions();
   }
 
   checkIsAuth = async() => {
@@ -42,6 +44,14 @@ class AuthStore {
       this.permissions = await api('auth/getPermissions');
     } catch {
       this.permissions = [];
+    }
+  }
+
+  getGlobalPermissions = async() => {
+    try {
+      this.globalPermissions = await api('auth/getGlobalPermissions');
+    } catch {
+      this.globalPermissions = [];
     }
   }
 

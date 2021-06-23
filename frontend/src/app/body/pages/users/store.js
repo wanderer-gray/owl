@@ -50,14 +50,19 @@ class UsersStore {
       await api('users/deleteUser')
         .method('delete')
         .query({ id });
-      
-      this.refresh();
+
+      notify({
+        variant: 'success',
+        message: 'Пользователь удалён'
+      });
     } catch {
       notify({
         variant: 'error',
         message: 'Не удалось удалить пользователя'
       });
     }
+      
+    this.refresh();
   }
 }
 

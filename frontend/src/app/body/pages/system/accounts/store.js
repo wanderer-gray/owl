@@ -35,14 +35,19 @@ class AccountsStore {
       await api('system/deleteEmailAccount')
         .method('delete')
         .query({ id });
-      
-      this.getAccounts();
+
+      notify({
+        variant: 'success',
+        message: 'Аккаунт удалён'
+      });
     } catch {
       notify({
         variant: 'error',
         message: 'Не удалось удалить аккаунт'
       });
     }
+      
+    this.getAccounts();
   }
 }
 

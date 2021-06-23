@@ -23,7 +23,7 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import WhiteIcon from '@material-ui/icons/CheckOutlined';
 import BlackIcon from '@material-ui/icons/CancelOutlined';
-import { system } from '../../../../../enums';
+import { types, actions } from '../../../../../enums/emailConditions';
 
 const useStyles = makeStyles(() => ({
   title: {
@@ -70,12 +70,12 @@ const ConditionView = observer(({ ConditionStore }) => {
         />
 
         <FormControlLabel
-          label={`Тип условия "${type}": `}
+          label={`Тип условия "${types.getTitle(type)}": `}
           labelPlacement={'start'}
           control={(
             <Switch
               color={'primary'}
-              checked={type === system.EMAIL_СONDITION_WHITE}
+              checked={type === types.WHITE}
               onChange={setType}
             />
           )}
@@ -108,6 +108,7 @@ const ConditionsView = observer(({
   const classes = useStyles();
 
   const {
+    action,
     conditions,
     deleteCondition,
   } = ConditionsStore;
@@ -118,7 +119,7 @@ const ConditionsView = observer(({
         className={classes.title}
         variant={'h5'}
       >
-        Email условия
+        Email условия {actions.getTitle(action)}
 
         <IconButton
           edge={'end'}
@@ -139,7 +140,7 @@ const ConditionsView = observer(({
             >
               <ListItemAvatar>
                 <Avatar>
-                  {type === system.EMAIL_СONDITION_WHITE ? (
+                  {type === types.WHITE ? (
                     <WhiteIcon />
                   ) : (
                     <BlackIcon />

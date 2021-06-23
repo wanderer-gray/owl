@@ -1,9 +1,9 @@
 import ConditionEditStore from './edit';
-import { system } from '../../../../../../enums';
+import { types } from '../../../../../../enums/emailConditions';
 
 const defaultCondition = {
-  condition: '',
-  type: system.EMAIL_СONDITION_WHITE,
+  type: types.WHITE,
+  condition: ''
 };
 
 class ConditionCreateStore extends ConditionEditStore {
@@ -19,20 +19,26 @@ class ConditionCreateStore extends ConditionEditStore {
 
   onSave = async() => {
     const {
-      condition,
       type,
+      action,
+      condition,
     } = this;
 
     try {
       await api('system/createEmailCondition')
         .method('post')
         .body({ 
-          condition,
           type,
+          action,
+          condition,
         });
       
       this.refresh();
-      this.onClose();
+
+      notify({
+        variant: 'success',
+        message: 'Условие добавлено'
+      });
     } catch {
       notify({
         variant: 'error',

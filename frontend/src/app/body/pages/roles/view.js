@@ -20,7 +20,7 @@ import {
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { actions, objects } from '../../../../enums';
+import { objects, actions } from '../../../../enums/permissions';
 
 const useStyles = makeStyles(() => ({
   input: {

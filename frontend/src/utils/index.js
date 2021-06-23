@@ -1,4 +1,4 @@
-import { actions } from '../enums';
+import { actions } from '../enums/permissions';
 
 const fmtDateTime = (value) => {
   const hh = value.getHours().toString().padStart(2, '0');
@@ -10,11 +10,26 @@ const fmtDateTime = (value) => {
   return `${hh}:${mm} ${dd}.${MM}.${yyyy}`;
 };
 
-const checkPermissions = (permissions, object, action = actions.SELECT) => permissions.some(
-  (permission) => permission.object === object && permission.action === action
-);
+const checkPermissions = ({ isAuth, permissions, globalPermissions }, object, action = actions.SELECT) => {
+  if (!isAuth) {
+    return false;
+  }
+
+  const check = (array) => {
+    return array.some(
+      (permission) => permission.object === object && permission.action === action
+    );
+  };
+
+  return check(permissions) || check(globalPermissions);
+};
+
+const getCheckPermissions = (AuthStore) => {
+  return (object, action) => checkPermissions(AuthStore, object, action);
+}
 
 export {
   fmtDateTime,
   checkPermissions,
+  getCheckPermissions,
 };

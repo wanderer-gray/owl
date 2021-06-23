@@ -1,7 +1,9 @@
-const RADIO_BUTS = 1;
-const CHECK_BOXS = 2;
+/* Тип */
+
+const TEST = 1;
+const SURVEY = 2;
 
 export {
-  RADIO_BUTS,
-  CHECK_BOXS,
+  TEST,
+  SURVEY,
 };

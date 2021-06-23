@@ -2,8 +2,8 @@ import AccountEditStore from './edit';
 
 const defaultAccount = {
   host: '',
-  port: 25,
-  secure: false,
+  port: 465,
+  secure: true,
   user: '',
   pass: '',
 };
@@ -40,7 +40,11 @@ class AccountCreateStore extends AccountEditStore {
         });
       
       this.refresh();
-      this.onClose();
+
+      notify({
+        variant: 'success',
+        message: 'Аккаунт добавлен'
+      });
     } catch {
       notify({
         variant: 'error',

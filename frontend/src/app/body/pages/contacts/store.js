@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx';
+import { httpErrors } from '../../../../enums';
 
 class ContactsStore {
   contacts = [];
@@ -48,7 +49,7 @@ class ContactsStore {
     }
   }
 
-  updateContacts = () => {
+  refresh = () => {
     this.searchContacts(this.email);
   }
 
@@ -60,8 +61,35 @@ class ContactsStore {
         .method('post')
         .body({ link });
       
-      this.updateContacts();
-    } catch {
+      this.refresh();
+
+      notify({
+        variant: 'success',
+        message: 'Контакт добавлен'
+      });
+    } catch (error) {
+      const { status } = error || {};
+
+      if (status === httpErrors.NOTFOUND) {
+        notify({
+          variant: 'warning',
+          message: 'Ссылка пользователя не существует'
+        });
+
+        return;
+      }
+
+      if (status === httpErrors.CONFLICT) {
+        this.refresh();
+
+        notify({
+          variant: 'warning',
+          message: 'Контакт существует'
+        });
+
+        return;
+      }
+
       notify({
         variant: 'error',
         message: 'Не удалось добавить контакт'
@@ -74,14 +102,19 @@ class ContactsStore {
       await api('contacts/deleteContact')
         .method('delete')
         .query({ id });
-      
-      this.updateContacts();
+
+      notify({
+        variant: 'success',
+        message: 'Контакт удалён'
+      });
     } catch {
       notify({
         variant: 'error',
         message: 'Не удалось удалить контакт'
       });
     }
+      
+    this.refresh();
   }
 }
 

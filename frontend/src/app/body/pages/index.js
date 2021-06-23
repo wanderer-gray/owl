@@ -14,8 +14,8 @@ import Groups from './groups';
 import Roles from './roles';
 import Users from './users';
 import System from './system';
-import { objects } from '../../../enums';
-import { checkPermissions } from '../../../utils';
+import { objects, actions } from '../../../enums/permissions';
+import { getCheckPermissions } from '../../../utils';
 
 const useStyles = makeStyles((theme) => ({
   pages: {
@@ -31,35 +31,74 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const Routers = ({ routers }) => {
+  if (!routers.length) {
+    return null;
+  }
+
+  return (
+    <Switch>
+      {routers.map(({ path, component }) => (
+        <Route
+          key={path}
+          exact={true}
+          path={path}
+          component={component}
+        />
+      ))}
+
+      <Redirect to="/" exact/>
+    </Switch>
+  );
+};
+
 const AppRouter = observer(({ AuthStore }) => {
   const classes = useStyles();
 
-  const { permissions } = AuthStore;
+  const checkPermissions = getCheckPermissions(AuthStore);
+
+  const routers = [{
+    path: '/',
+    component: Tests,
+  }];
+
+  checkPermissions(objects.TESTS, actions.CREATE) && routers.push({
+    path: '/test/createOrEdit',
+    component: CreateOrEditTest,
+  });
+
+  AuthStore.isAuth && routers.push({
+    path: '/profile',
+    component: Profile,
+  });
+
+  checkPermissions(objects.CONTACTS) && routers.push({
+    path: '/contacts',
+    component: Contacts,
+  });
+  checkPermissions(objects.GROUPS) && routers.push({
+    path: '/groups',
+    component: Groups,
+  });
+
+  checkPermissions(objects.ROLES) && routers.push({
+    path: '/roles',
+    component: Roles,
+  });
+  checkPermissions(objects.USERS) && routers.push({
+    path: '/users',
+    component: Users,
+  });
+  checkPermissions(objects.SYSTEM) && routers.push({
+    path: '/system',
+    component: System,
+  });
 
   return (
     <main className={classes.pages}>
       <div className={classes.toolbar} />
 
-      <Switch >
-        <Route path="/" exact component={Tests} />
-        <Route path="/test/view/:link" exact component={Tests} />
-        <Route path="/test/createOrEdit/:link?" exact component={CreateOrEditTest} />
-        <Route path="/profile" exact component={Profile} />
-        <Route path="/contacts" exact component={Contacts} />
-        <Route path="/groups" exact component={Groups} />
-
-        {checkPermissions(permissions, objects.ROLES) ? (
-          <Route path="/roles" exact component={Roles} />
-        ) : null}
-        {checkPermissions(permissions, objects.USERS) ? (
-          <Route path="/users" exact component={Users} />
-        ) : null}
-        {checkPermissions(permissions, objects.SYSTEM) ? (
-          <Route path="/system" exact component={System} />
-        ) : null}
-
-        <Redirect to="/" exact/>
-      </Switch>
+      <Routers routers={routers} />
     </main>
   );
 });

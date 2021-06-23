@@ -14,15 +14,15 @@ const Init = () => {
 
   return (
     <Router>
-      <Api>
-        <Notify>
+      <Notify>
+        <Api>
           <Auth>
             <Provider SearchStore={search}>
               <App />
             </Provider>
           </Auth>
-        </Notify>
-      </Api>
+        </Api>
+      </Notify>
     </Router>
   );
 };

@@ -1,6 +1,7 @@
 import { makeObservable, observable, computed, action, toJS } from 'mobx';
 import ContactsStore from './contacts';
 import GroupViewStore from './view';
+import { httpErrors } from '../../../../../enums';
 
 class GroupEditStore extends GroupViewStore {
   open = false;
@@ -77,8 +78,25 @@ class GroupEditStore extends GroupViewStore {
         });
       
       this.refresh();
-      this.onClose();
-    } catch {
+
+      notify({
+        variant: 'success',
+        message: 'Группа изменена'
+      });
+    } catch (error) {
+      const { status } = error || {};
+
+      if (status === httpErrors.NOTFOUND) {
+        this.refresh();
+
+        notify({
+          variant: 'warning',
+          message: 'Группа не найдена'
+        });
+
+        return;
+      }
+
       notify({
         variant: 'error',
         message: 'Не удалось изменить группу'
@@ -88,6 +106,7 @@ class GroupEditStore extends GroupViewStore {
 
   refresh = () => {
     this.GroupsStore.refresh();
+    this.onClose();
   }
 
   dispose = () => {

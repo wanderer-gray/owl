@@ -36,7 +36,11 @@ class UserCreateStore extends UserEditStore {
         });
       
       this.refresh();
-      this.onClose();
+
+      notify({
+        variant: 'success',
+        message: 'Пользователь добавлен'
+      });
     } catch {
       notify({
         variant: 'error',

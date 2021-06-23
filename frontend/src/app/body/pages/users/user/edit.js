@@ -77,7 +77,11 @@ class UserEditStore extends UserViewStore {
         .body({ roleIds });
       
       this.refresh();
-      this.onClose();
+
+      notify({
+        variant: 'success',
+        message: 'Пользователь изменён'
+      });
     } catch {
       notify({
         variant: 'error',
@@ -88,6 +92,7 @@ class UserEditStore extends UserViewStore {
 
   refresh = () => {
     this.UsersStore.refresh();
+    this.onClose();
   }
 
   dispose = () => {

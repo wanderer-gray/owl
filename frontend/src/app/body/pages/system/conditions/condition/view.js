@@ -1,5 +1,5 @@
 import { makeObservable, observable, computed, action, toJS } from 'mobx';
-import { system } from '../../../../../../enums';
+import { types, actions } from '../../../../../../enums/emailConditions';
 
 class ConditionViewStore {
   data = {};
@@ -8,12 +8,16 @@ class ConditionViewStore {
     return this.data.id || null;
   }
 
-  get condition() {
-    return this.data.condition || '';
+  get type() {
+    return this.data.type || types.WHITE;
   }
 
-  get type() {
-    return this.data.type || 'white';
+  get action() {
+    return this.ConditionsStore.action || actions.LOGIN;
+  }
+
+  get condition() {
+    return this.data.condition || '';
   }
 
   constructor({ ConditionsStore, data = {} }) {
@@ -22,11 +26,11 @@ class ConditionViewStore {
 
     makeObservable(this, {
       data: observable,
-      condition: computed,
       type: computed,
+      condition: computed,
       setData: action,
-      setCondition: action,
       setType: action,
+      setCondition: action,
     });
   }
 
@@ -34,16 +38,12 @@ class ConditionViewStore {
     this.data = toJS(data);
   }
 
-  setCondition = (condition) => {
-    this.data.condition = toJS(condition);
+  setType = () => {
+    this.data.type = toJS(types.getNext(this.type));
   }
 
-  setType = () => {
-    if (this.type === system.EMAIL_СONDITION_BLACK) {
-      this.data.type = system.EMAIL_СONDITION_WHITE;
-    } else {
-      this.data.type = system.EMAIL_СONDITION_BLACK;
-    }
+  setCondition = (condition) => {
+    this.data.condition = toJS(condition);
   }
 }
 

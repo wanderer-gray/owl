@@ -51,14 +51,19 @@ class RolesStore {
       await api('roles/deleteRole')
         .method('delete')
         .query({ id });
-      
-      this.refresh();
+
+      notify({
+        variant: 'success',
+        message: 'Роль удалена'
+      });
     } catch {
       notify({
         variant: 'error',
         message: 'Не удалось удалить роль'
       });
     }
+      
+    this.refresh();
   }
 }
 

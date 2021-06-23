@@ -118,6 +118,8 @@ class ProfileStore {
         message: 'Не удалось удалить аккаунт'
       });
     }
+
+    this.getProfile();
   }
 }
 
