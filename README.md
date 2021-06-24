@@ -36,7 +36,7 @@ class UsersStore {
  
  getUsers = async(name) => {
   try {
-   const users = await api('users.search')
+   const users = await api('users/search')
     .method('get')
     .query({name});
 
