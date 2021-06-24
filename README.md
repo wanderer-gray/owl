@@ -21,7 +21,7 @@ pm2 start ecosystem.config.js --env productio
 ### API
 ```javascript
 // Доступно в любом месте приложения
-api('<service>.<operation>')
+api('<service>/<operation>')
  .method('<get|post|put|delete>')
  .query({...})
  .body({...})
