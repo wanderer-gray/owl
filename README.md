@@ -21,7 +21,7 @@ pm2 start ecosystem.config.js --env productio
 ### API
 ```javascript
 // Доступно в любом месте приложения
-api('<service>.<operation>')
+api('<service>/<operation>')
  .method('<get|post|put|delete>')
  .query({...})
  .body({...})
@@ -36,7 +36,7 @@ class UsersStore {
  
  getUsers = async(name) => {
   try {
-   const users = await api('users.search')
+   const users = await api('users/search')
     .method('get')
     .query({name});
 
