@@ -4,7 +4,7 @@ const {
     actions: { CREATE },
   },
 } = require('../../../enums');
-const { getCheckGlobalPermissions } = require('../../../utils');
+const { getCheckPermissions } = require('../../../utils');
 
 module.exports = async function operation({ userId, body }, { log, knex, httpErrors }) {
   log.trace('createGroup');
@@ -16,9 +16,9 @@ module.exports = async function operation({ userId, body }, { log, knex, httpErr
     contactIds,
   } = body;
 
-  const checkGlobalPermissions = await getCheckGlobalPermissions({ log, knex });
+  const checkPermissions = await getCheckPermissions(userId, { log, knex });
 
-  if (!checkGlobalPermissions(GROUPS, CREATE)) {
+  if (!checkPermissions(GROUPS, CREATE)) {
     log.warn('not allow to create group');
 
     throw httpErrors.locked();

@@ -9,9 +9,9 @@ module.exports = {
   },
   sec: {
     rate: {
-      max: process.env.RATE_MAX,
-      timeWindow: process.env.RATE_TIME,
-      cache: process.env.RATE_CACHE,
+      max: Number(process.env.RATE_MAX),
+      timeWindow: Number(process.env.RATE_TIME),
+      cache: Number(process.env.RATE_CACHE),
     },
   },
   api: {
@@ -28,6 +28,7 @@ module.exports = {
         min: Number(process.env.KNEX_POOL_MIN || 1),
         max: Number(process.env.KNEX_POOL_MAX || 2),
       },
+      acquireConnectionTimeout: 10000, // ms
       migrations: {
         tableName: 'migrations',
       },

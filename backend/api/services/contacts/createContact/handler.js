@@ -6,7 +6,7 @@ const {
 } = require('../../../enums');
 const {
   knexExists,
-  getCheckGlobalPermissions,
+  getCheckPermissions,
 } = require('../../../utils');
 
 module.exports = async function operation({ userId, body }, { log, knex, httpErrors }) {
@@ -16,9 +16,9 @@ module.exports = async function operation({ userId, body }, { log, knex, httpErr
 
   const { link } = body;
 
-  const checkGlobalPermissions = await getCheckGlobalPermissions({ log, knex });
+  const checkPermissions = await getCheckPermissions(userId, { log, knex });
 
-  if (!checkGlobalPermissions(CONTACTS, CREATE)) {
+  if (!checkPermissions(CONTACTS, CREATE)) {
     log.warn('not allow to create contact');
 
     throw httpErrors.locked();

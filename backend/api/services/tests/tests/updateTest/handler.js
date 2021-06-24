@@ -9,7 +9,7 @@ const {
 } = require('../../../../enums');
 const {
   knexExists,
-  getCheckGlobalPermissions,
+  getCheckPermissions,
 } = require('../../../../utils');
 
 const updateTest = async (id, body, { knex }) => {
@@ -206,9 +206,9 @@ module.exports = async function operation({ userId, query, body }, { log, knex, 
   const { id } = query;
   const { questions } = body;
 
-  const checkGlobalPermissions = await getCheckGlobalPermissions({ log, knex });
+  const checkPermissions = await getCheckPermissions(userId, { log, knex });
 
-  if (!checkGlobalPermissions(TESTS, UPDATE)) {
+  if (!checkPermissions(TESTS, UPDATE)) {
     log.warn('not allow to update test');
 
     throw httpErrors.locked();

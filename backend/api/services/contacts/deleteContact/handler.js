@@ -4,7 +4,7 @@ const {
     actions: { DELETE },
   },
 } = require('../../../enums');
-const { getCheckGlobalPermissions } = require('../../../utils');
+const { getCheckPermissions } = require('../../../utils');
 
 module.exports = async function operation({ userId, query }, { log, knex, httpErrors }) {
   log.trace('deleteContact');
@@ -13,9 +13,9 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
 
   const { id } = query;
 
-  const checkGlobalPermissions = await getCheckGlobalPermissions({ log, knex });
+  const checkPermissions = await getCheckPermissions(userId, { log, knex });
 
-  if (!checkGlobalPermissions(CONTACTS, DELETE)) {
+  if (!checkPermissions(CONTACTS, DELETE)) {
     log.warn('not allow to delete contact');
 
     throw httpErrors.locked();

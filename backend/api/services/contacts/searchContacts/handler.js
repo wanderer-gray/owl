@@ -4,7 +4,7 @@ const {
     actions: { SELECT },
   },
 } = require('../../../enums');
-const { getCheckGlobalPermissions } = require('../../../utils');
+const { getCheckPermissions } = require('../../../utils');
 
 module.exports = async function operation({ userId, query, body }, { log, knex, httpErrors }) {
   log.trace('searchContacts');
@@ -18,9 +18,9 @@ module.exports = async function operation({ userId, query, body }, { log, knex, 
   } = query;
   const { noContactIds } = body;
 
-  const checkGlobalPermissions = await getCheckGlobalPermissions({ log, knex });
+  const checkPermissions = await getCheckPermissions(userId, { log, knex });
 
-  if (!checkGlobalPermissions(CONTACTS, SELECT)) {
+  if (!checkPermissions(CONTACTS, SELECT)) {
     log.warn('not allow to select contact');
 
     throw httpErrors.locked();

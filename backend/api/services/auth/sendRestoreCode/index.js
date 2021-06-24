@@ -8,7 +8,9 @@ module.exports = {
   schema,
   handler,
   config: {
-    max: 1,
-    timeWindow: 1000 * 10,
+    rateLimit: {
+      max: 1,
+      timeWindow: 1000 * 10,
+    },
   },
 };

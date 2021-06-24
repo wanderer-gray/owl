@@ -1,24 +1,28 @@
-const isAuth = require('./isAuth');
-const getPermissions = require('./getPermissions');
-const getGlobalPermissions = require('./getGlobalPermissions');
+const init = require('./init');
+
 const login = require('./login');
-const logout = require('./logout');
+
 const signup = require('./signup');
 const sendSignUpCode = require('./sendSignUpCode');
+
 const restore = require('./restore');
 const sendRestoreCode = require('./sendRestoreCode');
+
+const logout = require('./logout');
 
 module.exports = (fastify) => fastify.service({
   auth: false,
   operations: [
-    isAuth,
-    getPermissions,
-    getGlobalPermissions,
+    init,
+
     login,
-    logout,
+
     signup,
     sendSignUpCode,
+
     restore,
     sendRestoreCode,
+
+    logout,
   ],
 });

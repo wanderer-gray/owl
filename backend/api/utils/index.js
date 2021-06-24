@@ -15,7 +15,7 @@ const knexArrayAgg = (query, knex) => knex
 const getCheckPermissions = async (userId, { log, knex }) => {
   log.trace('getCheckPermissions');
 
-  const permissions = await knex('permissions')
+  const userPermissions = knex('permissions')
     .join('rolePermissions', 'permissions.id', '=', 'rolePermissions.permissionId')
     .join('userRoles', 'rolePermissions.roleId', '=', 'userRoles.roleId')
     .where({ userId })
@@ -24,26 +24,18 @@ const getCheckPermissions = async (userId, { log, knex }) => {
       'action',
     ]);
 
-  log.debug(permissions);
-
-  return (object, action) => permissions.some(
-    (permission) => permission.object === object && permission.action === action,
-  );
-};
-
-const getCheckGlobalPermissions = async ({ log, knex }) => {
-  log.trace('getCheckGlobalPermissions');
-
-  const globalPermissions = await knex('globalPermissions')
+  const globalPermissions = knex('globalPermissions')
     .where({ permit: true })
     .select([
       'object',
       'action',
     ]);
 
-  log.debug(globalPermissions);
+  const permissions = await userPermissions.union([globalPermissions]);
 
-  return (object, action) => globalPermissions.some(
+  log.debug(permissions);
+
+  return (object, action) => permissions.some(
     (permission) => permission.object === object && permission.action === action,
   );
 };
@@ -54,5 +46,4 @@ module.exports = {
   knexExists,
   knexArrayAgg,
   getCheckPermissions,
-  getCheckGlobalPermissions,
 };

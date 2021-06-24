@@ -5,7 +5,7 @@ const {
   },
   members: { roles: { CREATOR } },
 } = require('../../../../enums');
-const { getCheckGlobalPermissions } = require('../../../../utils');
+const { getCheckPermissions } = require('../../../../utils');
 
 module.exports = async function operation({ userId, query }, { log, knex, httpErrors }) {
   log.trace('deleteTest');
@@ -14,9 +14,9 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
 
   const { id } = query;
 
-  const checkGlobalPermissions = await getCheckGlobalPermissions({ log, knex });
+  const checkPermissions = await getCheckPermissions(userId, { log, knex });
 
-  if (!checkGlobalPermissions(TESTS, DELETE)) {
+  if (!checkPermissions(TESTS, DELETE)) {
     log.warn('not allow to delete test');
 
     throw httpErrors.locked();

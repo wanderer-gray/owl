@@ -4,7 +4,7 @@ const {
     actions: { SELECT },
   },
 } = require('../../../enums');
-const { getCheckGlobalPermissions } = require('../../../utils');
+const { getCheckPermissions } = require('../../../utils');
 
 const fmtGroup = async (group, { userId, knex }) => {
   const contacts = await knex('contacts')
@@ -38,9 +38,9 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
     limit,
   } = query;
 
-  const checkGlobalPermissions = await getCheckGlobalPermissions({ log, knex });
+  const checkPermissions = await getCheckPermissions(userId, { log, knex });
 
-  if (!checkGlobalPermissions(GROUPS, SELECT)) {
+  if (!checkPermissions(GROUPS, SELECT)) {
     log.warn('not allow to select group');
 
     throw httpErrors.locked();

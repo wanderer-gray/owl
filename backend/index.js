@@ -8,7 +8,7 @@ const app = fastify({
   },
 });
 
-app.register(require('./sec'), config);
+app.register(require('fastify-rate-limit'), config.sec.rate);
 
 app.register(require('./api'), config);
 

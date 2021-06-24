@@ -6,7 +6,7 @@ const {
 } = require('../../../enums');
 const {
   knexExists,
-  getCheckGlobalPermissions,
+  getCheckPermissions,
 } = require('../../../utils');
 
 const updateTitle = async (id, title, { knex }) => {
@@ -55,9 +55,9 @@ module.exports = async function operation({ userId, query, body }, { log, knex, 
     contactIds,
   } = body;
 
-  const checkGlobalPermissions = await getCheckGlobalPermissions({ log, knex });
+  const checkPermissions = await getCheckPermissions(userId, { log, knex });
 
-  if (!checkGlobalPermissions(GROUPS, UPDATE)) {
+  if (!checkPermissions(GROUPS, UPDATE)) {
     log.warn('not allow to update group');
 
     throw httpErrors.locked();

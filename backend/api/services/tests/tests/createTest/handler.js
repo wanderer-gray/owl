@@ -7,7 +7,7 @@ const {
   questions: questionsEnum,
   members: { roles: { CREATOR } },
 } = require('../../../../enums');
-const { getCheckGlobalPermissions } = require('../../../../utils');
+const { getCheckPermissions } = require('../../../../utils');
 
 const getDbQuestions = (testId, questions) => questions.map((question, index) => {
   const {
@@ -59,9 +59,9 @@ module.exports = async function operation({ userId, body }, { log, knex, httpErr
     questions,
   } = body;
 
-  const checkGlobalPermissions = await getCheckGlobalPermissions({ log, knex });
+  const checkPermissions = await getCheckPermissions(userId, { log, knex });
 
-  if (!checkGlobalPermissions(TESTS, CREATE)) {
+  if (!checkPermissions(TESTS, CREATE)) {
     log.warn('not allow to create test');
 
     throw httpErrors.locked();
