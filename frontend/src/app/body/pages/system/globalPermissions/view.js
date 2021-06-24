@@ -18,6 +18,29 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+const groupByObject = (globalPermissions) => globalPermissions
+  .filter(({ object }, index) => {
+    const idx = globalPermissions.findIndex((globalPermission) => globalPermission.object === object);
+
+    return idx === index;
+  })
+  .map(({object}) => {
+    const items = globalPermissions
+      .filter((globalPermission) => globalPermission.object === object)
+      .map(({id, action, permit}) => {
+        return {
+          id,
+          action,
+          permit,
+        };
+      });
+
+    return {
+      object,
+      items
+    };
+  });
+
 const GlobalPermissionsView = observer(({ store }) => {
   const classes = useStyles();
 
@@ -26,17 +49,7 @@ const GlobalPermissionsView = observer(({ store }) => {
     updateGlobalPermission
   } = store;
 
-  const permissions = globalPermissions
-    .filter(({ object }, index) => {
-      const idx = globalPermissions.findIndex(
-        (permission) => permission.object === object
-      );
-
-      return idx === index;
-    })
-    .map(({ object }) => {
-
-    });
+  const values = groupByObject(globalPermissions);
 
   return (
     <Fragment>
@@ -48,36 +61,29 @@ const GlobalPermissionsView = observer(({ store }) => {
       </Typography>
 
       <List>
-        {globalPermissions.map((globalPermission) => {
-          const {
-            id,
-            object,
-            action,
-            permit,
-          } = globalPermission;
-
-          return (
-            <ListItem key={id}>
-              <ListItemText primary={objects.getTitle(object)} />
-
-              <ListItemText primary={
-                <FormControlLabel
-                  labelPlacement={'start'}
-                  label={actions.getTitle(action)}
-                  control={(
-                    <Switch
-                      color={'primary'}
-                      checked={permit}
-                      onChange={() => {
-                        updateGlobalPermission(id, !permit);
-                      }}
+        {values.map(({ object, items }) => (
+            <Fragment key={object}>
+              <ListSubheader>{objects.getTitle(object)}</ListSubheader>
+              
+              {items.map(({id, action, permit}) => (
+                <ListItem key={id}>
+                  <ListItemText primary={
+                    <FormControlLabel
+                      labelPlacement={'start'}
+                      label={actions.getTitle(action)}
+                      control={(
+                        <Switch
+                          color={'primary'}
+                          checked={permit}
+                          onChange={() => updateGlobalPermission(id, !permit)}
+                        />
+                      )}
                     />
-                  )}
-                />
-              } />
-            </ListItem>
-          );
-        })}
+                  } />
+                </ListItem>
+              ))}
+            </Fragment>
+          ))}
       </List>
     </Fragment>
   );

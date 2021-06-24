@@ -10,6 +10,7 @@ import {
 } from '@material-ui/core';
 import Accounts from './accounts';
 import Conditions from './conditions';
+import GlobalPermissions from './globalPermissions';
 import { actions } from '../../../../enums/emailConditions';
 
 const useStyles = makeStyles(() => ({
@@ -32,6 +33,9 @@ const Content = ({ tabIndex }) => {
     case 3:
       return <Conditions action={actions.RESTORE} />;
     
+    case 4:
+      return <GlobalPermissions />;
+
     default:
       return null;
   }
@@ -53,8 +57,7 @@ const SystemView = observer(({ store }) => {
 
       <Paper className={classes.tabs}>
         <Tabs
-          variant={'scrollable'}
-          scrollButtons={'on'}
+          variant={'fullWidth'}
           textColor={'primary'}
           indicatorColor={'primary'}
           value={tabIndex}

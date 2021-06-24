@@ -135,6 +135,14 @@ const ProfileView = observer(({ store }) => {
                     Если вы удалите аккаунт, то все контакты, группы, тесты и результаты будут потеряны.
                   </DialogContentText>
 
+                  <TextField
+                    className={classes.input}
+                    type={'password'}
+                    placeholder={'Пароль'}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                  />
+
                   <DialogActions>
                     <Button
                       color={'primary'}

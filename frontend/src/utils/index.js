@@ -10,18 +10,14 @@ const fmtDateTime = (value) => {
   return `${hh}:${mm} ${dd}.${MM}.${yyyy}`;
 };
 
-const checkPermissions = ({ isAuth, permissions, globalPermissions }, object, action = actions.SELECT) => {
+const checkPermissions = ({ isAuth, permissions }, object, action = actions.SELECT) => {
   if (!isAuth) {
     return false;
   }
 
-  const check = (array) => {
-    return array.some(
-      (permission) => permission.object === object && permission.action === action
-    );
-  };
-
-  return check(permissions) || check(globalPermissions);
+  return permissions.some(
+    (permission) => permission.object === object && permission.action === action
+  );
 };
 
 const getCheckPermissions = (AuthStore) => {

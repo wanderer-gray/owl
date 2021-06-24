@@ -1,10 +1,9 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, transaction } from 'mobx';
 import ApiStore from '../api/store';
 
 class AuthStore {
   isAuth = false;
   permissions = [];
-  globalPermissions = [];
 
   open = false;
   type = 'login';
@@ -25,34 +24,22 @@ class AuthStore {
     this.onLogIn();
   }
 
-  init = () => {
-    this.checkIsAuth();
-    this.getPermissions();
-    this.getGlobalPermissions();
-  }
+  init = async() => {
+    let data;
 
-  checkIsAuth = async() => {
     try {
-      this.isAuth = await api('auth/isAuth');
+      data = await api('auth/init');
     } catch {
-      this.isAuth = false;
+      data = {
+        isAuth: false,
+        permissions: [],
+      };
     }
-  }
 
-  getPermissions = async() => {
-    try {
-      this.permissions = await api('auth/getPermissions');
-    } catch {
-      this.permissions = [];
-    }
-  }
-
-  getGlobalPermissions = async() => {
-    try {
-      this.globalPermissions = await api('auth/getGlobalPermissions');
-    } catch {
-      this.globalPermissions = [];
-    }
+    transaction(() => {
+      this.isAuth = data.isAuth;
+      this.permissions = data.permissions;
+    });
   }
 
   setOpen = (open) => {

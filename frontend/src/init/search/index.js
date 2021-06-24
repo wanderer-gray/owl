@@ -1,5 +1,15 @@
 import { makeAutoObservable } from 'mobx';
 
+const debounce = (callback, ms) => {
+  let timeout;
+
+  return (...args) => {
+    clearTimeout(timeout);
+
+    timeout = setTimeout(callback, ms, ...args);
+  };
+};
+
 class SearchStore {
   view = false;
   placeholder = '';
@@ -25,14 +35,13 @@ class SearchStore {
   onChange = (event) => {
     const value = event.target.value;
     const datetime = Date.now();
-    const { onValueChange } = this;
 
     this.setValue(value);
-    onValueChange && onValueChange(value, datetime);
+    this.onValueChange(value, datetime);
   }
 
-  setOnValueChange = (onValueChange) => {
-    this.onValueChange = onValueChange;
+  setOnValueChange = (onValueChange, ms = 300) => {
+    this.onValueChange = debounce(onValueChange, ms);
   }
 
   clear = () => {
