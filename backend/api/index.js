@@ -4,7 +4,12 @@ const fastifySensible = require('fastify-sensible');
 const fastifyKnexJS = require('fastify-knexjs');
 const fastifyCookie = require('fastify-cookie');
 const fastifyAutoload = require('fastify-autoload');
-const mailer = require('./plugins/mailer');
+const {
+  objects,
+  actions,
+} = require('./enums/permissions');
+const { mailer } = require('./exts');
+const { checkPermission } = require('./utils');
 
 async function Service(props) {
   const {
@@ -22,7 +27,8 @@ async function Service(props) {
 async function Operation(props) {
   const {
     auth,
-    tran = false,
+    tran,
+    target,
     handler,
     ...router
   } = props;
@@ -74,6 +80,26 @@ async function Operation(props) {
 
     log.debug('begin handler');
 
+    if (target) {
+      const { userId } = request;
+      const {
+        object,
+        action,
+      } = target;
+      const objectTitle = objects.getTitle(object);
+      const actionTitle = actions.getTitle(action);
+
+      const permission = await checkPermission(userId, target, exts);
+
+      if (!permission) {
+        log.warn(`no permission ${objectTitle} ${actionTitle}`);
+
+        throw httpErrors.forbidden();
+      }
+
+      log.info(`permission ${objectTitle} ${actionTitle}`);
+    }
+
     if (tran) {
       log.debug('begin transaction');
 
@@ -112,6 +138,8 @@ module.exports = async (fastify, options) => {
   await fastify.decorate('mailer', mailer);
   await fastify.decorate('service', Service);
   await fastify.decorate('operation', Operation);
+
+  await fastify.mailer.refreshAccounts(fastify);
 
   await fastify.register(fastifyAutoload, {
     dir: path.join(__dirname, 'services'),

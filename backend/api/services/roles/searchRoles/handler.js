@@ -1,11 +1,3 @@
-const {
-  permissions: {
-    objects: { ROLES },
-    actions: { SELECT },
-  },
-} = require('../../../enums');
-const { getCheckPermissions } = require('../../../utils');
-
 const fmtRole = async (role, { knex }) => {
   const permissionIds = await knex('rolePermissions')
     .where('roleId', role.id)
@@ -26,7 +18,7 @@ const fmtResult = async (roles, count, { knex }) => {
   };
 };
 
-module.exports = async function operation({ userId, query, body }, { log, knex, httpErrors }) {
+module.exports = async function operation({ userId, query, body }, { log, knex }) {
   log.trace('searchRoles');
   log.debug(userId);
   log.debug(query);
@@ -37,14 +29,6 @@ module.exports = async function operation({ userId, query, body }, { log, knex, 
     limit,
   } = query;
   const { noRoleIds } = body;
-
-  const checkPermissions = await getCheckPermissions(userId, { log, knex });
-
-  if (!checkPermissions(ROLES, SELECT)) {
-    log.warn('no permission to select a roles');
-
-    throw httpErrors.forbidden();
-  }
 
   const [
     roles,

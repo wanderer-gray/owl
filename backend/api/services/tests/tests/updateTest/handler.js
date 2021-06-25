@@ -1,16 +1,9 @@
 const {
-  permissions: {
-    objects: { TESTS },
-    actions: { UPDATE },
-  },
   tests,
   questions: questionsEnum,
   members: { roles: { CREATOR } },
 } = require('../../../../enums');
-const {
-  knexExists,
-  getCheckPermissions,
-} = require('../../../../utils');
+const { knexExists } = require('../../../../utils');
 
 const updateTest = async (id, body, { knex }) => {
   const {
@@ -205,14 +198,6 @@ module.exports = async function operation({ userId, query, body }, { log, knex, 
 
   const { id } = query;
   const { questions } = body;
-
-  const checkPermissions = await getCheckPermissions(userId, { log, knex });
-
-  if (!checkPermissions(TESTS, UPDATE)) {
-    log.warn('not allow to update test');
-
-    throw httpErrors.locked();
-  }
 
   const queryFindTest = knex('tests')
     .where({ id });

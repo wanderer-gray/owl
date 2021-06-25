@@ -1,12 +1,17 @@
+const {
+  tests,
+  questions,
+} = require('../../../../enums');
+
 module.exports = {
   body: {
     type: 'object',
     properties: {
       type: {
-        type: 'string',
+        type: 'integer',
         enum: [
-          'TEST',
-          'SURVEY',
+          tests.types.TEST,
+          tests.types.SURVEY,
         ],
       },
       title: {
@@ -40,10 +45,10 @@ module.exports = {
               nullable: true,
             },
             type: {
-              type: 'string',
+              type: 'integer',
               enum: [
-                'RADIO_BUTS',
-                'CHECK_BOXS',
+                questions.types.RADIO_BUTS,
+                questions.types.CHECK_BOXS,
               ],
             },
             points: {

@@ -2,6 +2,14 @@ const toStr = (obj) => JSON.stringify(obj, null, '');
 
 const getDateISO = (ms = 0) => new Date(Date.now() + ms).toISOString();
 
+const getCallbackThen = ({ log }) => (info) => {
+  log.info(info);
+};
+
+const getCallbackCatch = ({ log }) => (error) => {
+  log.error(error);
+};
+
 const knexExists = async (query, knex) => {
   const { result } = await knex.first(knex.raw('exists ? as result', query));
 
@@ -12,38 +20,39 @@ const knexArrayAgg = (query, knex) => knex
   .from(query.as('vals'))
   .select(knex.raw('array_agg(row_to_json(vals))'));
 
-const getCheckPermissions = async (userId, { log, knex }) => {
-  log.trace('getCheckPermissions');
+const checkPermission = async (userId, { object, action }, { log, knex }) => {
+  log.trace('checkPermission');
 
-  const userPermissions = knex('permissions')
-    .join('rolePermissions', 'permissions.id', '=', 'rolePermissions.permissionId')
-    .join('userRoles', 'rolePermissions.roleId', '=', 'userRoles.roleId')
-    .where({ userId })
-    .select([
-      'object',
-      'action',
-    ]);
+  const queryCheckUserPermission = knex('userRoles')
+    .join('rolePermissions', 'userRoles.roleId', '=', 'rolePermissions.roleId')
+    .whereRaw('"permissions"."id" = "rolePermissions"."permissionId"')
+    .where({ userId });
 
-  const globalPermissions = knex('globalPermissions')
-    .where({ permit: true })
-    .select([
-      'object',
-      'action',
-    ]);
+  const queryCheckPermission = knex('permissions')
+    .where({
+      object,
+      action,
+    })
+    .andWhere((builder) => {
+      builder
+        .where({
+          global: true,
+          permit: true,
+        })
+        .orWhereExists(queryCheckUserPermission);
+    });
 
-  const permissions = await userPermissions.union([globalPermissions]);
+  const custom = await knexExists(queryCheckPermission, knex);
 
-  log.debug(permissions);
-
-  return (object, action) => permissions.some(
-    (permission) => permission.object === object && permission.action === action,
-  );
+  return custom;
 };
 
 module.exports = {
   toStr,
   getDateISO,
+  getCallbackThen,
+  getCallbackCatch,
   knexExists,
   knexArrayAgg,
-  getCheckPermissions,
+  checkPermission,
 };

@@ -1,12 +1,4 @@
-const {
-  permissions: {
-    objects: { USERS },
-    actions: { UPDATE },
-  },
-} = require('../../../enums');
-const { getCheckPermissions } = require('../../../utils');
-
-module.exports = async function operation({ userId, query, body }, { log, knex, httpErrors }) {
+module.exports = async function operation({ userId, query, body }, { log, knex }) {
   log.trace('updateUser');
   log.debug(userId);
   log.debug(query);
@@ -14,14 +6,6 @@ module.exports = async function operation({ userId, query, body }, { log, knex, 
 
   const { id } = query;
   const { roleIds } = body;
-
-  const checkPermissions = await getCheckPermissions(userId, { log, knex });
-
-  if (!checkPermissions(USERS, UPDATE)) {
-    log.warn('no permission to update a user');
-
-    throw httpErrors.forbidden();
-  }
 
   await knex('userRoles')
     .where({ userId: id })

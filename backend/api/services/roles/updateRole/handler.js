@@ -1,13 +1,4 @@
-const {
-  permissions: {
-    objects: { ROLES },
-    actions: { UPDATE },
-  },
-} = require('../../../enums');
-const {
-  getCheckPermissions,
-  knexExists,
-} = require('../../../utils');
+const { knexExists } = require('../../../utils');
 
 const updateName = async (id, name, { knex }) => {
   if (name === undefined) {
@@ -52,14 +43,6 @@ module.exports = async function operation({ userId, query, body }, { log, knex, 
     name,
     permissionIds,
   } = body;
-
-  const checkPermissions = await getCheckPermissions(userId, { log, knex });
-
-  if (!checkPermissions(ROLES, UPDATE)) {
-    log.warn('no permission to update a role');
-
-    throw httpErrors.forbidden();
-  }
 
   const queryFindRole = knex('roles')
     .where({ id });

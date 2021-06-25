@@ -9,6 +9,37 @@ const GROUPS = 6;
 const TESTS = 7;
 const ANSWERS = 8;
 
+const getTitle = (value) => {
+  switch (value) {
+    case SYSTEM:
+      return 'SYSTEM';
+
+    case PERMISSIONS:
+      return 'PERMISSIONS';
+
+    case ROLES:
+      return 'ROLES';
+
+    case USERS:
+      return 'USERS';
+
+    case CONTACTS:
+      return 'CONTACTS';
+
+    case GROUPS:
+      return 'GROUPS';
+
+    case TESTS:
+      return 'TESTS';
+
+    case ANSWERS:
+      return 'ANSWERS';
+
+    default:
+      return null;
+  }
+};
+
 module.exports = {
   SYSTEM,
   PERMISSIONS,
@@ -18,4 +49,6 @@ module.exports = {
   GROUPS,
   TESTS,
   ANSWERS,
+
+  getTitle,
 };

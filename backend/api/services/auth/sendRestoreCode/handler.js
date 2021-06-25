@@ -6,10 +6,12 @@ const {
 const {
   knexExists,
   getDateISO,
+  getCallbackThen,
+  getCallbackCatch,
 } = require('../../../utils');
 
 module.exports = async function operation({ query }, {
-  log, knex, httpErrors, mailer,
+  log, knex, mailer, httpErrors,
 }) {
   log.trace('sendRestoreCode');
   log.debug(query);
@@ -23,7 +25,7 @@ module.exports = async function operation({ query }, {
   if (!allowEmail) {
     log.warn('email not allow');
 
-    throw httpErrors.forbidden();
+    throw httpErrors.locked();
   }
 
   const code = getCode();
@@ -44,19 +46,24 @@ module.exports = async function operation({ query }, {
     throw httpErrors.notFound();
   }
 
-  await Promise.all([
-    knex('codes')
-      .insert({
-        email,
-        code,
-        createAt,
-      })
-      .onConflict('email')
-      .merge(),
-    mailer.sendMail({
-      to: email,
+  await knex('codes')
+    .insert({
+      email,
+      code,
+      createAt,
+    })
+    .onConflict('email')
+    .merge();
+
+  mailer
+    .sendMail({
       subject: 'Восстановление пароля',
+      to: email,
       text: `Код: ${code}`,
-    }, { log, knex, httpErrors }),
-  ]);
+    }, {
+      log,
+      httpErrors,
+    })
+    .then(getCallbackThen({ log }))
+    .catch(getCallbackCatch({ log }));
 };

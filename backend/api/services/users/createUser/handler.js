@@ -1,18 +1,11 @@
 const {
-  permissions: {
-    objects: { USERS },
-    actions: { CREATE },
-  },
-} = require('../../../enums');
-const { getCheckPermissions } = require('../../../utils');
-const {
   pass: {
     getSalt,
     getHash,
   },
 } = require('../../auth/utils');
 
-module.exports = async function operation({ userId, body }, { log, knex, httpErrors }) {
+module.exports = async function operation({ userId, body }, { log, knex }) {
   log.trace('createUser');
   log.debug(userId);
   log.debug(body);
@@ -22,14 +15,6 @@ module.exports = async function operation({ userId, body }, { log, knex, httpErr
     password,
     roleIds,
   } = body;
-
-  const checkPermissions = await getCheckPermissions(userId, { log, knex });
-
-  if (!checkPermissions(USERS, CREATE)) {
-    log.warn('no permission to create a user');
-
-    throw httpErrors.forbidden();
-  }
 
   const salt = getSalt();
   log.info(salt);

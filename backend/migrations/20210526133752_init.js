@@ -1,6 +1,6 @@
 exports.up = async (knex) => {
   await knex.schema.createTable('permissions', (table) => {
-    table.comment('Разрешения (трогать запрещено!!!)');
+    table.comment('Разрешения');
 
     table.increments('id');
 
@@ -12,6 +12,15 @@ exports.up = async (knex) => {
       .integer('action')
       .notNullable()
       .comment('enums/permissions/actions');
+
+    table
+      .boolean('global')
+      .notNullable()
+      .comment('Доступно ли всем данное действие с объектом');
+    table
+      .boolean('permit')
+      .notNullable()
+      .comment('Если доступно всем, то разрешено ли');
 
     table.unique(['object', 'action']);
   });
@@ -45,27 +54,6 @@ exports.up = async (knex) => {
       .string('condition')
       .notNullable()
       .comment('Условие. Пример: email ILIKE condition');
-  });
-  await knex.schema.createTable('globalPermissions', (table) => {
-    table.comment('Глобальные действия');
-
-    table.increments('id');
-
-    table
-      .integer('object')
-      .notNullable()
-      .comment('enums/permissions/objects');
-    table
-      .integer('action')
-      .notNullable()
-      .comment('enums/permissions/actions');
-
-    table
-      .boolean('permit')
-      .notNullable()
-      .comment('Достопно ли всем данное действие с объектом');
-
-    table.unique(['object', 'action']);
   });
 
   await knex.schema.createTable('roles', (table) => {
@@ -368,7 +356,6 @@ exports.down = async (knex) => {
 
   await knex.raw('drop table "emailAccounts" cascade');
   await knex.raw('drop table "emailСonditions" cascade');
-  await knex.raw('drop table "globalPermissions" cascade');
 
   await knex.raw('drop table roles cascade');
   await knex.raw('drop table "rolePermissions" cascade');

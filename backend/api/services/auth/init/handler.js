@@ -27,23 +27,21 @@ module.exports = async function operation(request, { log, knex }) {
 
   const userId = Number(unsignUserId.value);
 
-  const userPermissions = knex('permissions')
-    .join('rolePermissions', 'permissions.id', '=', 'rolePermissions.permissionId')
-    .join('userRoles', 'rolePermissions.roleId', '=', 'userRoles.roleId')
-    .where({ userId })
+  const queryCheckUserPermission = knex('userRoles')
+    .join('rolePermissions', 'userRoles.roleId', '=', 'rolePermissions.roleId')
+    .whereRaw('"permissions"."id" = "rolePermissions"."permissionId"')
+    .where({ userId });
+
+  const permissions = await knex('permissions')
+    .where({
+      global: true,
+      permit: true,
+    })
+    .orWhereExists(queryCheckUserPermission)
     .select([
       'object',
       'action',
     ]);
-
-  const globalPermissions = knex('globalPermissions')
-    .where({ permit: true })
-    .select([
-      'object',
-      'action',
-    ]);
-
-  const permissions = await userPermissions.union([globalPermissions]);
 
   result.permissions = permissions;
 

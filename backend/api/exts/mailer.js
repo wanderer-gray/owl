@@ -3,8 +3,8 @@ const nodemailer = require('nodemailer');
 let index = 0;
 let accounts = [];
 
-const updateAccounts = async ({ log, knex }) => {
-  log.trace('updateAccounts');
+const refreshAccounts = async ({ log, knex }) => {
+  log.trace('refreshAccounts');
 
   accounts = await knex('emailAccounts')
     .select('*');
@@ -13,12 +13,8 @@ const updateAccounts = async ({ log, knex }) => {
 };
 
 module.exports = {
-  updateAccounts,
-  sendMail: async ({ to, subject, text }, { log, knex, httpErrors }) => {
-    if (!accounts || !accounts.length) {
-      await updateAccounts({ log, knex });
-    }
-
+  refreshAccounts,
+  sendMail: ({ to, subject, text }, { log, httpErrors }) => {
     if (!accounts || !accounts.length) {
       log.error('accounts not found');
 
@@ -48,13 +44,11 @@ module.exports = {
       },
     });
 
-    const result = await transporter.sendMail({
+    return transporter.sendMail({
       from: `"Сова" <${user}>`,
       to,
       subject,
       text,
     });
-
-    log.info(result);
   },
 };

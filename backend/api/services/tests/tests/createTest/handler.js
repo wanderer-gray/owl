@@ -1,13 +1,4 @@
-const {
-  permissions: {
-    objects: { TESTS },
-    actions: { CREATE },
-  },
-  tests,
-  questions: questionsEnum,
-  members: { roles: { CREATOR } },
-} = require('../../../../enums');
-const { getCheckPermissions } = require('../../../../utils');
+const { members: { roles: { CREATOR } } } = require('../../../../enums');
 
 const getDbQuestions = (testId, questions) => questions.map((question, index) => {
   const {
@@ -21,7 +12,7 @@ const getDbQuestions = (testId, questions) => questions.map((question, index) =>
     testId,
     title,
     description,
-    type: questionsEnum.types[type],
+    type,
     points,
     weight: index,
   };
@@ -46,7 +37,7 @@ const getDbOptions = (questionIds, questions) => {
   return result;
 };
 
-module.exports = async function operation({ userId, body }, { log, knex, httpErrors }) {
+module.exports = async function operation({ userId, body }, { log, knex }) {
   log.trace('createTest');
   log.debug(userId);
   log.debug(body);
@@ -59,17 +50,9 @@ module.exports = async function operation({ userId, body }, { log, knex, httpErr
     questions,
   } = body;
 
-  const checkPermissions = await getCheckPermissions(userId, { log, knex });
-
-  if (!checkPermissions(TESTS, CREATE)) {
-    log.warn('not allow to create test');
-
-    throw httpErrors.locked();
-  }
-
   const { id: testId } = await knex('tests')
     .insert({
-      type: tests.types[type],
+      type,
       title,
       description,
       availableAll,

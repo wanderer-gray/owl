@@ -1,11 +1,3 @@
-const {
-  permissions: {
-    objects: { GROUPS },
-    actions: { SELECT },
-  },
-} = require('../../../enums');
-const { getCheckPermissions } = require('../../../utils');
-
 const fmtGroup = async (group, { userId, knex }) => {
   const contacts = await knex('contacts')
     .join('groupContacts', 'contacts.id', '=', 'groupContacts.contactId')
@@ -28,7 +20,7 @@ const fmtResult = async (groups, count, { userId, knex }) => {
   };
 };
 
-module.exports = async function operation({ userId, query }, { log, knex, httpErrors }) {
+module.exports = async function operation({ userId, query }, { log, knex }) {
   log.trace('searchGroups');
   log.debug(userId);
   log.debug(query);
@@ -37,14 +29,6 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
     title,
     limit,
   } = query;
-
-  const checkPermissions = await getCheckPermissions(userId, { log, knex });
-
-  if (!checkPermissions(GROUPS, SELECT)) {
-    log.warn('not allow to select group');
-
-    throw httpErrors.locked();
-  }
 
   const [
     groups,

@@ -1,12 +1,4 @@
-const {
-  permissions: {
-    objects: { GROUPS },
-    actions: { CREATE },
-  },
-} = require('../../../enums');
-const { getCheckPermissions } = require('../../../utils');
-
-module.exports = async function operation({ userId, body }, { log, knex, httpErrors }) {
+module.exports = async function operation({ userId, body }, { log, knex }) {
   log.trace('createGroup');
   log.debug(userId);
   log.debug(body);
@@ -15,14 +7,6 @@ module.exports = async function operation({ userId, body }, { log, knex, httpErr
     title,
     contactIds,
   } = body;
-
-  const checkPermissions = await getCheckPermissions(userId, { log, knex });
-
-  if (!checkPermissions(GROUPS, CREATE)) {
-    log.warn('not allow to create group');
-
-    throw httpErrors.locked();
-  }
 
   const [groupId] = await knex('groups')
     .insert({

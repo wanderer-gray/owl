@@ -1,12 +1,4 @@
-const {
-  permissions: {
-    objects: { CONTACTS },
-    actions: { SELECT },
-  },
-} = require('../../../enums');
-const { getCheckPermissions } = require('../../../utils');
-
-module.exports = async function operation({ userId, query, body }, { log, knex, httpErrors }) {
+module.exports = async function operation({ userId, query, body }, { log, knex }) {
   log.trace('searchContacts');
   log.debug(userId);
   log.debug(query);
@@ -17,14 +9,6 @@ module.exports = async function operation({ userId, query, body }, { log, knex, 
     limit,
   } = query;
   const { noContactIds } = body;
-
-  const checkPermissions = await getCheckPermissions(userId, { log, knex });
-
-  if (!checkPermissions(CONTACTS, SELECT)) {
-    log.warn('not allow to select contact');
-
-    throw httpErrors.locked();
-  }
 
   const [
     contacts,

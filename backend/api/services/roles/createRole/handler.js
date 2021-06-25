@@ -1,12 +1,4 @@
-const {
-  permissions: {
-    objects: { ROLES },
-    actions: { CREATE },
-  },
-} = require('../../../enums');
-const { getCheckPermissions } = require('../../../utils');
-
-module.exports = async function operation({ userId, body }, { log, knex, httpErrors }) {
+module.exports = async function operation({ userId, body }, { log, knex }) {
   log.trace('createRole');
   log.debug(userId);
   log.debug(body);
@@ -15,14 +7,6 @@ module.exports = async function operation({ userId, body }, { log, knex, httpErr
     name,
     permissionIds,
   } = body;
-
-  const checkPermissions = await getCheckPermissions(userId, { log, knex });
-
-  if (!checkPermissions(ROLES, CREATE)) {
-    log.warn('no permission to create a role');
-
-    throw httpErrors.forbidden();
-  }
 
   const [roleId] = await knex('roles')
     .insert({ name })

@@ -6,6 +6,8 @@ const {
 const {
   knexExists,
   getDateISO,
+  getCallbackThen,
+  getCallbackCatch,
 } = require('../../../utils');
 
 module.exports = async function operation({ query }, {
@@ -23,7 +25,7 @@ module.exports = async function operation({ query }, {
   if (!allowEmail) {
     log.warn('email not allow');
 
-    throw httpErrors.forbidden();
+    throw httpErrors.locked();
   }
 
   const queryFindUser = knex('users')
@@ -44,19 +46,24 @@ module.exports = async function operation({ query }, {
   const createAt = getDateISO();
   log.info(createAt);
 
-  await Promise.all([
-    knex('codes')
-      .insert({
-        email,
-        code,
-        createAt,
-      })
-      .onConflict('email')
-      .merge(),
-    mailer.sendMail({
-      to: email,
+  await knex('codes')
+    .insert({
+      email,
+      code,
+      createAt,
+    })
+    .onConflict('email')
+    .merge();
+
+  mailer
+    .sendMail({
       subject: 'Регистрация',
+      to: email,
       text: `Код: ${code}`,
-    }, { log, knex, httpErrors }),
-  ]);
+    }, {
+      log,
+      httpErrors,
+    })
+    .then(getCallbackThen({ log }))
+    .catch(getCallbackCatch({ log }));
 };

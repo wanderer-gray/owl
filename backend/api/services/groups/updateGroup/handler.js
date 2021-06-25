@@ -1,13 +1,4 @@
-const {
-  permissions: {
-    objects: { GROUPS },
-    actions: { UPDATE },
-  },
-} = require('../../../enums');
-const {
-  knexExists,
-  getCheckPermissions,
-} = require('../../../utils');
+const { knexExists } = require('../../../utils');
 
 const updateTitle = async (id, title, { knex }) => {
   if (title === undefined) {
@@ -54,14 +45,6 @@ module.exports = async function operation({ userId, query, body }, { log, knex, 
     title,
     contactIds,
   } = body;
-
-  const checkPermissions = await getCheckPermissions(userId, { log, knex });
-
-  if (!checkPermissions(GROUPS, UPDATE)) {
-    log.warn('not allow to update group');
-
-    throw httpErrors.locked();
-  }
 
   const queryFindGroup = knex('groups')
     .where({

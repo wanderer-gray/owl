@@ -12,42 +12,75 @@ const {
 } = require('../api/services/auth/utils');
 
 const getPermissions = () => [
-  { object: objects.SYSTEM, action: actions.CREATE },
-  { object: objects.SYSTEM, action: actions.UPDATE },
-  { object: objects.SYSTEM, action: actions.DELETE },
-  { object: objects.SYSTEM, action: actions.SELECT },
-  { object: objects.PERMISSIONS, action: actions.SELECT },
-  { object: objects.ROLES, action: actions.CREATE },
-  { object: objects.ROLES, action: actions.UPDATE },
-  { object: objects.ROLES, action: actions.DELETE },
-  { object: objects.ROLES, action: actions.SELECT },
-  { object: objects.USERS, action: actions.CREATE },
-  { object: objects.USERS, action: actions.UPDATE },
-  { object: objects.USERS, action: actions.DELETE },
-  { object: objects.USERS, action: actions.SELECT },
-  { object: objects.CONTACTS, action: actions.CREATE },
-  { object: objects.CONTACTS, action: actions.DELETE },
-  { object: objects.CONTACTS, action: actions.SELECT },
-  { object: objects.GROUPS, action: actions.CREATE },
-  { object: objects.GROUPS, action: actions.UPDATE },
-  { object: objects.GROUPS, action: actions.DELETE },
-  { object: objects.GROUPS, action: actions.SELECT },
-  { object: objects.TESTS, action: actions.CREATE },
-  { object: objects.TESTS, action: actions.UPDATE },
-  { object: objects.TESTS, action: actions.DELETE },
-];
-
-const getGlobalPermissions = () => [
-  { object: objects.CONTACTS, action: actions.CREATE, permit: true },
-  { object: objects.CONTACTS, action: actions.DELETE, permit: true },
-  { object: objects.CONTACTS, action: actions.SELECT, permit: true },
-  { object: objects.GROUPS, action: actions.CREATE, permit: true },
-  { object: objects.GROUPS, action: actions.UPDATE, permit: true },
-  { object: objects.GROUPS, action: actions.DELETE, permit: true },
-  { object: objects.GROUPS, action: actions.SELECT, permit: true },
-  { object: objects.TESTS, action: actions.CREATE, permit: true },
-  { object: objects.TESTS, action: actions.UPDATE, permit: true },
-  { object: objects.TESTS, action: actions.DELETE, permit: true },
+  {
+    object: objects.SYSTEM, action: actions.CREATE, global: false, permit: true,
+  },
+  {
+    object: objects.SYSTEM, action: actions.UPDATE, global: false, permit: true,
+  },
+  {
+    object: objects.SYSTEM, action: actions.DELETE, global: false, permit: true,
+  },
+  {
+    object: objects.SYSTEM, action: actions.SELECT, global: false, permit: true,
+  },
+  {
+    object: objects.PERMISSIONS, action: actions.SELECT, global: false, permit: true,
+  },
+  {
+    object: objects.ROLES, action: actions.CREATE, global: false, permit: true,
+  },
+  {
+    object: objects.ROLES, action: actions.UPDATE, global: false, permit: true,
+  },
+  {
+    object: objects.ROLES, action: actions.DELETE, global: false, permit: true,
+  },
+  {
+    object: objects.ROLES, action: actions.SELECT, global: false, permit: true,
+  },
+  {
+    object: objects.USERS, action: actions.CREATE, global: false, permit: true,
+  },
+  {
+    object: objects.USERS, action: actions.UPDATE, global: false, permit: true,
+  },
+  {
+    object: objects.USERS, action: actions.DELETE, global: false, permit: true,
+  },
+  {
+    object: objects.USERS, action: actions.SELECT, global: false, permit: true,
+  },
+  {
+    object: objects.CONTACTS, action: actions.CREATE, global: true, permit: true,
+  },
+  {
+    object: objects.CONTACTS, action: actions.DELETE, global: true, permit: true,
+  },
+  {
+    object: objects.CONTACTS, action: actions.SELECT, global: true, permit: true,
+  },
+  {
+    object: objects.GROUPS, action: actions.CREATE, global: true, permit: true,
+  },
+  {
+    object: objects.GROUPS, action: actions.UPDATE, global: true, permit: true,
+  },
+  {
+    object: objects.GROUPS, action: actions.DELETE, global: true, permit: true,
+  },
+  {
+    object: objects.GROUPS, action: actions.SELECT, global: true, permit: true,
+  },
+  {
+    object: objects.TESTS, action: actions.CREATE, global: true, permit: true,
+  },
+  {
+    object: objects.TESTS, action: actions.UPDATE, global: true, permit: true,
+  },
+  {
+    object: objects.TESTS, action: actions.DELETE, global: true, permit: true,
+  },
 ];
 
 const getRoleAdmin = () => ({
@@ -82,8 +115,6 @@ exports.up = async (knex) => {
     knex('permissions')
       .insert(getPermissions())
       .returning('id'),
-    knex('globalPermissions')
-      .insert(getGlobalPermissions()),
   ]);
 
   const rolePermissions = permissionIds.map((permissionId) => ({
@@ -109,12 +140,7 @@ exports.up = async (knex) => {
 };
 
 exports.down = async (knex) => Promise.all([
-  knex('roles')
-    .del(),
-  knex('permissions')
-    .del(),
-  knex('globalPermissions')
-    .del(),
-  knex('users')
-    .del(),
+  knex('roles').del(),
+  knex('permissions').del(),
+  knex('users').del(),
 ]);

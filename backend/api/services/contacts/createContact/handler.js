@@ -1,13 +1,4 @@
-const {
-  permissions: {
-    objects: { CONTACTS },
-    actions: { CREATE },
-  },
-} = require('../../../enums');
-const {
-  knexExists,
-  getCheckPermissions,
-} = require('../../../utils');
+const { knexExists } = require('../../../utils');
 
 module.exports = async function operation({ userId, body }, { log, knex, httpErrors }) {
   log.trace('createContact');
@@ -16,27 +7,20 @@ module.exports = async function operation({ userId, body }, { log, knex, httpErr
 
   const { link } = body;
 
-  const checkPermissions = await getCheckPermissions(userId, { log, knex });
-
-  if (!checkPermissions(CONTACTS, CREATE)) {
-    log.warn('not allow to create contact');
-
-    throw httpErrors.locked();
-  }
-
-  const { id: userIdTo } = await knex('users')
+  const userTo = await knex('users')
     .where({ link })
     .whereNot({ id: userId })
     .first('id');
 
-  log.info(userIdTo);
+  log.info(userTo);
 
-  if (!userIdTo) {
+  if (!userTo) {
     log.warn('user not found by link');
 
     throw httpErrors.notFound();
   }
 
+  const { id: userIdTo } = userTo;
   const userIdFrom = userId;
 
   const queryFindContact = knex('contacts')

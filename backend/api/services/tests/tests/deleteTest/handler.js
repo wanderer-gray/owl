@@ -1,11 +1,5 @@
-const {
-  permissions: {
-    objects: { TESTS },
-    actions: { DELETE },
-  },
-  members: { roles: { CREATOR } },
-} = require('../../../../enums');
-const { getCheckPermissions } = require('../../../../utils');
+const { members: { roles: { CREATOR } } } = require('../../../../enums');
+const { knexExists } = require('../../../../utils');
 
 module.exports = async function operation({ userId, query }, { log, knex, httpErrors }) {
   log.trace('deleteTest');
@@ -14,31 +8,22 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
 
   const { id } = query;
 
-  const checkPermissions = await getCheckPermissions(userId, { log, knex });
-
-  if (!checkPermissions(TESTS, DELETE)) {
-    log.warn('not allow to delete test');
-
-    throw httpErrors.locked();
-  }
-
   const checkUserPermissions = knex('members')
-    .whereRaw('"members"."testId" = "tests"."id"')
     .where({
+      testId: id,
       userId,
       role: CREATOR,
     });
 
-  const numberDeletedTests = await knex('tests')
-    .where({ id })
-    .whereExists(checkUserPermissions)
-    .del();
+  const userAllowDeleteTest = await knexExists(checkUserPermissions, knex);
 
-  log.info(numberDeletedTests);
+  if (!userAllowDeleteTest) {
+    log.warn('no permission to delete a test');
 
-  if (!numberDeletedTests) {
-    log.warn('test not found');
-
-    throw httpErrors.notFound();
+    throw httpErrors.forbidden();
   }
+
+  await knex('tests')
+    .where({ id })
+    .del();
 };
