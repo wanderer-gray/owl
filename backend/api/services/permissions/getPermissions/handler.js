@@ -3,7 +3,11 @@ module.exports = async function operation({ userId }, { log, knex }) {
   log.debug(userId);
 
   const permissions = await knex('permissions')
-    .select('*');
+    .select([
+      'id',
+      'object',
+      'action',
+    ]);
 
   return permissions;
 };

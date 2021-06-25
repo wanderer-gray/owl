@@ -4,7 +4,12 @@ module.exports = async function operation({ userId }, { log, knex }) {
 
   const globalPermissions = await knex('permissions')
     .where({ global: true })
-    .select('*')
+    .select([
+      'id',
+      'object',
+      'action',
+      'permit',
+    ])
     .orderBy([
       'object',
       'action',
