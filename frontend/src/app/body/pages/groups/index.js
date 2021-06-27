@@ -9,13 +9,16 @@ class Groups extends Component {
   constructor(props) {
     super(props);
 
-    const { SearchStore } = this.props;
+    const {
+      AuthStore,
+      SearchStore
+    } = this.props;
 
     const GroupsStore = new Store({ SearchStore });
 
     this.GroupsStore = GroupsStore;
-    this.GroupEditStore = new GroupEditStore({ GroupsStore });
-    this.GroupCreateStore = new GroupCreateStore({ GroupsStore });
+    this.GroupEditStore = new GroupEditStore({ GroupsStore, AuthStore });
+    this.GroupCreateStore = new GroupCreateStore({ GroupsStore, AuthStore });
   }
 
   componentDidMount() {
@@ -36,6 +39,7 @@ class Groups extends Component {
   render() {
     return (
       <View
+        AuthStore={this.props.AuthStore}
         GroupsStore={this.GroupsStore}
         GroupEditStore={this.GroupEditStore}
         GroupCreateStore={this.GroupCreateStore}
@@ -45,8 +49,9 @@ class Groups extends Component {
 }
 
 export default inject(
-  ({ SearchStore }) => { 
+  ({ AuthStore, SearchStore }) => { 
     return {
+      AuthStore,
       SearchStore
     };
   }

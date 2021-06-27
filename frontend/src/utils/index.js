@@ -1,6 +1,10 @@
 import { actions } from '../enums/permissions';
 
 const fmtDateTime = (value) => {
+  if (!value) {
+    return value;
+  }
+
   const hh = value.getHours().toString().padStart(2, '0');
   const mm = value.getMinutes().toString().padStart(2, '0');
   const dd = value.getDate().toString().padStart(2, '0');

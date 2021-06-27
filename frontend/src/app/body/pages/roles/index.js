@@ -9,13 +9,16 @@ class Roles extends Component {
   constructor(props) {
     super(props);
 
-    const { SearchStore } = this.props;
+    const {
+      AuthStore,
+      SearchStore
+    } = this.props;
 
     const RolesStore = new Store({ SearchStore });
 
     this.RolesStore = RolesStore;
-    this.RoleEditStore = new RoleEditStore({ RolesStore });
-    this.RoleCreateStore = new RoleCreateStore({ RolesStore });
+    this.RoleEditStore = new RoleEditStore({ RolesStore, AuthStore });
+    this.RoleCreateStore = new RoleCreateStore({ RolesStore, AuthStore });
   }
 
   componentDidMount() {
@@ -33,6 +36,7 @@ class Roles extends Component {
   render() {
     return (
       <View
+        AuthStore={this.props.AuthStore}
         RolesStore={this.RolesStore}
         RoleEditStore={this.RoleEditStore}
         RoleCreateStore={this.RoleCreateStore}
@@ -42,8 +46,9 @@ class Roles extends Component {
 }
 
 export default inject(
-  ({ SearchStore }) => { 
+  ({ AuthStore, SearchStore }) => { 
     return {
+      AuthStore,
       SearchStore
     };
   }

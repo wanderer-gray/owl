@@ -1,4 +1,6 @@
 import { makeAutoObservable, autorun } from 'mobx';
+import { objects, actions } from '../../../../../../enums/permissions';
+import { checkPermissions } from '../../../../../../utils';
 
 class RolesStore {
   roles = [];
@@ -9,10 +11,11 @@ class RolesStore {
     return this.UserStore.roleIds;
   }
 
-  constructor({ UserStore }) {
+  constructor({ UserStore, AuthStore }) {
     makeAutoObservable(this);
 
     this.UserStore = UserStore;
+    this.AuthStore = AuthStore;
 
     this.disposer = autorun(() => {
       this.searchRoles();
@@ -30,6 +33,10 @@ class RolesStore {
   }
 
   searchRoles = async(name = '', datetime = Date.now()) => {
+    if (!checkPermissions(this.AuthStore, objects.ROLES, actions.SELECT)) {
+      return;
+    }
+
     const { noRoleIds } = this;
 
     try {

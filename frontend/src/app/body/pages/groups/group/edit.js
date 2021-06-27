@@ -10,7 +10,7 @@ class GroupEditStore extends GroupViewStore {
     return this.contacts.map(({ id }) => id);
   }
 
-  constructor({ GroupsStore }) {
+  constructor({ GroupsStore, AuthStore }) {
     super({ GroupsStore });
 
     makeObservable(this, {
@@ -21,7 +21,7 @@ class GroupEditStore extends GroupViewStore {
 
     this.onOpen = this.onOpen.bind(this);
 
-    this.ContactsStore = new ContactsStore({ GroupStore: this });
+    this.ContactsStore = new ContactsStore({ GroupStore: this, AuthStore });
   }
 
   setOpen = (open) => {
@@ -86,7 +86,7 @@ class GroupEditStore extends GroupViewStore {
     } catch (error) {
       const { status } = error || {};
 
-      if (status === httpErrors.NOTFOUND) {
+      if (status === httpErrors.NOT_FOUND) {
         this.refresh();
 
         notify({

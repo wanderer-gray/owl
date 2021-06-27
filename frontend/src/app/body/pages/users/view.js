@@ -20,6 +20,8 @@ import {
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { objects, actions } from '../../../../enums/permissions';
+import { getCheckPermissions } from '../../../../utils';
 
 const useStyles = makeStyles(() => ({
   input: {
@@ -32,7 +34,6 @@ const RolesView = observer(({ RolesStore }) => {
     roles,
     searchRoles,
     UserStore: {
-      disabledFields,
       addRole,
     },
   } = RolesStore;
@@ -64,12 +65,11 @@ const RolesView = observer(({ RolesStore }) => {
         
         searchRoles(name);
       }}
-      disabled={disabledFields.roles}
     />
   );
 });
 
-const UserView = observer(({ UserStore }) => {
+const UserView = observer(({ UserStore, checkPermissions }) => {
   const classes = useStyles();
 
   const {
@@ -105,8 +105,7 @@ const UserView = observer(({ UserStore }) => {
           variant={'outlined'}
           fullWidth={true}
           value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          disabled={disabledFields.email}
+          onChange={(event) => !disabledFields.email && setEmail(event.target.value)}
         />
 
         {password !== undefined ? (
@@ -120,7 +119,9 @@ const UserView = observer(({ UserStore }) => {
           />
         ) : null}
 
-        <RolesView RolesStore={RolesStore} />
+        {checkPermissions(objects.ROLES, actions.SELECT) ? (
+          <RolesView RolesStore={RolesStore} />
+        ) : null}
 
         <List>
           {roles.map(({ id, name }) => (
@@ -159,10 +160,14 @@ const UserView = observer(({ UserStore }) => {
 });
 
 const UsersView = observer(({
+  AuthStore,
   UsersStore,
   UserEditStore,
   UserCreateStore,
 }) => {
+  const checkPermissions = getCheckPermissions(AuthStore);
+  const { USERS } = objects;
+
   const {
     users,
     count,
@@ -175,12 +180,14 @@ const UsersView = observer(({
       <Typography variant={'h4'}>
         Пользователи
 
-        <IconButton
-          edge={'end'}
-          onClick={UserCreateStore.onOpen}
-        >
-          <AddIcon />
-        </IconButton>
+        {checkPermissions(USERS, actions.CREATE) ? (
+          <IconButton
+            edge={'end'}
+            onClick={UserCreateStore.onOpen}
+          >
+            <AddIcon />
+          </IconButton>
+        ) : null}
       </Typography>
 
       {count ? (
@@ -191,7 +198,7 @@ const UsersView = observer(({
             return (
               <ListItem
                 key={id}
-                onClick={() => UserEditStore.onOpen(user)}
+                onClick={() => checkPermissions(USERS, actions.UPDATE) && UserEditStore.onOpen(user)}
               >
                 <ListItemAvatar>
                   <Avatar />
@@ -200,12 +207,14 @@ const UsersView = observer(({
                 <ListItemText primary={email} />
 
                 <ListItemSecondaryAction>
-                  <IconButton
-                    edge={'end'}
-                    onClick={() => deleteUser(id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                  {checkPermissions(USERS, actions.DELETE) ? (
+                    <IconButton
+                      edge={'end'}
+                      onClick={() => deleteUser(id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  ) : null}
                 </ListItemSecondaryAction>
               </ListItem>
             );
@@ -217,8 +226,14 @@ const UsersView = observer(({
         </p>
       )}
 
-      <UserView UserStore={UserEditStore} />
-      <UserView UserStore={UserCreateStore} />
+      <UserView
+        UserStore={UserEditStore}
+        checkPermissions={checkPermissions}
+      />
+      <UserView
+        UserStore={UserCreateStore}
+        checkPermissions={checkPermissions}
+      />
     </Fragment>
   );
 });

@@ -6,8 +6,9 @@ import {
 } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
 import { makeStyles } from '@material-ui/core/styles';
-import Tests  from './tests';
-import CreateOrEditTest  from './test/createOrEdit';
+import Tests from './tests';
+import TestCreate from './test/create';
+import TestEdit from './test/edit';
 import Profile from './profile';
 import Contacts from './contacts';
 import Groups from './groups';
@@ -63,8 +64,12 @@ const AppRouter = observer(({ AuthStore }) => {
   }];
 
   checkPermissions(objects.TESTS, actions.CREATE) && routers.push({
-    path: '/test/createOrEdit',
-    component: CreateOrEditTest,
+    path: '/test/create',
+    component: TestCreate,
+  });
+  checkPermissions(objects.TESTS, actions.UPDATE) && routers.push({
+    path: '/test/edit/:id',
+    component: TestEdit,
   });
 
   AuthStore.isAuth && routers.push({
@@ -98,7 +103,9 @@ const AppRouter = observer(({ AuthStore }) => {
     <main className={classes.pages}>
       <div className={classes.toolbar} />
 
-      <Routers routers={routers} />
+      {AuthStore.uploaded ? (
+        <Routers routers={routers} />
+      ) : null}
     </main>
   );
 });

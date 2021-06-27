@@ -1,5 +1,8 @@
 import { Fragment } from 'react';
-import { observer } from 'mobx-react';
+import {
+  inject,
+  observer,
+} from 'mobx-react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Typography,
@@ -23,7 +26,8 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import WhiteIcon from '@material-ui/icons/CheckOutlined';
 import BlackIcon from '@material-ui/icons/CancelOutlined';
-import { types, actions } from '../../../../../enums/emailConditions';
+import { permissions, emailСonditions } from '../../../../../enums';
+import { getCheckPermissions } from '../../../../../utils';
 
 const useStyles = makeStyles(() => ({
   title: {
@@ -36,6 +40,8 @@ const useStyles = makeStyles(() => ({
 
 const ConditionView = observer(({ ConditionStore }) => {
   const classes = useStyles();
+
+  const { types } = emailСonditions;
 
   const {
     id,
@@ -101,11 +107,23 @@ const ConditionView = observer(({ ConditionStore }) => {
 });
 
 const ConditionsView = observer(({
+  AuthStore,
   ConditionsStore,
   ConditionEditStore,
   ConditionCreateStore,
 }) => {
   const classes = useStyles();
+
+  const checkPermissions = getCheckPermissions(AuthStore);
+  const {
+    objects: { SYSTEM },
+    actions,
+  } = permissions;
+
+  const {
+    types: { WHITE },
+    actions: emailActions,
+  } = emailСonditions;
 
   const {
     action,
@@ -119,14 +137,16 @@ const ConditionsView = observer(({
         className={classes.title}
         variant={'h5'}
       >
-        Email условия {actions.getTitle(action)}
+        Email условия {emailActions.getTitle(action)}
 
-        <IconButton
-          edge={'end'}
-          onClick={ConditionCreateStore.onOpen}
-        >
-          <AddIcon />
-        </IconButton>
+        {checkPermissions(SYSTEM, actions.CREATE) ? (
+          <IconButton
+            edge={'end'}
+            onClick={ConditionCreateStore.onOpen}
+          >
+            <AddIcon />
+          </IconButton>
+        ) : null}
       </Typography>
 
       <List>
@@ -136,11 +156,11 @@ const ConditionsView = observer(({
           return (
             <ListItem
               key={id}
-              onClick={() => ConditionEditStore.onOpen(conditionData)}
+              onClick={() => checkPermissions(SYSTEM, actions.UPDATE) && ConditionEditStore.onOpen(conditionData)}
             >
               <ListItemAvatar>
                 <Avatar>
-                  {type === types.WHITE ? (
+                  {type === WHITE ? (
                     <WhiteIcon />
                   ) : (
                     <BlackIcon />
@@ -151,12 +171,14 @@ const ConditionsView = observer(({
               <ListItemText primary={condition} />
 
               <ListItemSecondaryAction>
-                <IconButton
-                  edge={'end'}
-                  onClick={() => deleteCondition(id)}
-                >
-                  <DeleteIcon />
-                </IconButton>
+                {checkPermissions(SYSTEM, actions.DELETE) ? (
+                  <IconButton
+                    edge={'end'}
+                    onClick={() => deleteCondition(id)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                ) : null}
               </ListItemSecondaryAction>
             </ListItem>
           );
@@ -169,4 +191,8 @@ const ConditionsView = observer(({
   );
 });
 
-export default ConditionsView;
+export default inject(({ AuthStore }) => {
+  return {
+    AuthStore,
+  };
+})(ConditionsView);

@@ -3,9 +3,11 @@ import { makeAutoObservable } from 'mobx';
 class ProfileStore {
   profile = null;
 
+  oldPassword = '';
+  newPassword = '';
+
   open = false;
   password = '';
-  newPassword = '';
 
   constructor() {
     makeAutoObservable(this);
@@ -17,16 +19,20 @@ class ProfileStore {
     this.profile = profile;
   }
 
+  setOldPassword = (oldPassword) => {
+    this.oldPassword = oldPassword;
+  }
+
+  setNewPassword = (newPassword) => {
+    this.newPassword = newPassword;
+  }
+
   setOpen = (open) => {
     this.open = open;
   }
 
   setPassword = (password) => {
     this.password = password;
-  }
-
-  setNewPassword = (newPassword) => {
-    this.newPassword = newPassword;
   }
 
   onOpen = () => {
@@ -51,8 +57,9 @@ class ProfileStore {
       });
     }
 
-    this.setPassword('');
+    this.setOldPassword('');
     this.setNewPassword('');
+
     this.setProfile(profile);
   }
 
@@ -77,7 +84,7 @@ class ProfileStore {
 
   updatePassword = async() => {
     const {
-      password,
+      oldPassword,
       newPassword,
     } = this;
 
@@ -85,7 +92,7 @@ class ProfileStore {
       await api('accounts/updatePassword')
         .method('put')
         .body({
-          oldPassword: password,
+          oldPassword,
           newPassword
         });
 

@@ -6,8 +6,8 @@ const defaultGroup = {
 };
 
 class GroupCreateStore extends GroupEditStore {
-  constructor({ GroupsStore }) {
-    super({ GroupsStore });
+  constructor({ GroupsStore, AuthStore }) {
+    super({ GroupsStore, AuthStore });
 
     this.onOpen = this.onOpen.bind(this);
   }

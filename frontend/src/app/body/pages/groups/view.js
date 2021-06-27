@@ -21,6 +21,8 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GroupIcon from '@material-ui/icons/Group';
+import { objects, actions } from '../../../../enums/permissions';
+import { getCheckPermissions } from '../../../../utils';
 
 const useStyles = makeStyles(() => ({
   input: {
@@ -68,7 +70,7 @@ const ContactsView = observer(({ ContactsStore }) => {
   );
 });
 
-const GroupView = observer(({ GroupStore }) => {
+const GroupView = observer(({ GroupStore, checkPermissions }) => {
   const classes = useStyles();
 
   const {
@@ -104,7 +106,9 @@ const GroupView = observer(({ GroupStore }) => {
           onChange={(event) => setTitle(event.target.value)}
         />
 
-        <ContactsView ContactsStore={ContactsStore} />
+        {checkPermissions(objects.CONTACTS, actions.SELECT) ? (
+          <ContactsView ContactsStore={ContactsStore} />
+        ): null }
 
         <List>
           {contacts.map(({ id, email }) => (
@@ -147,10 +151,14 @@ const GroupView = observer(({ GroupStore }) => {
 });
 
 const GroupsView = observer(({
+  AuthStore,
   GroupsStore,
   GroupEditStore,
   GroupCreateStore,
 }) => {
+  const checkPermissions = getCheckPermissions(AuthStore);
+  const { GROUPS } = objects;
+
   const {
     groups,
     count,
@@ -163,12 +171,14 @@ const GroupsView = observer(({
       <Typography variant={'h4'}>
         Группы
 
-        <IconButton
-          edge={'end'}
-          onClick={GroupCreateStore.onOpen}
-        >
-          <AddIcon />
-        </IconButton>
+        {checkPermissions(GROUPS, actions.CREATE) ? (
+          <IconButton
+            edge={'end'}
+            onClick={GroupCreateStore.onOpen}
+          >
+            <AddIcon />
+          </IconButton>
+        ) : null}
       </Typography>
 
       {count ? (
@@ -179,7 +189,7 @@ const GroupsView = observer(({
             return (
               <ListItem
                 key={id}
-                onClick={() => GroupEditStore.onOpen(group)}
+                onClick={() => checkPermissions(GROUPS, actions.UPDATE) && GroupEditStore.onOpen(group)}
               >
                 <ListItemAvatar>
                   <Avatar>
@@ -190,12 +200,14 @@ const GroupsView = observer(({
                 <ListItemText primary={title} />
 
                 <ListItemSecondaryAction>
-                  <IconButton
-                    edge={'end'}
-                    onClick={() => deleteGroup(id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                  {checkPermissions(GROUPS, actions.DELETE) ? (
+                    <IconButton
+                      edge={'end'}
+                      onClick={() => deleteGroup(id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  ) : null}
                 </ListItemSecondaryAction>
               </ListItem>
             );
@@ -207,8 +219,14 @@ const GroupsView = observer(({
         </p>
       )}
 
-      <GroupView GroupStore={GroupEditStore} />
-      <GroupView GroupStore={GroupCreateStore} />
+      <GroupView
+        GroupStore={GroupEditStore}
+        checkPermissions={checkPermissions}
+      />
+      <GroupView
+        GroupStore={GroupCreateStore}
+        checkPermissions={checkPermissions}
+      />
     </Fragment>
   );
 });

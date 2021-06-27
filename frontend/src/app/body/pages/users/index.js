@@ -9,13 +9,16 @@ class Users extends Component {
   constructor(props) {
     super(props);
 
-    const { SearchStore } = this.props;
+    const {
+      AuthStore,
+      SearchStore
+    } = this.props;
 
     const UsersStore = new Store({ SearchStore });
 
     this.UsersStore = UsersStore;
-    this.UserEditStore = new UserEditStore({ UsersStore });
-    this.UserCreateStore = new UserCreateStore({ UsersStore });
+    this.UserEditStore = new UserEditStore({ UsersStore, AuthStore });
+    this.UserCreateStore = new UserCreateStore({ UsersStore, AuthStore });
   }
 
   componentDidMount() {
@@ -36,6 +39,7 @@ class Users extends Component {
   render() {
     return (
       <View
+        AuthStore={this.props.AuthStore}
         UsersStore={this.UsersStore}
         UserEditStore={this.UserEditStore}
         UserCreateStore={this.UserCreateStore}
@@ -45,8 +49,9 @@ class Users extends Component {
 }
 
 export default inject(
-  ({ SearchStore }) => { 
+  ({ AuthStore, SearchStore }) => { 
     return {
+      AuthStore,
       SearchStore
     };
   }

@@ -1,4 +1,6 @@
 import { makeAutoObservable } from 'mobx';
+import { objects, actions } from '../../../../../../enums/permissions';
+import { checkPermissions } from '../../../../../../utils';
 
 class ContactsStore {
   _permissions = [];
@@ -11,10 +13,11 @@ class ContactsStore {
     return this.RoleStore.permissionIds;
   }
 
-  constructor({ RoleStore }) {
+  constructor({ RoleStore, AuthStore }) {
     makeAutoObservable(this);
     
     this.RoleStore = RoleStore;
+    this.AuthStore = AuthStore;
 
     this.getPermissions();
   }
@@ -24,6 +27,10 @@ class ContactsStore {
   }
 
   getPermissions = async() => {
+    if (!checkPermissions(this.AuthStore, objects.PERMISSIONS, actions.SELECT)) {
+      return;
+    }
+
     try {
       const permissions = await api('permissions/getPermissions');
       

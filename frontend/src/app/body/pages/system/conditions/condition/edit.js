@@ -54,7 +54,7 @@ class ConditionEditStore extends ConditionViewStore {
     } catch (error) {
       const { status } = error || {};
 
-      if (status === httpErrors.NOTFOUND) {
+      if (status === httpErrors.NOT_FOUND) {
         this.refresh();
 
         notify({

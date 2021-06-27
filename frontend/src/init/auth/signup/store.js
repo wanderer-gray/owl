@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx';
+import { httpErrors } from '../../../enums';
 
 class SignUpStore {
   step = 1;
@@ -43,7 +44,50 @@ class SignUpStore {
         .query({ email });
 
       this.setStep(2);
-    } catch {
+
+      notify({
+        variant: 'success',
+        message: 'Код подтверждения отправлен на почту'
+      });
+    } catch (error) {
+      const { status } = error || {};
+
+      if (status === httpErrors.LOCKED) {
+        notify({
+          variant: 'warning',
+          message: 'Адрес электронной почты не поддерживается'
+        });
+
+        return;
+      }
+
+      if (status === httpErrors.CONFLICT) {
+        notify({
+          variant: 'warning',
+          message: 'Адрес электронной почты уже используется'
+        });
+
+        return;
+      }
+
+      if (status === httpErrors.TOO_MANY_REQUESTS) {
+        notify({
+          variant: 'warning',
+          message: 'Превышен лимит на отправку запросов'
+        });
+
+        return;
+      }
+
+      if (status === httpErrors.SERVICE_UNAVAILABLE) {
+        notify({
+          variant: 'warning',
+          message: 'Сервис временно недоступен'
+        });
+
+        return;
+      }
+
       notify({
         variant: 'error',
         message: 'Не удалось отправить код'
@@ -68,7 +112,27 @@ class SignUpStore {
         });
       
       this.close();
-    } catch {
+    } catch (error) {
+      const { status } = error || {};
+
+      if (status === httpErrors.NOT_FOUND) {
+        notify({
+          variant: 'warning',
+          message: 'Код подтверждения не совпадает'
+        });
+
+        return;
+      }
+
+      if (status === httpErrors.TOO_MANY_REQUESTS) {
+        notify({
+          variant: 'warning',
+          message: 'Превышен лимит на отправку запросов'
+        });
+
+        return;
+      }
+
       notify({
         variant: 'error',
         message: 'Не удалось завершить регистрацию'

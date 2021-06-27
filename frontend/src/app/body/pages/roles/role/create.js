@@ -6,8 +6,8 @@ const defaultGroup = {
 };
 
 class RoleCreateStore extends RoleEditStore {
-  constructor({ RolesStore }) {
-    super({ RolesStore });
+  constructor({ RolesStore, AuthStore }) {
+    super({ RolesStore, AuthStore });
 
     this.onOpen = this.onOpen.bind(this);
   }

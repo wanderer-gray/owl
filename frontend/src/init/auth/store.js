@@ -2,6 +2,8 @@ import { makeAutoObservable, transaction } from 'mobx';
 import ApiStore from '../api/store';
 
 class AuthStore {
+  uploaded = false;
+
   isAuth = false;
   permissions = [];
 
@@ -37,6 +39,8 @@ class AuthStore {
     }
 
     transaction(() => {
+      this.uploaded = true;
+
       this.isAuth = data.isAuth;
       this.permissions = data.permissions;
     });

@@ -77,7 +77,7 @@ const Aside = observer(({ AuthStore }) => {
 
   checkPermissions(objects.TESTS, actions.CREATE) && items.push({
     key: `${objects.TESTS}:${actions.CREATE}`,
-    to: '/test/createOrEdit',
+    to: '/test/create',
     Icon: AddIcon,
   });
   

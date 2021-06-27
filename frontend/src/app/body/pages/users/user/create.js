@@ -9,8 +9,8 @@ const defaultUser = {
 class UserCreateStore extends UserEditStore {
   disabledFields = {};
 
-  constructor({ UsersStore }) {
-    super({ UsersStore });
+  constructor({ UsersStore, AuthStore }) {
+    super({ UsersStore, AuthStore });
 
     this.onOpen = this.onOpen.bind(this);
   }

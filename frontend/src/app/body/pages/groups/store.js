@@ -30,6 +30,7 @@ class GroupsStore {
   searchGroups = async(title = '', datetime = Date.now()) => {
     try {
       const result = await api('groups/searchGroups')
+        .method('post')
         .query({ title });
       
       this.setResult(result, datetime);

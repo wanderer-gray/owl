@@ -70,7 +70,7 @@ class ContactsStore {
     } catch (error) {
       const { status } = error || {};
 
-      if (status === httpErrors.NOTFOUND) {
+      if (status === httpErrors.NOT_FOUND) {
         notify({
           variant: 'warning',
           message: 'Ссылка пользователя не существует'

@@ -21,6 +21,7 @@ import {
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { objects, actions } from '../../../../enums/permissions';
+import { getCheckPermissions } from '../../../../utils';
 
 const useStyles = makeStyles(() => ({
   input: {
@@ -63,7 +64,7 @@ const PermissionsView = observer(({ PermissionsStore }) => {
   );
 });
 
-const RoleView = observer(({ RoleStore }) => {
+const RoleView = observer(({ RoleStore, checkPermissions }) => {
   const classes = useStyles();
 
   const {
@@ -97,7 +98,9 @@ const RoleView = observer(({ RoleStore }) => {
           onChange={(event) => setName(event.target.value)}
         />
 
-        <PermissionsView PermissionsStore={PermissionsStore} />
+        {checkPermissions(objects.PERMISSIONS, actions.SELECT) ? (
+          <PermissionsView PermissionsStore={PermissionsStore} />
+        ) : null}
       </DialogContent>
 
       <DialogActions>
@@ -119,10 +122,14 @@ const RoleView = observer(({ RoleStore }) => {
 });
 
 const RolesView = observer(({
+  AuthStore,
   RolesStore,
   RoleEditStore,
   RoleCreateStore,
 }) => {
+  const checkPermissions = getCheckPermissions(AuthStore);
+  const { ROLES } = objects;
+
   const {
     roles,
     count,
@@ -135,12 +142,14 @@ const RolesView = observer(({
       <Typography variant={'h4'}>
         Роли
 
-        <IconButton
-          edge={'end'}
-          onClick={RoleCreateStore.onOpen}
-        >
-          <AddIcon />
-        </IconButton>
+        {checkPermissions(ROLES, actions.CREATE) ? (
+          <IconButton
+            edge={'end'}
+            onClick={RoleCreateStore.onOpen}
+          >
+            <AddIcon />
+          </IconButton>
+        ) : null}
       </Typography>
 
       {count ? (
@@ -151,17 +160,19 @@ const RolesView = observer(({
             return (
               <ListItem
                 key={id}
-                onClick={() => RoleEditStore.onOpen(role)}
+                onClick={() => checkPermissions(ROLES, actions.UPDATE) && RoleEditStore.onOpen(role)}
               >
                 <ListItemText primary={name} />
 
                 <ListItemSecondaryAction>
-                  <IconButton
-                    edge={'end'}
-                    onClick={() => deleteRole(id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                  {checkPermissions(ROLES, actions.DELETE) ? (
+                    <IconButton
+                      edge={'end'}
+                      onClick={() => deleteRole(id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  ) : null}
                 </ListItemSecondaryAction>
               </ListItem>
             );
@@ -173,8 +184,14 @@ const RolesView = observer(({
         </p>
       )}
 
-      <RoleView RoleStore={RoleEditStore} />
-      <RoleView RoleStore={RoleCreateStore} />
+      <RoleView
+        RoleStore={RoleEditStore}
+        checkPermissions={checkPermissions}
+      />
+      <RoleView
+        RoleStore={RoleCreateStore}
+        checkPermissions={checkPermissions}
+      />
     </Fragment>
   );
 });

@@ -1,4 +1,6 @@
 import { makeAutoObservable, autorun } from 'mobx';
+import { objects, actions } from '../../../../../../enums/permissions';
+import { checkPermissions } from '../../../../../../utils';
 
 class ContactsStore {
   contacts = [];
@@ -9,10 +11,11 @@ class ContactsStore {
     return this.GroupStore.contactIds;
   }
 
-  constructor({ GroupStore }) {
+  constructor({ GroupStore, AuthStore }) {
     makeAutoObservable(this);
     
     this.GroupStore = GroupStore;
+    this.AuthStore = AuthStore;
 
     this.disposer = autorun(() => {
       this.searchContacts();
@@ -30,6 +33,10 @@ class ContactsStore {
   }
 
   searchContacts = async(email = '', datetime = Date.now()) => {
+    if (!checkPermissions(this.AuthStore, objects.CONTACTS, actions.SELECT)) {
+      return;
+    }
+
     const { noContactIds } = this;
 
     try {

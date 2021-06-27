@@ -13,7 +13,7 @@ class UserEditStore extends UserViewStore {
     return this.roles.map(({ id }) => id);
   }
   
-  constructor({ UsersStore }) {
+  constructor({ UsersStore, AuthStore }) {
     super({ UsersStore });
     
     makeObservable(this, {
@@ -24,7 +24,7 @@ class UserEditStore extends UserViewStore {
 
     this.onOpen = this.onOpen.bind(this);
 
-    this.RolesStore = new RolesStore({ UserStore: this });
+    this.RolesStore = new RolesStore({ UserStore: this, AuthStore });
   }
 
   setOpen = (open) => {

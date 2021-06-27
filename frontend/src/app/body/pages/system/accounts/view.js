@@ -1,5 +1,8 @@
 import { Fragment } from 'react';
-import { observer } from 'mobx-react';
+import {
+  inject,
+  observer,
+} from 'mobx-react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Typography,
@@ -19,6 +22,8 @@ import {
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { objects, actions } from '../../../../../enums/permissions';
+import { getCheckPermissions } from '../../../../../utils';
 
 const useStyles = makeStyles(() => ({
   title: {
@@ -29,8 +34,10 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const AccountView = observer(({ AccountStore }) => {
+const AccountView = observer(({ AccountStore, checkPermissions }) => {
   const classes = useStyles();
+
+  const { SYSTEM } = objects;
 
   const {
     id,
@@ -67,7 +74,7 @@ const AccountView = observer(({ AccountStore }) => {
           variant={'outlined'}
           fullWidth={true}
           value={host}
-          onChange={(event) => setHost(event.target.value)}
+          onChange={(event) => checkPermissions(SYSTEM, actions.UPDATE) && setHost(event.target.value)}
         />
 
         <TextField
@@ -76,7 +83,7 @@ const AccountView = observer(({ AccountStore }) => {
           variant={'outlined'}
           fullWidth={true}
           value={port}
-          onChange={(event) => setPort(event.target.value)}
+          onChange={(event) => checkPermissions(SYSTEM, actions.UPDATE) && setPort(event.target.value)}
         />
 
         <FormControlLabel
@@ -87,9 +94,7 @@ const AccountView = observer(({ AccountStore }) => {
             <Switch
               color={'primary'}
               checked={secure}
-              onChange={() => {
-                setSecure(!secure);
-              }}
+              onChange={() => checkPermissions(SYSTEM, actions.UPDATE) && setSecure(!secure)}
             />
           )}
         />
@@ -100,7 +105,7 @@ const AccountView = observer(({ AccountStore }) => {
           variant={'outlined'}
           fullWidth={true}
           value={user}
-          onChange={(event) => setUser(event.target.value)}
+          onChange={(event) => checkPermissions(SYSTEM, actions.UPDATE) && setUser(event.target.value)}
         />
 
         <TextField
@@ -109,7 +114,7 @@ const AccountView = observer(({ AccountStore }) => {
           variant={'outlined'}
           fullWidth={true}
           value={pass}
-          onChange={(event) => setPass(event.target.value)}
+          onChange={(event) => checkPermissions(SYSTEM, actions.UPDATE) && setPass(event.target.value)}
         />
       </DialogContent>
 
@@ -120,23 +125,29 @@ const AccountView = observer(({ AccountStore }) => {
         >
           Отмена
         </Button>
-        <Button
-          color={'primary'}
-          onClick={onSave}
-        >
-          Сохранить
-        </Button>
+        {checkPermissions(SYSTEM, actions.UPDATE) ? (
+          <Button
+            color={'primary'}
+            onClick={onSave}
+          >
+            Сохранить
+          </Button>
+        ) : null}
       </DialogActions>
     </Dialog>
   );
 });
 
 const AccountsView = observer(({
+  AuthStore,
   AccountsStore,
   AccountEditStore,
   AccountCreateStore,
 }) => {
   const classes = useStyles();
+
+  const checkPermissions = getCheckPermissions(AuthStore);
+  const { SYSTEM } = objects;
 
   const {
     accounts,
@@ -151,12 +162,14 @@ const AccountsView = observer(({
       >
         Email аккаунты
 
-        <IconButton
-          edge={'end'}
-          onClick={AccountCreateStore.onOpen}
-        >
-          <AddIcon />
-        </IconButton>
+        {checkPermissions(SYSTEM, actions.CREATE) ? (
+          <IconButton
+            edge={'end'}
+            onClick={AccountCreateStore.onOpen}
+          >
+            <AddIcon />
+          </IconButton>
+        ) : null}
       </Typography>
 
       <List>
@@ -173,22 +186,34 @@ const AccountsView = observer(({
               <ListItemText primary={user} />
 
               <ListItemSecondaryAction>
-                <IconButton
-                  edge={'end'}
-                  onClick={() => deleteAccount(id)}
-                >
-                  <DeleteIcon />
-                </IconButton>
+                {checkPermissions(SYSTEM, actions.DELETE) ? (
+                  <IconButton
+                    edge={'end'}
+                    onClick={() => deleteAccount(id)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                ) : null}
               </ListItemSecondaryAction>
             </ListItem>
           );
         })}
       </List>
 
-      <AccountView AccountStore={AccountEditStore} />
-      <AccountView AccountStore={AccountCreateStore} />
+      <AccountView
+        AccountStore={AccountEditStore}
+        checkPermissions={checkPermissions}
+      />
+      <AccountView
+        AccountStore={AccountCreateStore}
+        checkPermissions={checkPermissions}
+      />
     </Fragment>
   );
 });
 
-export default AccountsView;
+export default inject(({ AuthStore }) => {
+  return {
+    AuthStore,
+  };
+})(AccountsView);

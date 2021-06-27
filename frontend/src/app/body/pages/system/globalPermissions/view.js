@@ -1,5 +1,8 @@
 import { Fragment } from 'react';
-import { observer } from 'mobx-react';
+import {
+  inject,
+  observer,
+} from 'mobx-react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Typography,
@@ -11,6 +14,7 @@ import {
   Switch,
 } from '@material-ui/core';
 import { objects, actions } from '../../../../../enums/permissions';
+import { getCheckPermissions } from '../../../../../utils';
 
 const useStyles = makeStyles(() => ({
   title: {
@@ -41,8 +45,11 @@ const groupByObject = (globalPermissions) => globalPermissions
     };
   });
 
-const GlobalPermissionsView = observer(({ store }) => {
+const GlobalPermissionsView = observer(({ AuthStore, store }) => {
   const classes = useStyles();
+
+  const checkPermissions = getCheckPermissions(AuthStore);
+  const { SYSTEM } = objects;
 
   const {
     globalPermissions,
@@ -75,7 +82,7 @@ const GlobalPermissionsView = observer(({ store }) => {
                         <Switch
                           color={'primary'}
                           checked={permit}
-                          onChange={() => updateGlobalPermission(id, !permit)}
+                          onChange={() => checkPermissions(SYSTEM, actions.UPDATE) && updateGlobalPermission(id, !permit)}
                         />
                       )}
                     />
@@ -89,4 +96,8 @@ const GlobalPermissionsView = observer(({ store }) => {
   );
 });
 
-export default GlobalPermissionsView;
+export default inject(({ AuthStore }) => {
+  return {
+    AuthStore,
+  };
+})(GlobalPermissionsView);

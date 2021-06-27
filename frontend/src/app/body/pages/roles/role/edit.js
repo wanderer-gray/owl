@@ -6,7 +6,7 @@ import { httpErrors } from '../../../../../enums';
 class RoleEditStore extends RoleViewStore {
   open = false;
 
-  constructor({ RolesStore }) {
+  constructor({ RolesStore, AuthStore }) {
     super({ RolesStore });
 
     makeObservable(this, {
@@ -16,7 +16,7 @@ class RoleEditStore extends RoleViewStore {
 
     this.onOpen = this.onOpen.bind(this);
 
-    this.PermissionsStore = new PermissionsStore({ RoleStore: this });
+    this.PermissionsStore = new PermissionsStore({ RoleStore: this, AuthStore });
   }
 
   setOpen = (open) => {
@@ -81,7 +81,7 @@ class RoleEditStore extends RoleViewStore {
     } catch (error) {
       const { status } = error || {};
 
-      if (status === httpErrors.NOTFOUND) {
+      if (status === httpErrors.NOT_FOUND) {
         this.refresh();
 
         notify({
