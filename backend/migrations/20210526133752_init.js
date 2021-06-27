@@ -179,6 +179,10 @@ exports.up = async (knex) => {
       .comment('Тип. enums/tests/types');
     table.string('title').notNullable();
     table.string('description');
+    table
+      .datetime('time', { useTz: false, precision: 6 })
+      .notNullable()
+      .comment('Время действия попытки у теста / опроса');
 
     table
       .boolean('availableAll')
@@ -258,28 +262,6 @@ exports.up = async (knex) => {
     table.unique(['testId', 'userId']);
   });
 
-  await knex.schema.createTable('links', (table) => {
-    table.comment('Связи теста / опроса и ссылки');
-
-    table.integer('testId').notNullable();
-    table.uuid('link').notNullable().defaultTo(knex.raw('gen_random_uuid()'));
-
-    table
-      .datetime('begin', { useTz: false, precision: 6 })
-      .comment('Дата начала действия ссылки');
-    table
-      .datetime('end', { useTz: false, precision: 6 })
-      .comment('Дата окончания действия ссылки');
-    table
-      .integer('limit')
-      .notNullable()
-      .defaultTo(1)
-      .comment('Лимит на использование. Примечание: 0 и ссылка удаляется');
-
-    table.foreign('testId').references('tests.id').onDelete('CASCADE');
-
-    table.unique('link');
-  });
   await knex.schema.createTable('testContacts', (table) => {
     table.comment('Связи теста / опроса и контакта');
 
@@ -378,7 +360,6 @@ exports.down = async (knex) => {
 
   await knex.raw('drop table members cascade');
 
-  await knex.raw('drop table links cascade');
   await knex.raw('drop table "testContacts" cascade');
   await knex.raw('drop table "testGroups" cascade');
 

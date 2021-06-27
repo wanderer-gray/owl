@@ -1,8 +1,8 @@
-const { members: { roles: { CREATOR } } } = require('../../../../enums');
+const { members: { roles: { CREATOR } } } = require('../../../enums');
 const {
   knexExists,
   knexArrayAgg,
-} = require('../../../../utils');
+} = require('../../../utils');
 
 module.exports = async function operation({ userId, query }, { log, knex, httpErrors }) {
   log.trace('getTest');
@@ -61,14 +61,14 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
   const test = await knex('tests')
     .where({ id })
     .first([
+      'id',
       'type',
       'title',
       'description',
+      'time',
       'availableAll',
       knexArrayAgg(questions, knex).as('questions'),
     ]);
-
-  test.id = id;
 
   return test;
 };

@@ -1,7 +1,7 @@
 const {
   tests,
   questions,
-} = require('../../../../enums');
+} = require('../../../enums');
 
 module.exports = {
   body: {
@@ -24,6 +24,11 @@ module.exports = {
         minLength: 1,
         maxLength: 255,
         nullable: true,
+      },
+      time: {
+        type: 'integer',
+        minimum: new Date(0, 0, 0, 0, 0).getTime(),
+        maximum: new Date(0, 0, 0, 23, 59).getTime(),
       },
       availableAll: {
         type: 'boolean',
@@ -95,6 +100,7 @@ module.exports = {
     required: [
       'type',
       'title',
+      'time',
       'availableAll',
       'questions',
     ],

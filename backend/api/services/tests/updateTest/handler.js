@@ -1,22 +1,19 @@
-const {
-  tests,
-  questions: questionsEnum,
-  members: { roles: { CREATOR } },
-} = require('../../../../enums');
-const { knexExists } = require('../../../../utils');
+const { members: { roles: { CREATOR } } } = require('../../../enums');
+const { knexExists } = require('../../../utils');
 
 const updateTest = async (id, body, { knex }) => {
   const {
     type,
     title,
     description,
+    time,
     availableAll,
   } = body;
 
   const dbTest = {};
 
   if (type !== undefined) {
-    dbTest.type = tests.types[type];
+    dbTest.type = type;
   }
 
   if (title !== undefined) {
@@ -25,6 +22,10 @@ const updateTest = async (id, body, { knex }) => {
 
   if (description !== undefined) {
     dbTest.description = description;
+  }
+
+  if (time !== undefined) {
+    dbTest.time = new Date(time);
   }
 
   if (availableAll !== undefined) {
@@ -49,12 +50,12 @@ const createQuestion = async (testId, question, { index: questionIndex, knex }) 
     options,
   } = question;
 
-  const { id: questionId } = await knex('questions')
+  const [questionId] = await knex('questions')
     .insert({
       testId,
       title: questionTitle,
       description,
-      typeEnum: tests.types[type],
+      type,
       points,
       weight: questionIndex,
     })
@@ -88,7 +89,7 @@ const updateOptions = async (questionId, options, { knex }) => {
     .map((option) => option.id);
 
   if (ids.length) {
-    await knex('questionOptions')
+    await knex('options')
       .where({ questionId })
       .whereNotIn('id', ids)
       .del();
@@ -170,7 +171,7 @@ const updateQuestions = async (testId, questions, { knex }) => {
     }
 
     if (type !== undefined) {
-      dbQuestion.type = questionsEnum.types[type];
+      dbQuestion.type = type;
     }
 
     if (points !== undefined) {

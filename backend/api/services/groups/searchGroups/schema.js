@@ -16,4 +16,18 @@ module.exports = {
     required: ['title'],
     additionalProperties: false,
   },
+  body: {
+    type: 'object',
+    properties: {
+      noGroupIds: {
+        type: 'array',
+        items: {
+          type: 'integer',
+        },
+        maxItems: 256,
+        default: [],
+      },
+    },
+    additionalProperties: false,
+  },
 };

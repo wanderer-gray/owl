@@ -1,5 +1,5 @@
-const { members: { roles: { CREATOR } } } = require('../../../../enums');
-const { knexExists } = require('../../../../utils');
+const { members: { roles: { CREATOR } } } = require('../../../enums');
+const { knexExists } = require('../../../utils');
 
 module.exports = async function operation({ userId, query }, { log, knex, httpErrors }) {
   log.trace('deleteTest');

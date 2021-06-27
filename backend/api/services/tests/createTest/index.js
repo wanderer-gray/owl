@@ -1,18 +1,19 @@
 const {
   permissions: {
-    objects: { GROUPS },
-    actions: { SELECT },
+    objects: { TESTS },
+    actions: { CREATE },
   },
 } = require('../../../enums');
 const schema = require('./schema');
 const handler = require('./handler');
 
 module.exports = {
+  tran: true,
   method: 'POST',
-  path: '/searchGroups',
+  path: '/createTest',
   target: {
-    object: GROUPS,
-    action: SELECT,
+    object: TESTS,
+    action: CREATE,
   },
   schema,
   handler,

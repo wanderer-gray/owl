@@ -1,19 +1,19 @@
 const {
   permissions: {
     objects: { TESTS },
-    actions: { CREATE },
+    actions: { UPDATE },
   },
-} = require('../../../../enums');
+} = require('../../../enums');
 const schema = require('./schema');
 const handler = require('./handler');
 
 module.exports = {
   tran: true,
-  method: 'POST',
-  path: '/createTest',
+  method: 'PUT',
+  path: '/setContacts',
   target: {
     object: TESTS,
-    action: CREATE,
+    action: UPDATE,
   },
   schema,
   handler,

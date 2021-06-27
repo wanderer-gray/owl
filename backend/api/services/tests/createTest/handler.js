@@ -1,4 +1,4 @@
-const { members: { roles: { CREATOR } } } = require('../../../../enums');
+const { members: { roles: { CREATOR } } } = require('../../../enums');
 
 const getDbQuestions = (testId, questions) => questions.map((question, index) => {
   const {
@@ -46,15 +46,17 @@ module.exports = async function operation({ userId, body }, { log, knex }) {
     type,
     title,
     description,
+    time,
     availableAll,
     questions,
   } = body;
 
-  const { id: testId } = await knex('tests')
+  const [testId] = await knex('tests')
     .insert({
       type,
       title,
       description,
+      time: new Date(time),
       availableAll,
     })
     .returning('id');

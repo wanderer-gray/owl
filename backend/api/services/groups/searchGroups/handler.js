@@ -20,15 +20,17 @@ const fmtResult = async (groups, count, { userId, knex }) => {
   };
 };
 
-module.exports = async function operation({ userId, query }, { log, knex }) {
+module.exports = async function operation({ userId, query, body }, { log, knex }) {
   log.trace('searchGroups');
   log.debug(userId);
   log.debug(query);
+  log.debug(body);
 
   const {
     title,
     limit,
   } = query;
+  const { noGroupIds } = body;
 
   const [
     groups,
@@ -36,13 +38,15 @@ module.exports = async function operation({ userId, query }, { log, knex }) {
   ] = await Promise.all([
     knex('groups')
       .where('title', 'ilike', `${title}%`)
-      .select('id', 'title')
       .where('ownerId', userId)
+      .whereNotIn('id', noGroupIds)
+      .select('id', 'title')
       .orderBy('title')
       .limit(limit),
     knex('groups')
       .where('title', 'ilike', `${title}%`)
       .where('ownerId', userId)
+      .whereNotIn('id', noGroupIds)
       .select(knex.raw('count(*)::int')),
   ]);
 

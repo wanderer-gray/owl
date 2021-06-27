@@ -60,6 +60,19 @@ module.exports = async function operation({ userId, query, body }, { log, knex, 
     throw httpErrors.notFound();
   }
 
+  const checkUserBadContacts = knex('contacts')
+    .whereIn('id', contactIds)
+    .whereNot({ userIdFrom: userId })
+    .whereNot({ userIdTo: userId });
+
+  const existsBadContact = await knexExists(checkUserBadContacts, knex);
+
+  if (existsBadContact) {
+    log.warn('no exists contact');
+
+    throw httpErrors.forbidden();
+  }
+
   await Promise.all([
     updateTitle(id, title, { knex }),
     updateContacts(id, contactIds, { log, knex }),

@@ -1,4 +1,6 @@
-module.exports = async function operation({ userId, body }, { log, knex }) {
+const { knexExists } = require('../../../utils');
+
+module.exports = async function operation({ userId, body }, { log, knex, httpErrors }) {
   log.trace('createGroup');
   log.debug(userId);
   log.debug(body);
@@ -7,6 +9,19 @@ module.exports = async function operation({ userId, body }, { log, knex }) {
     title,
     contactIds,
   } = body;
+
+  const checkUserBadContacts = knex('contacts')
+    .whereIn('id', contactIds)
+    .whereNot({ userIdFrom: userId })
+    .whereNot({ userIdTo: userId });
+
+  const existsBadContact = await knexExists(checkUserBadContacts, knex);
+
+  if (existsBadContact) {
+    log.warn('no exists contact');
+
+    throw httpErrors.forbidden();
+  }
 
   const [groupId] = await knex('groups')
     .insert({

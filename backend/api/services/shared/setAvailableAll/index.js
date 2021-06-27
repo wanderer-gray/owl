@@ -1,18 +1,19 @@
 const {
   permissions: {
     objects: { TESTS },
-    actions: { DELETE },
+    actions: { UPDATE },
   },
-} = require('../../../../enums');
+} = require('../../../enums');
 const schema = require('./schema');
 const handler = require('./handler');
 
 module.exports = {
-  method: 'DELETE',
-  path: '/deleteTest',
+  tran: true,
+  method: 'PUT',
+  path: '/setAvailableAll',
   target: {
     object: TESTS,
-    action: DELETE,
+    action: UPDATE,
   },
   schema,
   handler,

@@ -1,5 +1,5 @@
-const { members: { roles: { CREATOR } } } = require('../../../../enums');
-const { getDateISO } = require('../../../../utils');
+const { members: { roles: { CREATOR } } } = require('../../../enums');
+const { getDateISO } = require('../../../utils');
 
 module.exports = async function operation({ userId, query }, { log, knex }) {
   log.trace('searchTests');
