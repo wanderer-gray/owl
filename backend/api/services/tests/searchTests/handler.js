@@ -1,9 +1,47 @@
-const { members: { roles: { CREATOR } } } = require('../../../enums');
+const {
+  tests: { searchTypes },
+  members: { roles: { CREATOR } },
+} = require('../../../enums');
 const { getDateISO } = require('../../../utils');
 
-module.exports = async function operation({ userId, query }, { log, knex }) {
+const searchAllTests = async ({ title, offset, limit }, { knex }) => {
+  const queryTests = knex('tests')
+    .where({ availableAll: true })
+    .where('title', 'ilike', `${title}%`)
+    .select([
+      'id',
+      'type',
+      'title',
+    ])
+    .orderBy('title')
+    .offset(offset)
+    .limit(limit);
+
+  const queryCountTests = knex('tests')
+    .where({ availableAll: true })
+    .where('title', 'ilike', `${title}%`)
+    .select(knex.raw('count(*)::int'));
+
+  const [
+    tests,
+    [{ count }],
+  ] = await Promise.all([
+    queryTests,
+    queryCountTests,
+  ]);
+
+  return {
+    tests,
+    count,
+  };
+};
+
+module.exports = async function operation(request, { log, knex, httpErrors }) {
   log.trace('searchTests');
-  log.debug(userId);
+  log.debug(request.cookies);
+
+  const { query } = request;
+
   log.debug(query);
 
   const {
@@ -13,121 +51,137 @@ module.exports = async function operation({ userId, query }, { log, knex }) {
     limit,
   } = query;
 
-  const currentDate = getDateISO();
+  if (type === searchTypes.ALL) {
+    const result = await searchAllTests(query, { knex });
 
-  log.info(currentDate);
+    return result;
+  }
 
-  const checkIfTestCreator = knex('testMembers')
-    .whereRaw('"tests"."id" = "testMembers"."testId"')
-    .where({
-      userId,
-      roleEnum: CREATOR,
-    });
+  const signUserId = request.cookies.userId;
 
-  const checkIfUserMember = knex('contacts')
-    .whereRaw('"contacts"."id" = "testLinkMembers"."memberId"')
-    .where('testLinkMembers.typeEnum', linkMembers.USER)
-    .andWhere((builder) => {
-      builder
-        .where('userIdFrom', userId)
-        .orWhere('userIdTo', userId);
-    });
+  log.info(signUserId);
 
-  const cehckIfUserGroup = knex('contacts')
-    .whereRaw('"contacts"."id" = "groupContacts"."contactId"')
-    .andWhere((builder) => {
-      builder
-        .where('userIdFrom', userId)
-        .orWhere('userIdTo', userId);
-    });
+  if (!signUserId) {
+    log.warn('not authorized');
 
-  const checkIfGroupMember = knex('groupContacts')
-    .whereRaw('"groupContacts"."groupId" = "testLinkMembers"."memberId"')
-    .where('testLinkMembers.typeEnum', linkMembers.GROUP)
-    .whereExists(cehckIfUserGroup);
+    throw httpErrors.unauthorized();
+  }
 
-  const checkIfLinkMember = knex('testLinkMembers')
-    .whereRaw('"testLinks"."id" = "testLinkMembers"."testLinkId"')
-    .andWhere((builder) => {
-      builder
-        .whereExists(checkIfUserMember)
-        .orWhereExists(checkIfGroupMember);
-    });
+  const unsignUserId = request.unsignCookie(signUserId);
 
-  const checkIfTestMember = knex('testLinks')
-    .whereRaw('"tests"."id" = "testLinks"."testId"')
-    .andWhere((builder) => {
-      builder
-        .whereNull('begin')
-        .orWhere(knex.raw('begin < ?', [currentDate]));
-    })
-    .andWhere((builder) => {
-      builder
-        .whereNull('end')
-        .orWhere(knex.raw('end > ?', [currentDate]));
-    })
-    .whereExists(checkIfLinkMember);
+  log.info(unsignUserId);
 
-  const checkIfTestUser = knex('testUsers')
-    .whereRaw('"tests"."id" = "testUsers"."testId"')
-    .where({ userId });
+  if (!unsignUserId.valid) {
+    log.warn('not authorized');
 
-  const queryAll = knex('tests')
+    throw httpErrors.unauthorized();
+  }
+
+  const userId = Number(unsignUserId.value);
+
+  const queryTests = knex('tests')
     .where('title', 'ilike', `${title}%`)
-    .where('availableAll', true);
+    .orderBy('title')
+    .offset(offset)
+    .limit(limit);
 
-  const queryMy = knex('tests')
+  const queryCountTests = knex('tests')
     .where('title', 'ilike', `${title}%`)
-    .whereExists(checkIfTestCreator);
+    .select(knex.raw('count(*)::int'));
 
-  const queryAvailable = knex('tests')
-    .where('title', 'ilike', `${title}%`)
-    .whereExists(checkIfTestMember);
+  if (type === searchTypes.MY) {
+    const existsUserMemberCreator = knex('members')
+      .whereRaw('"tests"."id" = "members"."testId"')
+      .where({
+        userId,
+        role: CREATOR,
+      });
 
-  const queryResult = knex('tests')
-    .where('title', 'ilike', `${title}%`)
-    .whereExists(checkIfTestUser);
+    queryTests.whereExists(existsUserMemberCreator);
+    queryCountTests.whereExists(existsUserMemberCreator);
+  } else if (type === searchTypes.ASSIGNED) {
+    const countUseTestByUser = knex('testUsers')
+      .whereRaw('"tests"."id" = "testUsers"."testId"')
+      .where({ userId })
+      .count('*');
 
-  const promises = [];
+    const existsUserInTestContacts = knex('contacts')
+      .join('testContacts', 'contacts.id', '=', 'testContacts.contactId')
+      .whereRaw('"tests"."id" = "testContacts"."testId"')
+      .where((builder) => {
+        builder
+          .where('userIdFrom', userId)
+          .orWhere('userIdTo', userId);
+      })
+      .where((builder) => {
+        builder
+          .whereNull('begin')
+          .orWhere('begin', '<=', getDateISO());
+      })
+      .where((builder) => {
+        builder
+          .whereNull('end')
+          .orWhere('end', '>=', getDateISO());
+      })
+      .where((builder) => {
+        builder
+          .where('limit', '=', 0)
+          .orWhere('limit', '>', countUseTestByUser);
+      });
+    const existsUserInTestGroups = knex('contacts')
+      .join('groupContacts', 'contacts.id', '=', 'groupContacts.contactId')
+      .join('testGroups', 'groupContacts.groupId', '=', 'testGroups.groupId')
+      .whereRaw('"tests"."id" = "testGroups"."testId"')
+      .where((builder) => {
+        builder
+          .where('userIdFrom', userId)
+          .orWhere('userIdTo', userId);
+      })
+      .where((builder) => {
+        builder
+          .whereNull('begin')
+          .orWhere('begin', '<=', getDateISO());
+      })
+      .where((builder) => {
+        builder
+          .whereNull('end')
+          .orWhere('end', '>=', getDateISO());
+      })
+      .where((builder) => {
+        builder
+          .where('limit', '=', 0)
+          .orWhere('limit', '>', countUseTestByUser);
+      });
 
-  // eslint-disable-next-line default-case
-  switch (type) {
-    case typesSearch.ALL:
-      promises.push(queryAll.select(['id', 'title']));
-      break;
-    case typesSearch.MY:
-      promises.push(queryMy.select(['id', 'title']));
-      break;
+    queryTests.andWhere((builder) => {
+      builder
+        .whereExists(existsUserInTestContacts)
+        .orWhereExists(existsUserInTestGroups);
+    });
+    queryCountTests.andWhere((builder) => {
+      builder
+        .whereExists(existsUserInTestContacts)
+        .orWhereExists(existsUserInTestGroups);
+    });
+  } else { // type === searchTypes.COMPLETED
+    const existsUserInTestUsers = knex('testUsers')
+      .whereRaw('"tests"."id" = "testUsers"."testId"')
+      .where({ userId });
 
-    case typesSearch.AVAILABLE:
-      promises.push(queryAvailable.select(['id', 'title']));
-      break;
-
-    case typesSearch.RESULTS:
-      promises.push(queryResult.select(['id', 'title']));
-      break;
+    queryTests.whereExists(existsUserInTestUsers);
+    queryCountTests.whereExists(existsUserInTestUsers);
   }
 
   const [
-    roles,
+    tests,
     [{ count }],
   ] = await Promise.all([
-    knex('roles')
-      .where('name', 'ilike', `${name}%`)
-      .whereNotIn('id', noRoleIds)
-      .select('id', 'name')
-      .orderBy('name')
-      .limit(limit),
-    knex('roles')
-      .where('name', 'ilike', `${name}%`)
-      .whereNotIn('id', noRoleIds)
-      .select(knex.raw('count(*)::int')),
+    queryTests,
+    queryCountTests,
   ]);
-
-  log.info(tests, counts);
 
   return {
     tests,
-    counts,
+    count,
   };
 };

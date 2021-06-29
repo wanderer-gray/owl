@@ -1,5 +1,6 @@
 const { members: { roles: { CREATOR } } } = require('../../../enums');
 const {
+  getKnexDateISO,
   knexExists,
   knexArrayAgg,
 } = require('../../../utils');
@@ -44,8 +45,8 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
     .select([
       knex.ref('contacts.id').as('id'),
       'email',
-      'begin',
-      'end',
+      getKnexDateISO('begin', knex),
+      getKnexDateISO('end', knex),
       'limit',
     ]);
 
@@ -55,8 +56,8 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
     .select([
       knex.ref('groups.id').as('id'),
       'title',
-      'begin',
-      'end',
+      getKnexDateISO('begin', knex),
+      getKnexDateISO('end', knex),
       'limit',
     ]);
 

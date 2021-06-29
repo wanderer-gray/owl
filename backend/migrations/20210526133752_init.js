@@ -231,9 +231,7 @@ exports.up = async (knex) => {
   });
 
   await knex.schema.createTable('decisions', (table) => {
-    table.comment('Решения на основе баллов за тест / опрос');
-
-    table.increments('id');
+    table.comment('Решения на основе баллов за тест');
 
     table.integer('testId').notNullable();
 
@@ -318,6 +316,8 @@ exports.up = async (knex) => {
     table
       .integer('userId')
       .comment('Примечание: null - аноним');
+    table.boolean('anon').notNullable();
+    table.boolean('ready').notNullable();
 
     table.foreign('testId').references('tests.id').onDelete('CASCADE');
     table.foreign('userId').references('users.id').onDelete('SET NULL');
@@ -330,6 +330,8 @@ exports.up = async (knex) => {
 
     table.foreign('userId').references('testUsers.id').onDelete('CASCADE');
     table.foreign('optionId').references('options.id').onDelete('CASCADE');
+
+    table.unique(['userId', 'optionId']);
   });
 };
 

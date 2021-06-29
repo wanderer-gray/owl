@@ -15,7 +15,7 @@ module.exports = async function operation(request, { log, knex }) {
     return result;
   }
 
-  const unsignUserId = request.unsignCookie(request.cookies.userId);
+  const unsignUserId = request.unsignCookie(signUserId);
 
   log.info(unsignUserId);
 

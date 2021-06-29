@@ -2,9 +2,9 @@ const schema = require('./schema');
 const handler = require('./handler');
 
 module.exports = {
-  auth: false,
+  tran: true,
   method: 'GET',
-  path: '/searchTests',
+  path: '/getTest',
   schema,
   handler,
 };

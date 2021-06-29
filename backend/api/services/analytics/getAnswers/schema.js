@@ -1,21 +1,9 @@
-const { tests: { searchTypes } } = require('../../../enums');
-
 module.exports = {
   querystring: {
     type: 'object',
     properties: {
-      type: {
+      id: {
         type: 'integer',
-        enum: [
-          searchTypes.ALL,
-          searchTypes.MY,
-          searchTypes.ASSIGNED,
-          searchTypes.COMPLETED,
-        ],
-      },
-      title: {
-        type: 'string',
-        maxLength: 255,
       },
       offset: {
         type: 'integer',
@@ -29,10 +17,7 @@ module.exports = {
         default: 10,
       },
     },
-    required: [
-      'type',
-      'title',
-    ],
+    required: ['id'],
     additionalProperties: false,
   },
 };
