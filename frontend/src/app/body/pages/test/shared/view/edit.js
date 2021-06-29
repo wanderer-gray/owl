@@ -19,6 +19,7 @@ import {
   Checkbox,
   MenuItem,
   List,
+  ListSubheader,
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
@@ -40,11 +41,26 @@ import {
   Droppable,
   Draggable,
 } from 'react-beautiful-dnd';
+import {
+  ArgumentAxis,
+  ValueAxis,
+  Chart,
+  SplineSeries,
+  BarSeries,
+  Title,
+  Tooltip,
+} from '@devexpress/dx-react-chart-material-ui';
+import { EventTracker } from '@devexpress/dx-react-chart';
+import Pagination from '@material-ui/lab/Pagination';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CloseIcon from '@material-ui/icons/Close';
 import DragIcon from '@material-ui/icons/DragHandle';
+import GreenIcon from '@material-ui/icons/Done';
+import YellowIcon from '@material-ui/icons/Warning';
+import RedIcon from '@material-ui/icons/Error';
+import { green, yellow, red } from '@material-ui/core/colors';
 import { statuses, tests, questions } from '../../../../../../enums';
 import { objects, actions } from '../../../../../../enums/permissions';
 import { fmtDateTime, checkPermissions } from '../../../../../../utils';
@@ -74,6 +90,9 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
+  },
+  pagination: {
+    margin: '8px',
   },
 }));
 
@@ -707,6 +726,302 @@ const DecisionsView = observer(({
   );
 });
 
+const GetIcon = ({ color }) => {
+  switch (color) {
+    case 'green':
+      return <GreenIcon style={{ color: green[500] }} />;
+    
+    case 'yellow':
+      return <YellowIcon style={{ color: yellow[500] }} />;
+    
+    case 'red':
+      return <RedIcon style={{ color: red[500] }} />;
+
+    default:
+      return null;
+  }
+};
+
+const AnswerView = observer(({ AnswerStore }) => {
+  const classes = useStyles();
+
+  const {
+    open,
+    email,
+    points,
+    maxPoints,
+    questions,
+    onClose,
+  } = AnswerStore;
+
+  return (
+    <Dialog
+      fullScreen={true}
+      open={open}
+      onClose={onClose}
+    >
+      <AppBar className={classes.appBar}>
+        <Toolbar>
+          <IconButton
+            edge={'start'}
+            color={'inherit'}
+            onClick={onClose}
+          >
+            <CloseIcon />
+          </IconButton>
+
+          <Typography
+            className={classes.title}
+            variant={'h6'}
+          >
+            Ответы пользователя
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      
+      <Paper
+        className={classes.paper}
+        elevation={0}
+      >
+        <Typography variant={'h6'}>
+          Пользователь: {email}. Баллы: {points} / {maxPoints}
+        </Typography>
+
+        <List>
+          {questions.map((question) => {
+            const {
+              id,
+              title,
+              points,
+              maxPoints,
+              options,
+            } = question;
+
+            return (
+              <Fragment key={id}>
+                <ListSubheader disableGutters={true}>{title} {points} / {maxPoints}</ListSubheader>
+                
+                {options.map((option) => {
+                  const{
+                    id,
+                    title,
+                    color,
+                  } = option;
+
+                  return (
+                    <ListItem key={id}>
+                      <GetIcon color={color} />
+                      <ListItemText primary={title} />
+                    </ListItem>
+                  );
+                })}
+              </Fragment>
+            );
+          })}
+        </List>
+      </Paper>
+    </Dialog>
+  );
+});
+
+const AnswersView = observer(({
+  AnswersStore,
+  AnswerViewStore,
+}) => {
+  const classes = useStyles();
+
+  const {
+    open,
+    users,
+    count,
+    offset,
+    limit,
+    onClose,
+    onOffset,
+  } = AnswersStore;
+
+  return (
+    <Dialog
+      fullScreen={true}
+      open={open}
+      onClose={onClose}
+    >
+      <AppBar className={classes.appBar}>
+        <Toolbar>
+          <IconButton
+            edge={'start'}
+            color={'inherit'}
+            onClick={onClose}
+          >
+            <CloseIcon />
+          </IconButton>
+
+          <Typography
+            className={classes.title}
+            variant={'h6'}
+          >
+            Результаты
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      
+      <Paper
+        className={classes.paper}
+        elevation={0}
+      >
+        <Typography variant={'h6'}>
+          Пользователи и ответы
+        </Typography>
+
+        {!count ? (
+          <p>
+            Ничего не найдено
+          </p>
+        ) : null}
+
+        {count > limit ? (
+          <Pagination
+            className={classes.pagination}
+            showFirstButton={true}
+            showLastButton={true}
+            page={offset / limit + 1}
+            count={Math.ceil(count / limit)}
+            siblingCount={5}
+            onChange={(_, page) => onOffset((page - 1) * limit)}
+          />
+        ) : null}
+
+        <List>
+          {users.map((user) => {
+            const {
+              id,
+              email,
+              points,
+            } = user;
+
+            return (
+              <ListItem
+                key={id}
+                onClick={() => AnswerViewStore.onOpen(user)}
+              >
+                <ListItemText primary={`${email} ${points}`} />
+              </ListItem>
+            );
+          })}
+        </List>
+
+        {count > limit ? (
+          <Pagination
+            className={classes.pagination}
+            showFirstButton={true}
+            showLastButton={true}
+            page={offset / limit + 1}
+            count={Math.ceil(count / limit)}
+            siblingCount={5}
+            onChange={(_, page) => onOffset((page - 1) * limit)}
+          />
+        ) : null}
+      </Paper>
+
+      <AnswerView AnswerStore={AnswerViewStore} />
+    </Dialog>
+  );
+});
+
+const AnalyticsView = observer(({ AnalyticsStore }) => {
+  const classes = useStyles();
+
+  const {
+    open,
+    dataPoints,
+    dataQuestions,
+    onClose,
+  } = AnalyticsStore;
+
+  return (
+    <Dialog
+      fullScreen={true}
+      open={open}
+      onClose={onClose}
+    >
+      <AppBar className={classes.appBar}>
+        <Toolbar>
+          <IconButton
+            edge={'start'}
+            color={'inherit'}
+            onClick={onClose}
+          >
+            <CloseIcon />
+          </IconButton>
+
+          <Typography
+            className={classes.title}
+            variant={'h6'}
+          >
+            Аналитика
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      
+      <Paper
+        className={classes.paper}
+        elevation={0}
+      >
+        <Grid
+          container={true}
+          spacing={3}
+        >
+          <Grid
+            item={true}
+            xs={12}
+          >
+            <Paper>
+              <Chart data={dataPoints}>
+                <ArgumentAxis />
+                <ValueAxis />
+
+                <SplineSeries
+                  name="spline"
+                  valueField="count"
+                  argumentField="points"
+                />
+
+                <Title text="Количество тестов (y) / количество очков (x)" />
+              </Chart>
+            </Paper>
+          </Grid>
+
+          {dataQuestions.map(({id, title, options}) => {
+            return (
+              <Grid
+                key={id}
+                item={true}
+                xs={6}
+              >
+                <Paper>
+                  <Chart data={options}>
+                    <ArgumentAxis />
+                    <ValueAxis />
+
+                    <BarSeries
+                      valueField="count"
+                      argumentField="title"
+                    />
+                    <Title text={title} />
+
+                    <EventTracker />
+                    <Tooltip />
+                  </Chart>
+                </Paper>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </Paper>
+    </Dialog>
+  );
+});
+
 const OptionItemView = observer(({ TestStore, QuestionStore, option }) => {
   const classes = useStyles();
 
@@ -913,6 +1228,11 @@ const TestEditView = observer(({
   DecisionsStore,
   DecisionEditStore,
   DecisionCreateStore,
+
+  AnswersStore,
+  AnswerViewStore,
+
+  AnalyticsStore,
 }) => {
   const classes = useStyles();
 
@@ -1033,10 +1353,10 @@ const TestEditView = observer(({
               className={classes.buttons}
               fullWidth={true}
             >
-              <Button>
+              <Button onClick={AnswersStore.onOpen}>
                 Результаты
               </Button>
-              <Button>
+              <Button onClick={AnalyticsStore.onOpen}>
                 Аналитика
               </Button>
             </ButtonGroup>
@@ -1131,6 +1451,13 @@ const TestEditView = observer(({
         DecisionEditStore={DecisionEditStore}
         DecisionCreateStore={DecisionCreateStore}
       />
+      
+      <AnswersView
+        AnswersStore={AnswersStore}
+        AnswerViewStore={AnswerViewStore}
+      />
+
+      <AnalyticsView AnalyticsStore={AnalyticsStore} />
     </div>
   );
 });

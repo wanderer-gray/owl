@@ -18,6 +18,11 @@ import DecisionsStore from './decisions';
 import DecisionEditStore from './decisions/decision/edit';
 import DecisionCreateStore from './decisions/decision/create';
 
+import AnswersStore from './answers';
+import AnswerViewStore from './answers/answer/view';
+
+import AnalyticsStore from './analytics';
+
 import View from '../shared/view/edit';
 
 class EditTest extends Component {
@@ -52,6 +57,14 @@ class EditTest extends Component {
 
     this.DecisionEditStore = new DecisionEditStore({ DecisionsStore: decisionsStore });
     this.DecisionCreateStore = new DecisionCreateStore({ DecisionsStore: decisionsStore });
+
+    const answersStore = new AnswersStore({ TestStore: testEditStore });
+
+    this.AnswersStore = answersStore;
+    
+    this.AnswerViewStore = new AnswerViewStore({ AnswersStore: answersStore });
+
+    this.AnalyticsStore = new AnalyticsStore({ TestStore: testEditStore });
   }
 
   componentWillUnmount() {
@@ -78,6 +91,11 @@ class EditTest extends Component {
         DecisionsStore={this.DecisionsStore}
         DecisionEditStore={this.DecisionEditStore}
         DecisionCreateStore={this.DecisionCreateStore}
+
+        AnswersStore={this.AnswersStore}
+        AnswerViewStore={this.AnswerViewStore}
+
+        AnalyticsStore={this.AnalyticsStore}
       />
     );
   }

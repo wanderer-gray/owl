@@ -19,8 +19,6 @@ import Pagination from '@material-ui/lab/Pagination';
 import TestIcon from '@material-ui/icons/Assignment';
 import SurveyIcon from '@material-ui/icons/Assessment';
 import { types, searchTypes } from '../../../../enums/tests';
-import { objects, actions } from '../../../../enums/permissions';
-import { checkPermissions } from '../../../../utils';
 
 const useStyles = makeStyles(() => ({
   tabs: {
