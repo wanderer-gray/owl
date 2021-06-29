@@ -54,7 +54,7 @@ module.exports = async function operation({ query, body }, { log, knex, httpErro
 
   const [{ sum: points }] = await knex('questions')
     .where({ testId })
-    .select(knex.raw('sum(points * greatest(? / ?, 0))', [
+    .select(knex.raw('sum(points * greatest(? / greatest(?, 1), 0))', [
       countCheckedOptions,
       countAllOptions,
     ]));

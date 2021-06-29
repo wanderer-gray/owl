@@ -50,7 +50,7 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
 
   const points = knex('questions')
     .whereRaw('"testUsers"."testId" = "questions"."testId"')
-    .select(knex.raw('sum(points * greatest(? / ?, 0))', [
+    .select(knex.raw('sum(points * greatest(? / greatest(?, 1), 0))', [
       rateUser,
       rateQuestion,
     ]));
