@@ -45,20 +45,34 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
     .whereRaw('"testUsers"."id" = "testUserAnswers"."userId"')
     .select('optionId');
 
-  const users = await knex('users')
-    .join('testUsers', 'users.id', '=', 'testUsers.userId')
-    .where({
-      testId: id,
-      anon: false,
-    })
-    .select([
-      knex.ref('testUsers.id').as('id'),
-      'email',
-      knexArrayAgg(answers, knex).as('answers'),
-    ])
-    .orderBy('email', 'id')
-    .offset(offset)
-    .limit(limit);
+  const [
+    users,
+    [{ count }],
+  ] = await Promise.all([
+    knex('users')
+      .join('testUsers', 'users.id', '=', 'testUsers.userId')
+      .where({
+        testId: id,
+        anon: false,
+      })
+      .select([
+        knex.ref('testUsers.id').as('id'),
+        'email',
+        knexArrayAgg(answers, knex).as('answers'),
+      ])
+      .orderBy('email', 'id')
+      .offset(offset)
+      .limit(limit),
+    knex('testUsers')
+      .where({
+        testId: id,
+        anon: false,
+      })
+      .select(knex.raw('count(*)::int')),
+  ]);
 
-  return users;
+  return {
+    users,
+    count,
+  };
 };

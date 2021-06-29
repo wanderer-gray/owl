@@ -47,10 +47,11 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
     .orderBy('weight');
 
   const questions = await knex('questions')
-    .whereRaw({ testId: id })
+    .where({ testId: id })
     .select([
       'id',
       'title',
+      'points',
       knexArrayAgg(options, knex).as('options'),
     ])
     .orderBy('weight');
