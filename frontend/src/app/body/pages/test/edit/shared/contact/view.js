@@ -18,10 +18,6 @@ class ContactViewStore {
   }
 
   get end() {
-    if (this.begin) {
-      return this.begin;
-    }
-
     const t = this.contact.end;
 
     return t ? new Date(t) : null;

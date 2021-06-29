@@ -18,10 +18,6 @@ class GroupViewStore {
   }
 
   get end() {
-    if (this.begin) {
-      return this.begin;
-    }
-
     const t = this.group.end;
 
     return t ? new Date(t) : null;

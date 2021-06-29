@@ -329,6 +329,12 @@ const TestEditView = observer(({
 
             <Typography variant={'h6'}>
               Вопросы ({questions.length} / 100)
+
+              {questions.length < 100 ? (
+                <IconButton onClick={addQuestion}>
+                  <AddIcon />
+                </IconButton>
+              ) : null}
             </Typography>
 
             <DragDropContext onDragEnd={onDragEnd}>
@@ -375,12 +381,6 @@ const TestEditView = observer(({
                 )}
               </Droppable>
             </DragDropContext>
-
-            {questions.length < 100 ? (
-              <IconButton onClick={addQuestion}>
-                <AddIcon />
-              </IconButton>
-            ) : null}
           </Paper>
         </Grid>
 

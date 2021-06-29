@@ -120,6 +120,8 @@ class SharedStore {
         variant: 'success',
         message: 'Данных сохранены'
       });
+
+      this.onClose();
     } catch {
       notify({
         variant: 'error',

@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Tests from './tests';
 import TestCreate from './test/create';
 import TestEdit from './test/edit';
+import TestView from './test/view';
 import Profile from './profile';
 import Contacts from './contacts';
 import Groups from './groups';
@@ -61,6 +62,9 @@ const AppRouter = observer(({ AuthStore }) => {
   const routers = [{
     path: '/',
     component: Tests,
+  }, {
+    path: '/test/view/:id',
+    component: TestView,
   }];
 
   checkPermissions(objects.TESTS, actions.CREATE) && routers.push({

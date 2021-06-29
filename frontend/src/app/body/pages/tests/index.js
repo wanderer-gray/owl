@@ -1,10 +1,42 @@
+import { Component } from 'react';
+import { inject } from 'mobx-react';
 import Store from './store';
 import View from './view';
 
-const Tests = () => {
-  const store = new Store();
+class Tests extends Component {
+  constructor(props) {
+    super(props);
 
-  return <View Store={store} />;
+    const { SearchStore } = this.props;
+
+    const TestsStore = new Store({ SearchStore });
+
+    this.TestsStore = TestsStore;
+  }
+
+  componentDidMount() {
+    const { SearchStore } = this.props;
+
+    SearchStore.setView(true);
+    SearchStore.setPlaceholder('Введите название теста...');
+    SearchStore.setOnValueChange(this.TestsStore.searchTests);
+  }
+
+  componentWillUnmount() {
+    this.props.SearchStore.clear();
+  }
+
+  render() {
+    return (
+      <View TestsStore={this.TestsStore} />
+    );
+  }
 }
 
-export default Tests;
+export default inject(
+  ({ SearchStore }) => { 
+    return {
+      SearchStore
+    };
+  }
+)(Tests);

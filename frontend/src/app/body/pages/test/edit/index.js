@@ -13,6 +13,11 @@ import ContactCreateStore from './shared/contact/create';
 import GroupsStore from './shared/groups';
 import GroupEditStore from './shared/group/edit';
 import GroupCreateStore from './shared/group/create';
+
+import DecisionsStore from './decisions';
+import DecisionEditStore from './decisions/decision/edit';
+import DecisionCreateStore from './decisions/decision/create';
+
 import View from '../shared/view/edit';
 
 class EditTest extends Component {
@@ -40,6 +45,13 @@ class EditTest extends Component {
     this.GroupsStore = new GroupsStore({ SharedStore: sharedStore, AuthStore });
     this.GroupEditStore = new GroupEditStore({ SharedStore: sharedStore });
     this.GroupCreateStore = new GroupCreateStore({ SharedStore: sharedStore });
+
+    const decisionsStore = new DecisionsStore({ TestStore: testEditStore });
+
+    this.DecisionsStore = decisionsStore;
+
+    this.DecisionEditStore = new DecisionEditStore({ DecisionsStore: decisionsStore });
+    this.DecisionCreateStore = new DecisionCreateStore({ DecisionsStore: decisionsStore });
   }
 
   componentWillUnmount() {
@@ -62,6 +74,10 @@ class EditTest extends Component {
         GroupsStore={this.GroupsStore}
         GroupEditStore={this.GroupEditStore}
         GroupCreateStore={this.GroupCreateStore}
+
+        DecisionsStore={this.DecisionsStore}
+        DecisionEditStore={this.DecisionEditStore}
+        DecisionCreateStore={this.DecisionCreateStore}
       />
     );
   }

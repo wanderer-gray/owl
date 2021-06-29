@@ -223,7 +223,7 @@ class TestViewStore {
       questionData.points = question.points;
 
       const options = question.options.map((option) => {
-        const optionData = option;
+        const optionData = {};
 
         if (option.id) {
           optionData.id = option.id;

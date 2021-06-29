@@ -1,5 +1,8 @@
 import { Fragment } from 'react';
-import { observer } from 'mobx-react';
+import {
+  inject,
+  observer,
+} from 'mobx-react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Grid,
@@ -26,6 +29,7 @@ import {
   DialogActions,
   AppBar,
   Toolbar,
+  Slider,
 }from '@material-ui/core';
 import {
   TimePicker,
@@ -42,7 +46,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import CloseIcon from '@material-ui/icons/Close';
 import DragIcon from '@material-ui/icons/DragHandle';
 import { statuses, tests, questions } from '../../../../../../enums';
-import { fmtDateTime } from '../../../../../../utils';
+import { objects, actions } from '../../../../../../enums/permissions';
+import { fmtDateTime, checkPermissions } from '../../../../../../utils';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -520,6 +525,188 @@ const SharedView = observer(({
   );
 });
 
+const DecisionView = observer(({ DecisionStore, DecisionsStore }) => {
+  const classes = useStyles();
+
+  const {
+    open,
+    title,
+    description,
+    from,
+    to,
+    setTitle,
+    setDescription,
+    setFrom,
+    setTo,
+    onClose,
+    onSave,
+  } = DecisionStore;
+  const { maxPoints } = DecisionsStore;
+
+  return (
+    <Dialog
+      scroll={'paper'}
+      fullWidth={true}
+      open={open}
+      onClose={onClose}
+    >
+      <DialogTitle>
+        Решения редактирование
+      </DialogTitle>
+
+      <DialogContent dividers={true}>
+        <TextField
+          className={classes.input}
+          label={'Название'}
+          variant={'outlined'}
+          fullWidth={true}
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+        />
+        
+        <TextField
+          className={classes.input}
+          label={'Описание'}
+          variant={'outlined'}
+          fullWidth={true}
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+        />
+
+        <Slider
+          valueLabelDisplay={'on'}
+          max={maxPoints}
+          value={[from, to]}
+          onChange={(_, value) => {
+            setFrom(value[0]);
+            setTo(value[1]);
+          }}
+        />
+      </DialogContent>
+
+      <DialogActions>
+        <Button
+          color={'primary'}
+          onClick={onClose}
+        >
+          Отмена
+        </Button>
+        
+        <Button
+          color={'primary'}
+          onClick={onSave}
+        >
+          Сохранить
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+});
+
+const DecisionsView = observer(({
+  DecisionsStore,
+  DecisionEditStore,
+  DecisionCreateStore,
+}) => {
+  const classes = useStyles();
+
+  const {
+    open,
+    decisions,
+    removeDecision,
+    onClose,
+    onSave,
+  } = DecisionsStore;
+
+  return (
+    <Dialog
+      fullScreen={true}
+      open={open}
+      onClose={onClose}
+    >
+      <AppBar className={classes.appBar}>
+        <Toolbar>
+          <IconButton
+            edge={'start'}
+            color={'inherit'}
+            onClick={onClose}
+          >
+            <CloseIcon />
+          </IconButton>
+
+          <Typography
+            className={classes.title}
+            variant={'h6'}
+          >
+            Решения
+          </Typography>
+
+          <Button
+            color={'inherit'}
+            onClick={onSave}
+          >
+            Сохранить
+          </Button>
+        </Toolbar>
+      </AppBar>
+      
+      <Paper
+        className={classes.paper}
+        elevation={0}
+      >
+        <Typography variant={'h6'}>
+          Решения на основе баллов за тест
+
+          {decisions.length < 10 ? (
+            <IconButton onClick={DecisionCreateStore.onOpen}>
+              <AddIcon />
+            </IconButton>
+          ) : null}
+        </Typography>
+
+        <List>
+          {decisions.map((decision, index) => {
+            const {
+              title,
+              from,
+              to,
+            } = decision;
+
+            return (
+              <ListItem
+                key={index}
+                onClick={() => DecisionEditStore.onOpen(decision)}
+              >
+                <ListItemText primary={title} />
+                <ListItemText primary={from} />
+                <ListItemText primary={to} />
+
+                <ListItemSecondaryAction>
+                  <IconButton
+                    edge={'end'}
+                    onClick={() => removeDecision(index)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            );
+          })}
+        </List>
+      </Paper>
+
+      <DecisionView
+        DecisionStore={DecisionEditStore}
+        DecisionsStore={DecisionsStore}
+      />
+      <DecisionView
+        DecisionStore={DecisionCreateStore}
+        DecisionsStore={DecisionsStore}
+      />
+    </Dialog>
+  );
+});
+
 const OptionItemView = observer(({ TestStore, QuestionStore, option }) => {
   const classes = useStyles();
 
@@ -708,6 +895,8 @@ const QuestionItemTitleView = observer(({ index, question }) => {
 });
 
 const TestEditView = observer(({
+  AuthStore,
+
   TestStore,
   QuestionEditStore,
 
@@ -720,6 +909,10 @@ const TestEditView = observer(({
   GroupsStore,
   GroupEditStore,
   GroupCreateStore,
+
+  DecisionsStore,
+  DecisionEditStore,
+  DecisionCreateStore,
 }) => {
   const classes = useStyles();
 
@@ -773,9 +966,11 @@ const TestEditView = observer(({
             <Typography variant={'h6'}>
               {tests.types.getTitle(type)} редактирование
 
-              <IconButton onClick={deleteTest}>
-                <DeleteIcon />
-              </IconButton>
+              {checkPermissions(AuthStore, objects.TESTS, actions.DELETE) ? (
+                <IconButton onClick={deleteTest}>
+                  <DeleteIcon />
+                </IconButton>
+              ) : null}
             </Typography>
 
             <InputLabel htmlFor={'select-test-type'}>Тип</InputLabel>
@@ -828,6 +1023,11 @@ const TestEditView = observer(({
               <Button onClick={SharedStore.onOpen}>
                 Поделиться
               </Button>
+              {type === types.TEST && DecisionsStore.maxPoints ? (
+                <Button onClick={DecisionsStore.onOpen}>
+                  Решения
+                </Button>
+              ) : null}
             </ButtonGroup>
             <ButtonGroup
               className={classes.buttons}
@@ -843,6 +1043,12 @@ const TestEditView = observer(({
 
             <Typography variant={'h6'}>
               Вопросы ({questions.length} / 100)
+
+              {questions.length < 100 ? (
+                <IconButton onClick={addQuestion}>
+                  <AddIcon />
+                </IconButton>
+              ) : null}
             </Typography>
 
             <DragDropContext onDragEnd={onDragEnd}>
@@ -889,12 +1095,6 @@ const TestEditView = observer(({
                 )}
               </Droppable>
             </DragDropContext>
-
-            {questions.length < 100 ? (
-              <IconButton onClick={addQuestion}>
-                <AddIcon />
-              </IconButton>
-            ) : null}
           </Paper>
         </Grid>
 
@@ -925,8 +1125,18 @@ const TestEditView = observer(({
         GroupEditStore={GroupEditStore}
         GroupCreateStore={GroupCreateStore}
       />
+
+      <DecisionsView
+        DecisionsStore={DecisionsStore}
+        DecisionEditStore={DecisionEditStore}
+        DecisionCreateStore={DecisionCreateStore}
+      />
     </div>
   );
 });
 
-export default TestEditView;
+export default inject(({ AuthStore }) => {
+  return {
+    AuthStore,
+  };
+})(TestEditView);
