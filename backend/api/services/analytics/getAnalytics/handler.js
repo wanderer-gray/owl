@@ -67,17 +67,13 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
     ]);
 
   const [
-    maxPoints,
     countPoints,
     rateQuestions,
   ] = await Promise.all([
-    knex('questions')
-      .where({ testId: id })
-      .sum('points'),
     knex('testUsers')
       .where({ testId: id })
       .select([
-        knex.raw('count(*)').as('count'),
+        knex.raw('count(*) as count'),
         points.as('points'),
       ])
       .groupBy('points')
@@ -86,12 +82,11 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
       .where({ testId: id })
       .select([
         'id',
-        knexArrayAgg(rateOptions).as('options'),
+        knexArrayAgg(rateOptions, knex).as('options'),
       ]),
   ]);
 
   return {
-    maxPoints,
     countPoints,
     rateQuestions,
   };
