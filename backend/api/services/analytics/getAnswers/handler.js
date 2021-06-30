@@ -54,6 +54,7 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
       .where({
         testId: id,
         anon: false,
+        delete: false,
       })
       .select([
         knex.ref('testUsers.id').as('id'),
@@ -67,6 +68,7 @@ module.exports = async function operation({ userId, query }, { log, knex, httpEr
       .where({
         testId: id,
         anon: false,
+        delete: false,
       })
       .select(knex.raw('count(*)::int')),
   ]);

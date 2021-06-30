@@ -318,6 +318,7 @@ exports.up = async (knex) => {
       .comment('Примечание: null - аноним');
     table.boolean('anon').notNullable();
     table.boolean('ready').notNullable();
+    table.boolean('delete').notNullable().defaultTo(false);
 
     table.foreign('testId').references('tests.id').onDelete('CASCADE');
     table.foreign('userId').references('users.id').onDelete('SET NULL');

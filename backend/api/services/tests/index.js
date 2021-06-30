@@ -4,6 +4,8 @@ const createTest = require('./createTest');
 const updateTest = require('./updateTest');
 const deleteTest = require('./deleteTest');
 
+const getAnswers = require('./getAnswers');
+
 module.exports = (fastify) => fastify.service({
   operations: [
     searchTests,
@@ -11,5 +13,7 @@ module.exports = (fastify) => fastify.service({
     createTest,
     updateTest,
     deleteTest,
+
+    getAnswers,
   ],
 });

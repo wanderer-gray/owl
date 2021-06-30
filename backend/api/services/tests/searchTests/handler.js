@@ -166,7 +166,10 @@ module.exports = async function operation(request, { log, knex, httpErrors }) {
   } else { // type === searchTypes.COMPLETED
     const existsUserInTestUsers = knex('testUsers')
       .whereRaw('"tests"."id" = "testUsers"."testId"')
-      .where({ userId });
+      .where({
+        userId,
+        delete: false,
+      });
 
     queryTests.whereExists(existsUserInTestUsers);
     queryCountTests.whereExists(existsUserInTestUsers);

@@ -19,8 +19,8 @@ const knexExists = async (query, knex) => {
 };
 
 const knexArrayAgg = (query, knex) => knex
-  .from(query.as('vals'))
-  .select(knex.raw('array_agg(row_to_json(vals))'));
+  .from(query.clone().as('vals'))
+  .select(knex.raw('coalesce(array_agg(row_to_json(vals)), \'{}\'::json[])'));
 
 const checkPermission = async (userId, { object, action }, { log, knex }) => {
   log.trace('checkPermission');
