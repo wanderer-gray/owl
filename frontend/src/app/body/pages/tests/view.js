@@ -12,25 +12,200 @@ import {
   Tab,
   List,
   ListItem,
+  ListSubheader,
   ListItemAvatar,
   ListItemText,
+  Dialog,
+  AppBar,
+  Toolbar,
+  IconButton,
 } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
 import TestIcon from '@material-ui/icons/Assignment';
 import SurveyIcon from '@material-ui/icons/Assessment';
+import CloseIcon from '@material-ui/icons/Close';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { types, searchTypes } from '../../../../enums/tests';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   tabs: {
     marginTop: '16px',
+  },
+  paper: {
+    padding: theme.spacing(2),
+  },
+  appBar: {
+    position: 'relative',
+  },
+  title: {
+    marginLeft: theme.spacing(2),
+    flex: 1,
   },
   pagination: {
     margin: '8px',
   },
 }));
 
+const AnswersView = observer(({ AnswersStore }) => {
+  const classes = useStyles();
 
-const TestsView = observer(({ TestsStore, AuthStore }) => {
+  const {
+    open,
+    testId,
+    title,
+    offset,
+    count,
+    id,
+    points,
+    maxPoints,
+    questions,
+    decisions,
+    onClose,
+    onOffset,
+    deleteAnswer,
+  } = AnswersStore;
+
+  return (
+    <Dialog
+      fullScreen={true}
+      open={open}
+      onClose={onClose}
+    >
+      <AppBar className={classes.appBar}>
+        <Toolbar>
+          <IconButton
+            edge={'start'}
+            color={'inherit'}
+            onClick={onClose}
+          >
+            <CloseIcon />
+          </IconButton>
+
+          <Typography
+            className={classes.title}
+            variant={'h6'}
+          >
+            #{testId} {title}
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      
+      <Paper
+        className={classes.paper}
+        elevation={0}
+      >
+        <Typography
+          className={classes.title}
+          variant={'h6'}
+        >
+          Версия ответов: #{offset + 1}
+
+          <IconButton
+            edge={'end'}
+            onClick={() => deleteAnswer(id)}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Typography>
+
+        {count ? (
+          <Pagination
+            className={classes.pagination}
+            showFirstButton={true}
+            showLastButton={true}
+            page={offset + 1}
+            count={count}
+            siblingCount={5}
+            onChange={(_, page) => onOffset((page - 1))}
+          />
+        ) : null}
+
+        <Typography
+          className={classes.title}
+          variant={'h6'}
+        >
+          Баллы: {points} / {maxPoints}
+        </Typography>
+
+        <Typography
+          className={classes.title}
+          variant={'body1'}
+        >
+          Вопросы
+        </Typography>
+
+        <List>
+          {questions.map((question, index) => {
+            const { id, title, options } = question;
+
+            return (
+              <Fragment key={id}>
+                <ListSubheader color={'primary'}>#{index + 1} {title}</ListSubheader>
+                
+                {options.map((option) => {
+                  const{
+                    id,
+                    title,
+                  } = option;
+
+                  return (
+                    <ListItem
+                      key={id}
+                      dense={true}
+                    >
+                      <ListItemText primary={title} />
+                    </ListItem>
+                  );
+                })}
+              </Fragment>
+            );
+          })}
+        </List>
+
+        {decisions.length ? (
+          <Fragment>
+            <Typography
+              className={classes.title}
+              variant={'body1'}
+            >
+              Решения
+            </Typography>
+
+            <List>
+              {decisions.map((decision, index) => {
+                const { title, description } = decision;
+
+                return (
+                  <ListItem key={index}>
+                    <ListSubheader>{title}</ListSubheader>
+
+                    <ListItemText primary={description} />
+                  </ListItem>
+                );
+              })}
+            </List>
+          </Fragment>
+        ) : null}
+      </Paper>
+    </Dialog>
+  );
+});
+
+const getCallback = ({ TestsStore, AnswersStore, test }) => () => {
+  const {
+    type,
+    setTestId,
+  } = TestsStore;
+  const { onOpen } = AnswersStore;
+
+  if (type === searchTypes.COMPLETED) {
+    return onOpen(test);
+  }
+
+  return setTestId(test.id);
+};
+
+const TestsView = observer(({ TestsStore, AnswersStore, AuthStore }) => {
   const classes = useStyles();
 
   const {
@@ -42,7 +217,6 @@ const TestsView = observer(({ TestsStore, AuthStore }) => {
     type,
     title,
     testId,
-    setTestId,
     onTabIndexChange,
     onOffset,
   } = TestsStore;
@@ -97,22 +271,26 @@ const TestsView = observer(({ TestsStore, AuthStore }) => {
       ) : null}
 
       <List>
-        {tests.map(({id, type, title}) => (
-          <ListItem
-            key={id}
-            onClick={() => setTestId(id)}
-          >
-            <ListItemAvatar>
-              {type === types.TEST ? (
-                <TestIcon />
-              ) : (
-                <SurveyIcon />
-              )}
-            </ListItemAvatar>
+        {tests.map((test) => {
+          const { id, type, title } = test;
 
-            <ListItemText primary={title} />
-          </ListItem>
-        ))}
+          return (
+            <ListItem
+              key={id}
+              onClick={getCallback({ TestsStore, AnswersStore, test })}
+            >
+              <ListItemAvatar>
+                {type === types.TEST ? (
+                  <TestIcon />
+                ) : (
+                  <SurveyIcon />
+                )}
+              </ListItemAvatar>
+
+              <ListItemText primary={title} />
+            </ListItem>
+          );
+        })}
       </List>
 
       {count > limit ? (
@@ -126,6 +304,8 @@ const TestsView = observer(({ TestsStore, AuthStore }) => {
           onChange={(_, page) => onOffset((page - 1) * limit)}
         />
       ) : null}
+
+      <AnswersView AnswersStore={AnswersStore} />
     </Fragment>
   );
 });

@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { inject } from 'mobx-react';
 import Store from './store';
+import AnswersStore from './answers';
 import View from './view';
 
 class Tests extends Component {
@@ -12,6 +13,7 @@ class Tests extends Component {
     const TestsStore = new Store({ SearchStore });
 
     this.TestsStore = TestsStore;
+    this.AnswersStore = new AnswersStore({ TestsStore });
   }
 
   componentDidMount() {
@@ -28,7 +30,10 @@ class Tests extends Component {
 
   render() {
     return (
-      <View TestsStore={this.TestsStore} />
+      <View
+        TestsStore={this.TestsStore}
+        AnswersStore={this.AnswersStore}
+      />
     );
   }
 }

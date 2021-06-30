@@ -53,10 +53,8 @@ const useStyles = makeStyles((theme) => ({
 const OptionItemView = observer(({ TestStore, QuestionStore, option }) => {
   const classes = useStyles();
 
-  const { types: testTypes } = tests;
   const { types: questionTypes } = questions;
 
-  const { type: testType } = TestStore;
   const { type: questionType } = QuestionStore;
 
   const {
@@ -72,13 +70,13 @@ const OptionItemView = observer(({ TestStore, QuestionStore, option }) => {
 
       {questionType === questionTypes.RADIO_BUTS ? (
         <Radio
-          checked={testType === testTypes.TEST && checked}
-          onClick={testType === testTypes.TEST ? onChecked : undefined}
+          checked={checked}
+          onClick={onChecked}
         />
       ) : (
         <Checkbox
-          checked={testType === testTypes.TEST && checked}
-          onClick={testType === testTypes.TEST ? onChecked : undefined}
+          checked={checked}
+          onClick={onChecked}
         />
       )}
 

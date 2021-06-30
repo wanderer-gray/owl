@@ -56,7 +56,7 @@ class AnswerViewStore {
 
       return {
         ...question,
-        points: maxPoints * Math.max(user / all, 0),
+        points: maxPoints * Math.max(user / (all || 1), 0),
         maxPoints,
         options: options.map((option) => {
           const { id, checked } = option;

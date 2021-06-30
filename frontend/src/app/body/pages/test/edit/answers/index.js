@@ -37,7 +37,7 @@ class AnswersStore {
       }, 0);
       const all = options.reduce((count, { checked }) => count + checked, 0);
 
-      return result + points * Math.max(user / all, 0);
+      return result + points * Math.max(user / (all || 1), 0);
     }, 0);
   }
 
