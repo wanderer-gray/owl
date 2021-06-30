@@ -21,11 +21,6 @@ app.setNotFoundHandler((_, reply) => reply.sendFile('index.html'));
 const init = async () => {
   try {
     await app.listen(config.app);
-
-    if (process.env.NODE_ENV !== 'production') {
-      // eslint-disable-next-line no-console
-      console.log(app.printRoutes());
-    }
   } catch (err) {
     app.log.fatal(err);
     process.exit(1);
